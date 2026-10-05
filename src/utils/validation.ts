@@ -67,3 +67,14 @@ export function parseList(value: string): string[] {
 export function joinList(values: readonly string[]): string {
   return values.join(", ");
 }
+
+/** Filters nulls out of a per-field error map, keeping only real messages. */
+export function fieldErrors(
+  entries: Record<string, string | null>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(entries).filter(
+      (entry): entry is [string, string] => entry[1] !== null,
+    ),
+  );
+}
