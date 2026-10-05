@@ -1,0 +1,62 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-firebase
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    env:
+      # Written to a file below — firebase-tools picks it up via
+      # GOOGLE_APPLICATION_CREDENTIALS. Empty means "not configured yet"
+      # and the deploy steps skip gracefully instead of failing the build.
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify configuration
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' && env.FIREBASE_PROJECT_ID != '' }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/service-account.json" >> "$GITHUB_ENV"
+
+      - name: Deploy hosting, rules, and indexes
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT != '' && env.FIREBASE_PROJECT_ID != '' }}
+        run: >-
+          npx firebase deploy
+          --non-interactive
+          --project "$FIREBASE_PROJECT_ID"
+          --only hosting,firestore:rules,firestore:indexes,storage
+
+      - name: Deploy skipped notice
+        if: ${{ env.FIREBASE_SERVICE_ACCOUNT == '' || env.FIREBASE_PROJECT_ID == '' }}
+        run: |
+          echo "::notice::Deploy skipped. Configure the FIREBASE_SERVICE_ACCOUNT secret and the FIREBASE_PROJECT_ID repository variable (see docs/manual-setup.md)."
