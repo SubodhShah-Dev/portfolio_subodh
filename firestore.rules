@@ -1,20 +1,150 @@
 rules_version = '2';
 
 // ---------------------------------------------------------------------------
-// Firestore Security Rules
+// Firestore Security Rules (§12, §32–§36)
 //
-// STUB — deny everything. The full rule set (public published reads, admin
-// authorization, message validation) is implemented and tested against the
-// Emulator Suite in Phase 9 (see tests/rules/).
+// Authorization, not hiding: every public query in the app carries the same
+// constraints enforced here (e.g. status == "published", isActive == true).
+// Admin membership lives in admins/{uid} — readable only by its own signed-in
+// user and NEVER writable from a client (created manually in the console).
 //
-// Remember: Security Rules are NOT filters. Every public query in the app
-// must include the same constraints these rules enforce (e.g.
-// where("status", "== "published")) or the query fails outright.
+// There are no locks in production rules — the emulator verifies every rule
+// in tests/rules/.
 // ---------------------------------------------------------------------------
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+
+    function isSignedIn() {
+      return request.auth != null;
     }
+
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == "admin";
+    }
+
+    // Structural write validation shared by ordered, status-managed content.
+    // Timestamps must be server-generated; creates must stamp createdAt.
+    function isValidContentWrite() {
+      let data = request.resource.data;
+      return data.status in ['draft', 'published', 'archived']
+        && data.order is int
+        && data.order >= 0
+        && data.updatedAt == request.time
+        && (request.method == 'update' || data.createdAt == request.time)
+        && (!('publishedAt' in data) || data.publishedAt == request.time);
+    }
+
+    // --- Ordered collections: public sees published only, admins see all ----
+    match /projects/{docId} {
+      allow get, list: if isAdmin() || resource.data.status == 'published';
+      allow create, update: if isAdmin() && isValidContentWrite();
+      allow delete: if isAdmin();
+    }
+
+    match /skills/{docId} {
+      allow get, list: if isAdmin() || resource.data.status == 'published';
+      allow create, update: if isAdmin() && isValidContentWrite();
+      allow delete: if isAdmin();
+    }
+
+    match /experience/{docId} {
+      allow get, list: if isAdmin() || resource.data.status == 'published';
+      allow create, update: if isAdmin() && isValidContentWrite();
+      allow delete: if isAdmin();
+    }
+
+    match /education/{docId} {
+      allow get, list: if isAdmin() || resource.data.status == 'published';
+      allow create, update: if isAdmin() && isValidContentWrite();
+      allow delete: if isAdmin();
+    }
+
+    match /certifications/{docId} {
+      allow get, list: if isAdmin() || resource.data.status == 'published';
+      allow create, update: if isAdmin() && isValidContentWrite();
+      allow delete: if isAdmin();
+    }
+
+    match /socialLinks/{docId} {
+      allow get, list: if isAdmin() || resource.data.status == 'published';
+      allow create, update: if isAdmin() && isValidContentWrite();
+      allow delete: if isAdmin();
+    }
+
+    // --- Profile: public identity, admin-managed (§8) ------------------------
+    match /profile/{docId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // --- Contact configuration: public section copy (§19) --------------------
+    match /contact/{docId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin()
+        && request.resource.data.enabled is bool
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    // --- Site settings: public reads power rendering (§47) -------------------
+    match /settings/{docId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin()
+        && request.resource.data.enabled is bool
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    // --- Resumes: public read of the active one only (§21–§24) ---------------
+    match /resumes/{docId} {
+      allow get, list: if isAdmin() || resource.data.isActive == true;
+      allow create: if isAdmin()
+        && request.resource.data.source in ['storage', 'external']
+        && request.resource.data.downloadUrl is string
+        && request.resource.data.isActive is bool
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+             ['isActive', 'updatedAt', 'source', 'downloadUrl', 'fileName',
+              'fileSize', 'contentType', 'storagePath', 'uploadedAt'])
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.isActive is bool;
+      allow delete: if isAdmin();
+    }
+
+    // --- Messages: anyone may CREATE, only admins may read or manage (§20) ---
+    match /messages/{docId} {
+      allow create: if request.resource.data.keys().hasOnly(
+            ['name', 'email', 'message', 'read', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 0
+        && request.resource.data.email.size() <= 200
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 10
+        && request.resource.data.message.size() <= 5000
+        && request.resource.data.read == false
+        && request.resource.data.createdAt == request.time;
+      allow get, list: if isAdmin();
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+        && request.resource.data.read is bool;
+      allow delete: if isAdmin();
+    }
+
+    // --- Admin membership: readable by its owner, never client-writable (§32) --
+    match /admins/{userId} {
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    // Everything else is implicitly denied.
   }
 }

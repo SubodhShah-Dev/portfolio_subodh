@@ -1,18 +1,32 @@
 rules_version = '2';
 
 // ---------------------------------------------------------------------------
-// Cloud Storage Security Rules
+// Cloud Storage Security Rules (§22, §24)
 //
-// STUB — deny everything. Full rules (admin-only writes, PDF/image MIME and
-// size validation, public read of managed resume/image files) are implemented
-// and emulator-tested in Phase 9 (see tests/rules/).
+// Public may READ resume files; only admins may write them, and only as
+// PDFs under the size limit. Admin membership is checked against Firestore —
+// one source of truth, no second roster to drift.
 //
-// Storage is OPTIONAL for this app: when uploads are unavailable the admin
-// falls back to supplying a real external URL. These rules never assume a
-// billing plan.
+// Storage stays optional: when uploads are unavailable the admin supplies a
+// real external URL instead. These rules never assume a billing plan.
 // ---------------------------------------------------------------------------
 service firebase.storage {
   match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+        && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)) != null
+        && firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role == "admin";
+    }
+
+    match /resumes/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+      allow delete: if isAdmin();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
