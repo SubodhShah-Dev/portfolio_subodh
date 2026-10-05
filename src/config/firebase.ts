@@ -38,18 +38,32 @@ interface FirebaseEnv {
   appCheckSiteKey: string;
 }
 
+/** First non-empty value wins — empty strings from .env files must not win. */
+function pick(...values: readonly (string | undefined)[]): string {
+  for (const value of values) {
+    if (value !== undefined && value !== "") return value;
+  }
+  return "";
+}
+
 function readEnv(): FirebaseEnv {
   const useEmulators = import.meta.env.MODE === "test"
     || import.meta.env.VITE_USE_FIREBASE_EMULATORS === "true";
 
   if (useEmulators) {
     return {
-      apiKey: import.meta.env.VITE_FIREBASE_API_KEY ?? "demo-api-key",
-      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ?? "demo-portfolio-cms.firebaseapp.com",
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ?? EMULATOR_PROJECT_ID,
-      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ?? "demo-portfolio-cms.appspot.com",
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? "0",
-      appId: import.meta.env.VITE_FIREBASE_APP_ID ?? "demo-app-id",
+      apiKey: pick(import.meta.env.VITE_FIREBASE_API_KEY, "demo-api-key"),
+      authDomain: pick(
+        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+        "demo-portfolio-cms.firebaseapp.com",
+      ),
+      projectId: pick(import.meta.env.VITE_FIREBASE_PROJECT_ID, EMULATOR_PROJECT_ID),
+      storageBucket: pick(
+        import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+        "demo-portfolio-cms.appspot.com",
+      ),
+      messagingSenderId: pick(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID, "0"),
+      appId: pick(import.meta.env.VITE_FIREBASE_APP_ID, "demo-app-id"),
       useEmulators: true,
       siteUrl: import.meta.env.VITE_SITE_URL ?? "",
       appCheckSiteKey: import.meta.env.VITE_FIREBASE_APPCHECK_SITE_KEY ?? "",

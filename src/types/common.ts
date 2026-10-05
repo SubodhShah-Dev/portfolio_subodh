@@ -18,11 +18,13 @@ export type AppErrorCode =
   | "storage-unavailable"
   | "aborted";
 
-export interface AppError {
+/**
+ * Normalized application error — raw Firebase exceptions never reach the UI.
+ * Extends Error so it can be safely thrown; `cause` preserves the original
+ * exception for admin-side diagnostics (never shown to public users).
+ */
+export interface AppError extends Error {
   code: AppErrorCode;
-  message: string;
-  /** Original error — surfaced only in admin diagnostics, never to the public. */
-  cause?: unknown;
 }
 
 /** Read lifecycle: idle → loading → success | error | empty (§43). */

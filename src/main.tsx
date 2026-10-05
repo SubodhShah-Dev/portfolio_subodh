@@ -2,7 +2,10 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import App from "./App";
+import { initAppCheck } from "./config/firebase";
 import "./index.css";
+
+initAppCheck();
 
 const container = document.getElementById("root");
 

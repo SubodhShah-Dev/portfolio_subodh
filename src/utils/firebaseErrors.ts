@@ -66,7 +66,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function extractFirebaseCode(error: unknown): string | null {
+/** Extracts the raw Firebase error code (e.g. "auth/invalid-credential"), if any. */
+export function getFirebaseCode(error: unknown): string | null {
   if (isRecord(error) && typeof error.code === "string") {
     return error.code;
   }
@@ -83,21 +84,30 @@ export function isAppError(value: unknown): value is AppError {
   );
 }
 
+/** Builds a safe, throwable AppError with a normalized message. */
+export function createAppError(
+  code: AppErrorCode,
+  message?: string,
+  cause?: unknown,
+): AppError {
+  const base = new Error(
+    message ?? PUBLIC_MESSAGES[code],
+    cause !== undefined ? { cause } : undefined,
+  );
+  return Object.assign(base, { code });
+}
+
 /** Converts any thrown value into a safe, normalized AppError. */
 export function toAppError(error: unknown, context?: AppErrorCode): AppError {
   if (isAppError(error)) return error;
 
-  const code = extractFirebaseCode(error);
+  const code = getFirebaseCode(error);
   const mapped: AppErrorCode =
     code !== null && FIREBASE_CODE_MAP[code] !== undefined
       ? FIREBASE_CODE_MAP[code]
       : (context ?? "unknown");
 
-  return {
-    code: mapped,
-    message: PUBLIC_MESSAGES[mapped],
-    cause: error,
-  };
+  return createAppError(mapped, PUBLIC_MESSAGES[mapped], error);
 }
 
 /** Safe message lookup for a known application code. */
