@@ -1,0 +1,20 @@
+rules_version = '2';
+
+// ---------------------------------------------------------------------------
+// Firestore Security Rules
+//
+// STUB — deny everything. The full rule set (public published reads, admin
+// authorization, message validation) is implemented and tested against the
+// Emulator Suite in Phase 9 (see tests/rules/).
+//
+// Remember: Security Rules are NOT filters. Every public query in the app
+// must include the same constraints these rules enforce (e.g.
+// where("status", "== "published")) or the query fails outright.
+// ---------------------------------------------------------------------------
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

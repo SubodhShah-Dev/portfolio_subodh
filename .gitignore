@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+coverage/
+
+# Environment files — never commit local configuration or secrets
+.env.local
+.env.*.local
+
+# Firebase private credentials — never commit
+service-account.json
+service-account*.json
+*service-account*.json
+firebase-adminsdk*.json
+firebase-adminsdk*.json.key
+*.serviceaccount.json
+
+# Firebase local emulator artifacts
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+storage-debug.log
+firebase-export-*.json
+firestore-export-*.json
+storage-export-*.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Misc
+*.tsbuildinfo

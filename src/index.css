@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Carbon Dark design system (§56)
+   Canvas: bg-slate-950 · Cards: bg-slate-900 + border-slate-800
+   Accent: text-emerald-400 · Headings: text-slate-100 · Body: text-slate-400
+--------------------------------------------------------------------------- */
+
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-slate-950);
+    color: var(--color-slate-400);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-slate-100);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-emerald-500) 35%, transparent);
+    color: var(--color-slate-100);
+  }
+
+  /* Visible, consistent focus indicator for keyboard users (§54) */
+  :focus-visible {
+    outline: 2px solid var(--color-emerald-400);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* Reusable primitives that keep markup lean without hiding semantics. */
+  .card {
+    @apply rounded-xl border border-slate-800 bg-slate-900;
+  }
+
+  .btn-primary {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-500 px-4 py-2
+      text-sm font-medium text-slate-950 transition-all duration-300 hover:bg-emerald-400
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-700
+      bg-slate-900 px-4 py-2 text-sm font-medium text-slate-300 transition-all duration-300
+      hover:border-emerald-500/50 hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-danger {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-500/30
+      bg-slate-900 px-4 py-2 text-sm font-medium text-red-400 transition-all duration-300
+      hover:border-red-500/60 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100
+      placeholder:text-slate-500 focus:border-emerald-500/50 focus:outline-none;
+  }
+}

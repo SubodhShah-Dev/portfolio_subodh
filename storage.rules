@@ -1,0 +1,20 @@
+rules_version = '2';
+
+// ---------------------------------------------------------------------------
+// Cloud Storage Security Rules
+//
+// STUB — deny everything. Full rules (admin-only writes, PDF/image MIME and
+// size validation, public read of managed resume/image files) are implemented
+// and emulator-tested in Phase 9 (see tests/rules/).
+//
+// Storage is OPTIONAL for this app: when uploads are unavailable the admin
+// falls back to supplying a real external URL. These rules never assume a
+// billing plan.
+// ---------------------------------------------------------------------------
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
