@@ -10,11 +10,17 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { deleteObject, ref as storageRef } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
 
 import { db, storage } from "../config/firebase";
 import { createAppError, getFirebaseCode, toAppError } from "../utils/firebaseErrors";
 import { isValidHttpUrl } from "../utils/urlValidation";
+import { validateResumeFile } from "../utils/resumeValidation";
 import { cached, invalidateCache } from "./contentCache";
 import {
   collectionRef,
@@ -77,8 +83,32 @@ export async function getResumes(): Promise<Resume[]> {
 }
 
 /**
+ * Inserts a resume document. It becomes active automatically only when no
+ * active resume exists yet, so replacing a resume is an explicit activation.
+ */
+async function insertResume(data: Record<string, unknown>): Promise<string> {
+  try {
+    const activeSnapshot = await getDocs(
+      query(
+        collectionRef<DocData<Resume>>(PATH),
+        where("isActive", "==", true),
+        limit(1),
+      ),
+    );
+    const reference = await addDoc(collection(db, PATH), {
+      ...data,
+      isActive: activeSnapshot.empty,
+      updatedAt: serverTimestamp(),
+    });
+    invalidateCache(PATH);
+    return reference.id;
+  } catch (error) {
+    throw toAppError(error);
+  }
+}
+
+/**
  * Saves an admin-supplied external download URL — never generated (§24).
- * Activates automatically only when no active resume exists yet.
  */
 export async function saveExternalResume(
   input: ExternalResumeInput,
@@ -91,29 +121,62 @@ export async function saveExternalResume(
     );
   }
 
+  const payload: Record<string, unknown> = { source: "external", downloadUrl };
+  const fileName = input.fileName?.trim();
+  if (fileName !== undefined && fileName !== "") {
+    payload.fileName = fileName;
+  }
+  return insertResume(payload);
+}
+
+/**
+ * Uploads a validated PDF to Storage under a random path and records it as a
+ * resume document (§22). If the document write fails afterwards, the just
+ * uploaded file is removed best-effort so no orphaned object is left behind.
+ */
+export async function uploadResume(file: File): Promise<string> {
+  const issue = validateResumeFile(file);
+  if (issue !== null) {
+    throw createAppError("invalid-input", issue);
+  }
+
+  const path = `resumes/${crypto.randomUUID()}.pdf`;
+  const objectRef = storageRef(storage, path);
+  let uploaded = false;
+
   try {
-    const activeSnapshot = await getDocs(
-      query(
-        collectionRef<DocData<Resume>>(PATH),
-        where("isActive", "==", true),
-        limit(1),
-      ),
-    );
-    const payload: Record<string, unknown> = {
-      source: "external",
+    await uploadBytes(objectRef, file, { contentType: "application/pdf" });
+    uploaded = true;
+    const downloadUrl = await getDownloadURL(objectRef);
+    return await insertResume({
+      source: "storage",
+      storagePath: path,
       downloadUrl,
-      isActive: activeSnapshot.empty,
-      updatedAt: serverTimestamp(),
-    };
-    const fileName = input.fileName?.trim();
-    if (fileName !== undefined && fileName !== "") {
-      payload.fileName = fileName;
-    }
-    const reference = await addDoc(collection(db, PATH), payload);
-    invalidateCache(PATH);
-    return reference.id;
+      fileName: file.name,
+      fileSize: file.size,
+      contentType: "application/pdf",
+      uploadedAt: serverTimestamp(),
+    });
   } catch (error) {
-    throw toAppError(error);
+    // Best-effort cleanup when the upload succeeded but the write failed.
+    if (uploaded) {
+      try {
+        await deleteObject(objectRef);
+      } catch (cleanupError) {
+        console.warn("Could not clean up partially uploaded resume:", cleanupError);
+      }
+    }
+    const appError = toAppError(error);
+    const rawCode = getFirebaseCode(error);
+    if (
+      appError.code === "unknown" &&
+      rawCode !== null &&
+      rawCode.startsWith("storage/")
+    ) {
+      // Unmapped storage failure — surface the neutral, plan-agnostic message.
+      throw createAppError("storage-unavailable", undefined, error);
+    }
+    throw appError;
   }
 }
 
