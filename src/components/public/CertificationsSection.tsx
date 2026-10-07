@@ -16,23 +16,30 @@ export function CertificationsSection({
     <Section id="certifications" title="Certifications" index={index}>
       <ul className="grid gap-4 sm:grid-cols-2">
         {certifications.map((entry) => (
-          <li key={entry.id} className="card p-5">
+          <li
+            key={entry.id}
+            className="rounded-xl border border-slate-800/70 bg-slate-900/40 p-5 transition-colors hover:border-slate-700"
+          >
             <h3 className="text-sm font-semibold text-slate-100">{entry.title}</h3>
             <p className="mt-1 text-sm text-emerald-400">{entry.issuer}</p>
             {entry.issueDate !== undefined && entry.issueDate.trim() !== "" && (
-              <p className="mt-1 font-mono text-xs text-slate-500">{entry.issueDate}</p>
+              <p className="mt-1 font-meta text-xs text-slate-600 tabular-nums">
+                {entry.issueDate}
+              </p>
             )}
             {entry.description !== undefined && entry.description.trim() !== "" && (
-              <p className="mt-2 text-sm text-slate-400">{entry.description}</p>
+              <p className="mt-2 text-pretty text-sm leading-6 text-slate-400">
+                {entry.description}
+              </p>
             )}
             {entry.credentialUrl !== undefined && entry.credentialUrl.trim() !== "" && (
               <a
                 href={entry.credentialUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-block text-xs font-medium text-emerald-400 hover:underline"
+                className="mt-3 inline-block font-meta text-xs text-emerald-400 underline-offset-4 hover:underline"
               >
-                View credential
+                View credential →
               </a>
             )}
           </li>

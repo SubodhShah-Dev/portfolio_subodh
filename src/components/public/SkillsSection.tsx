@@ -33,19 +33,23 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
 
   return (
     <Section id="skills" title="Skills" index={index}>
-      <div className="space-y-5">
+      <div className="space-y-8">
         {groups.map((group) => (
           <div key={group.category || "all"}>
             {group.category.trim() !== "" && (
-              <h3 className="text-sm font-medium text-slate-300">{group.category}</h3>
+              <h3 className="font-meta text-xs tracking-widest text-slate-500 uppercase">
+                {group.category}
+              </h3>
             )}
             <ul
-              className={`flex flex-wrap gap-2 ${group.category.trim() !== "" ? "mt-2" : ""}`}
+              className={`flex flex-wrap gap-2.5 ${
+                group.category.trim() !== "" ? "mt-3.5" : ""
+              }`}
             >
               {group.items.map((skill) => (
                 <li
                   key={skill.id}
-                  className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs text-slate-300"
+                  className="rounded-full border border-slate-700/70 bg-slate-900/60 px-3.5 py-1.5 text-sm text-slate-300 transition-colors hover:border-emerald-500/40 hover:text-slate-100"
                 >
                   {skill.name}
                 </li>

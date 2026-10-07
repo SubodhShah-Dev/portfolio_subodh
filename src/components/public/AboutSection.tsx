@@ -19,40 +19,43 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
 
   return (
     <Section id="about" title="About" index={index}>
-      <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-start">
-        <div className="space-y-4">
+      <div className="grid gap-10 sm:grid-cols-[1fr_auto] sm:items-start">
+        <div className="space-y-5">
           {paragraphs.map((paragraph, index) => (
-            <p key={index} className="max-w-2xl text-sm leading-7 text-slate-400">
+            <p
+              key={index}
+              className="max-w-2xl text-pretty text-base leading-8 text-slate-300"
+            >
               {paragraph}
             </p>
           ))}
           {(hasEmail || hasPhone || hasLocation) && (
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 pt-2 text-sm">
+            <ul className="flex flex-wrap gap-x-8 gap-y-3 pt-3 font-meta text-sm">
               {hasEmail && (
-                <li>
-                  <span className="text-slate-500">Email: </span>
+                <li className="flex items-baseline gap-2">
+                  <span className="text-slate-600">Email</span>
                   <a
                     href={`mailto:${email}`}
-                    className="text-emerald-400 hover:underline"
+                    className="text-emerald-400 underline-offset-4 hover:underline"
                   >
                     {email}
                   </a>
                 </li>
               )}
               {hasPhone && (
-                <li>
-                  <span className="text-slate-500">Phone: </span>
+                <li className="flex items-baseline gap-2">
+                  <span className="text-slate-600">Phone</span>
                   <a
                     href={`tel:${phone.replace(/\s+/g, "")}`}
-                    className="text-emerald-400 hover:underline"
+                    className="text-emerald-400 underline-offset-4 hover:underline"
                   >
                     {phone}
                   </a>
                 </li>
               )}
               {hasLocation && (
-                <li>
-                  <span className="text-slate-500">Location: </span>
+                <li className="flex items-baseline gap-2">
+                  <span className="text-slate-600">Based in</span>
                   <span className="text-slate-300">{location}</span>
                 </li>
               )}
@@ -64,7 +67,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
             src={profileImageUrl}
             alt={`${profile.public.name} — profile`}
             loading="lazy"
-            className="mx-auto size-36 rounded-2xl border border-slate-800 object-cover sm:mx-0"
+            className="mx-auto size-44 rounded-2xl border border-slate-800 object-cover shadow-[0_24px_60px_-30px_rgba(16,185,129,0.35)] sm:mx-0"
           />
         )}
       </div>

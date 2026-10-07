@@ -46,33 +46,33 @@ export function ContactSection({
 
   return (
     <Section id="contact" title={title} description={description} index={index}>
-      <div className="grid gap-8 lg:grid-cols-2">
-        <ul className="space-y-3 text-sm">
+      <div className="grid gap-10 lg:grid-cols-2">
+        <ul className="space-y-5 font-meta text-sm">
           {email !== undefined && (
-            <li>
-              <span className="text-slate-500">Email: </span>
+            <li className="flex items-baseline gap-3">
+              <span className="text-slate-600">Email</span>
               <a
                 href={`mailto:${email}`}
-                className="text-emerald-400 hover:underline"
+                className="break-all text-emerald-400 underline-offset-4 hover:underline"
               >
                 {email}
               </a>
             </li>
           )}
           {phone !== undefined && (
-            <li>
-              <span className="text-slate-500">Phone: </span>
+            <li className="flex items-baseline gap-3">
+              <span className="text-slate-600">Phone</span>
               <a
                 href={`tel:${phone.replace(/\s+/g, "")}`}
-                className="text-emerald-400 hover:underline"
+                className="text-emerald-400 underline-offset-4 hover:underline"
               >
                 {phone}
               </a>
             </li>
           )}
           {location !== undefined && (
-            <li>
-              <span className="text-slate-500">Location: </span>
+            <li className="flex items-baseline gap-3">
+              <span className="text-slate-600">Based in</span>
               <span className="text-slate-300">{location}</span>
             </li>
           )}
