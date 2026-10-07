@@ -1,27 +1,55 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Carbon Dark design system (§56)
-   Canvas: bg-slate-950 · Cards: bg-slate-900 + border-slate-800
-   Accent: text-emerald-400 · Headings: text-slate-100 · Body: text-slate-400
+   Two design systems in one stylesheet (§56):
+
+   1. Carbon Dark — the ADMIN. Canvas bg-slate-950 · cards bg-slate-900 +
+      border-slate-800 · accent text-emerald-400 · headings text-slate-100 ·
+      body text-slate-400 · system font stack (--font-sans / --font-mono).
+
+   2. Ink on Paper — the PUBLIC portfolio. Warm paper #F3EFE6 · ink #15120E ·
+      one vermilion accent · Instrument Serif / Instrument Sans / IBM Plex
+      Mono (--font-display / --font-body / --font-meta). Applied only inside
+      `.public-scope` (the public shell root); the admin never carries that
+      class, so both systems coexist without leaking.
 --------------------------------------------------------------------------- */
 
 @theme {
+  /* Admin stacks — untouched. */
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
   --font-mono:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Public portfolio typography (editorial direction) — applied only where
-     components opt in, so the admin keeps the system stack above. */
+  /* Public typography. Instrument Serif is 400-only — never font-semibold
+     on font-display (synthetic bold); the public heading rule below forces 400. */
   --font-body:
-    "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Instrument Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     sans-serif;
-  --font-display:
-    "Fraunces Variable", "Iowan Old Style", Georgia, "Times New Roman", serif;
-  --font-meta:
-    "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-meta: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Ink on Paper palette — contrast-checked against paper (§ plan):
+     ink 16.27 · muted 5.85 · accent-deep 5.54 · error 5.70 (small text OK);
+     accent 3.52 = graphics / ≥24px only, ink on accent fills 4.62. */
+  --color-paper: #f3efe6;
+  --color-paper-raised: #faf7f0;
+  --color-ink: #15120e;
+  --color-muted: #625b4f;
+  --color-faint: #8b8377;
+  --color-accent: #e8410e;
+  --color-accent-deep: #b22f06;
+  --color-error: #b3261e;
+  --color-error-tint: #fbeae8;
+  --color-success: #1f6f4a;
+  --color-success-tint: #e7f3ea;
+
+  /* One motion language: a single ease + three-step duration scale. */
+  --ease-print: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-1: 160ms;
+  --dur-2: 450ms;
+  --dur-3: 750ms;
 }
 
 @layer base {
@@ -43,8 +71,10 @@
     }
   }
 
+  /* Paper canvas: public pages paint it from the shell; every admin surface
+     sets its own bg-slate-950, so only a pre-hydration flash sees this. */
   body {
-    background-color: var(--color-slate-950);
+    background-color: var(--color-paper);
     color: var(--color-slate-400);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -76,7 +106,8 @@
 }
 
 @layer components {
-  /* Reusable primitives that keep markup lean without hiding semantics. */
+  /* --- Carbon Dark primitives (admin) — byte-stable ------------------------ */
+
   .card {
     @apply rounded-xl border border-slate-800 bg-slate-900;
   }
@@ -104,25 +135,115 @@
       placeholder:text-slate-500 focus:border-emerald-500/50 focus:outline-none;
   }
 
-  /* --- Public portfolio primitives (additive; shared rules above untouched) */
+  /* --- Ink on Paper primitives (public only) ------------------------------ */
 
   /* Mono eyebrow — role, section numbers, meta labels. */
   .eyebrow {
-    @apply font-meta text-[11px] font-medium tracking-[0.18em] text-emerald-400 uppercase;
+    @apply font-meta text-[0.6875rem] font-medium tracking-[0.16em] text-accent-deep uppercase;
   }
 
-  /* Large call-to-action pair for hero and footer (compact UI keeps .btn-*). */
+  /* Large call-to-action pair for hero, footer, and detail pages. */
   .cta-primary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-500
-      px-6 py-3 text-base font-medium text-slate-950 transition-colors duration-300
-      hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-ink px-6 py-3
+      text-base font-medium text-paper transition-colors duration-200
+      hover:bg-accent-deep disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .cta-ghost {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border
-      border-slate-700 px-6 py-3 text-base font-medium text-slate-200 transition-colors
-      duration-300 hover:border-emerald-500/60 hover:text-slate-50 disabled:cursor-not-allowed
-      disabled:opacity-50;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-ink px-6 py-3
+      text-base font-medium text-ink transition-colors duration-200
+      hover:bg-ink hover:text-paper disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Fixed-viewport paper fiber (aria-hidden overlay in the public shell). */
+  .paper-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+
+  /* --- Ink on Paper, scoped to the public shell ---------------------------
+     Everything below requires a .public-scope ancestor (PublicShell root,
+     paused screen, route error boundary). Specificity wins over the Carbon
+     primitives above; the utilities layer still wins over all of it. */
+
+  /* Every public heading is typeset serif — beats the base slate-100 rule,
+     loses to explicit font-meta/size utilities where used. */
+  .public-scope :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+
+  .public-scope ::selection {
+    background-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+    color: var(--color-ink);
+  }
+
+  .public-scope :focus-visible {
+    outline-color: var(--color-accent-deep);
+    border-radius: 0;
+  }
+
+  .public-scope .btn-primary {
+    border-radius: 0;
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    transition-duration: var(--dur-1);
+  }
+
+  .public-scope .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-accent-deep);
+  }
+
+  .public-scope .btn-secondary {
+    border-radius: 0;
+    border-color: var(--color-ink);
+    background-color: transparent;
+    color: var(--color-ink);
+    transition-duration: var(--dur-1);
+  }
+
+  .public-scope .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  /* Print-style fields: underline only, paper tint on focus. */
+  .public-scope .input {
+    border-radius: 0;
+    border-width: 0 0 2px 0;
+    border-color: color-mix(in oklab, var(--color-ink) 30%, transparent);
+    background-color: transparent;
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 1.0625rem;
+    color: var(--color-ink);
+  }
+
+  .public-scope .input::placeholder {
+    color: var(--color-muted);
+  }
+
+  .public-scope .input:focus {
+    border-color: var(--color-accent-deep);
+    background-color: var(--color-paper-raised);
+  }
+
+  /* Bridge so .card content (public EmptyState) reads on paper until its
+     public instances are replaced with inline markup. */
+  .public-scope .card {
+    border-radius: 0;
+    border-color: color-mix(in oklab, var(--color-ink) 15%, transparent);
+    background-color: var(--color-paper-raised);
+  }
+
+  .public-scope .card > p:first-child {
+    color: var(--color-ink);
+  }
+
+  .public-scope .card > p + p {
+    color: var(--color-muted);
   }
 }
 
@@ -130,10 +251,10 @@
    the global reduced-motion rule above zeroes these durations. ------------- */
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(28px);
   transition:
-    opacity 0.55s ease,
-    transform 0.55s ease;
+    opacity var(--dur-3) var(--ease-print),
+    transform var(--dur-3) var(--ease-print);
 }
 
 .reveal.reveal-in {
@@ -153,5 +274,35 @@
 }
 
 .hero-enter {
-  animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-up var(--dur-3) var(--ease-print) both;
+}
+
+/* Hero choreography (D2): word masks, drawn rule, staged rise. */
+@keyframes word-rise {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }

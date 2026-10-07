@@ -88,12 +88,12 @@ export default function PublicLayout() {
 
   if (!data.siteEnabled) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="public-scope flex min-h-screen items-center justify-center bg-paper px-4">
         <div className="text-center">
-          <h1 className="text-xl font-semibold text-slate-100">
+          <h1 className="text-xl font-semibold text-ink">
             Temporarily unavailable
           </h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-sm text-ink/80">
             This site is currently paused. Please check back later.
           </p>
         </div>
@@ -109,11 +109,11 @@ export default function PublicLayout() {
       {data.logoUrl !== null && (
         <img src={data.logoUrl} alt="" className="mb-2 h-7 w-auto" />
       )}
-      <span className="block truncate font-display text-lg font-semibold text-slate-100 transition-colors group-hover:text-emerald-400">
+      <span className="block truncate font-display text-lg font-semibold text-ink transition-colors group-hover:text-accent-deep">
         {name.trim() !== "" ? name : "Portfolio"}
       </span>
       {role.trim() !== "" && (
-        <span className="mt-0.5 block truncate font-meta text-[11px] tracking-wider text-slate-400 uppercase">
+        <span className="mt-0.5 block truncate font-meta text-[11px] tracking-wider text-ink/80 uppercase">
           {role}
         </span>
       )}
@@ -154,13 +154,13 @@ export default function PublicLayout() {
     <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 lg:px-10">
       <div className="max-w-2xl">
         <p className="eyebrow">Get in touch</p>
-        <h2 className="mt-4 font-display text-3xl font-semibold text-balance text-slate-100 sm:text-4xl">
+        <h2 className="mt-4 font-display text-3xl font-semibold text-balance text-ink sm:text-4xl">
           Let&apos;s build something together.
         </h2>
         {contactEmail !== null && (
           <a
             href={`mailto:${contactEmail}`}
-            className="mt-5 inline-block font-meta text-sm break-all text-emerald-400 underline-offset-4 hover:underline sm:text-base"
+            className="mt-5 inline-block font-meta text-sm break-all text-accent-deep underline-offset-4 hover:underline sm:text-base"
           >
             {contactEmail}
           </a>
@@ -177,13 +177,13 @@ export default function PublicLayout() {
         </div>
       </div>
 
-      <div className="mt-12 flex flex-col gap-4 border-t border-slate-800/70 pt-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mt-12 flex flex-col gap-4 border-t border-ink/12 pt-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           {data.footerText !== null && (
-            <p className="text-sm text-slate-400">{data.footerText}</p>
+            <p className="text-sm text-ink/80">{data.footerText}</p>
           )}
           <p
-            className={`text-xs text-slate-400 ${
+            className={`text-xs text-ink/80 ${
               data.footerText !== null ? "mt-1" : ""
             }`}
           >

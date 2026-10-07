@@ -22,7 +22,7 @@ export function Section({ id, title, description, index, children }: SectionProp
     <section
       id={id}
       aria-labelledby={headingId}
-      className="scroll-mt-24 border-t border-slate-800/70 pt-10 lg:pt-14"
+      className="scroll-mt-24 border-t border-ink/12 pt-10 lg:pt-14"
     >
       <div className="flex items-baseline gap-4">
         {index !== undefined && (
@@ -32,13 +32,13 @@ export function Section({ id, title, description, index, children }: SectionProp
         )}
         <h2
           id={headingId}
-          className="font-display text-3xl font-semibold text-balance text-slate-100 sm:text-4xl"
+          className="font-display text-3xl font-semibold text-balance text-ink sm:text-4xl"
         >
           {title}
         </h2>
       </div>
       {description !== undefined && (
-        <p className="mt-3 max-w-2xl text-base text-pretty text-slate-400">
+        <p className="mt-3 max-w-2xl text-base text-pretty text-ink/80">
           {description}
         </p>
       )}

@@ -85,7 +85,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={(event) => { void handleSubmit(event); }} noValidate className="space-y-4">
-      <FormField label="Name" htmlFor="contact-name" error={errors.name} required>
+      <FormField label="Name" htmlFor="contact-name" error={errors.name} variant="light" required>
         <input
           id="contact-name"
           type="text"
@@ -97,7 +97,7 @@ export function ContactForm() {
         />
       </FormField>
 
-      <FormField label="Email" htmlFor="contact-email" error={errors.email} required>
+      <FormField label="Email" htmlFor="contact-email" error={errors.email} variant="light" required>
         <input
           id="contact-email"
           type="email"
@@ -114,6 +114,7 @@ export function ContactForm() {
         htmlFor="contact-message"
         error={errors.message}
         hint={`At least ${MESSAGE_MIN} characters.`}
+        variant="light"
         required
       >
         <textarea
@@ -127,10 +128,10 @@ export function ContactForm() {
       </FormField>
 
       {mutation.status === "error" && mutation.error !== null && (
-        <Alert tone="error">{mutation.error.message}</Alert>
+        <Alert tone="error" variant="light">{mutation.error.message}</Alert>
       )}
       {sent && (
-        <Alert tone="success" onDismiss={() => setSent(false)}>
+        <Alert tone="success" variant="light" onDismiss={() => setSent(false)}>
           Your message has been sent. Thank you for reaching out.
         </Alert>
       )}

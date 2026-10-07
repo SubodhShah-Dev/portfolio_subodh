@@ -24,7 +24,7 @@ export function Hero({ profile, contactVisible }: HeroProps) {
     <header className="hero-enter relative scroll-mt-24 overflow-hidden pt-6 pb-2 lg:pt-10">
       {/* Ambient emerald glow + film grain behind the type. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-40 left-1/2 h-[420px] w-[820px] max-w-[140vw] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[110px]" />
+        <div className="absolute -top-40 left-1/2 h-[420px] w-[820px] max-w-[140vw] -translate-x-1/2 rounded-full bg-accent/10 blur-[110px]" />
         <div
           className="absolute inset-0 opacity-[0.05]"
           style={{ backgroundImage: `url("${GRAIN_URL}")`, backgroundRepeat: "repeat" }}
@@ -33,18 +33,18 @@ export function Hero({ profile, contactVisible }: HeroProps) {
 
       {role.trim() !== "" && <p className="eyebrow">{role}</p>}
 
-      <h1 className="mt-5 font-display text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-tight text-slate-50">
+      <h1 className="mt-5 font-display text-[clamp(2.75rem,7vw,5.5rem)] leading-[0.98] font-semibold tracking-tight text-ink">
         {name}
       </h1>
 
       {headline.trim() !== "" && (
-        <p className="mt-6 max-w-2xl text-xl text-pretty text-slate-400 sm:text-2xl">
+        <p className="mt-6 max-w-2xl text-xl text-pretty text-ink/80 sm:text-2xl">
           {headline}
         </p>
       )}
 
       {location !== undefined && location.trim() !== "" && (
-        <p className="mt-5 font-meta text-sm text-slate-400">
+        <p className="mt-5 font-meta text-sm text-ink/80">
           Based in {location}
         </p>
       )}

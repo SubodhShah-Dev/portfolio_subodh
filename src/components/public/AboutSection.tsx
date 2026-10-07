@@ -24,7 +24,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
           {paragraphs.map((paragraph, index) => (
             <p
               key={index}
-              className="max-w-2xl text-pretty text-base leading-8 text-slate-300"
+              className="max-w-2xl text-pretty text-base leading-8 text-ink"
             >
               {paragraph}
             </p>
@@ -33,10 +33,10 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
             <ul className="flex flex-wrap gap-x-8 gap-y-3 pt-3 font-meta text-sm">
               {hasEmail && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-slate-400">Email</span>
+                  <span className="text-ink/80">Email</span>
                   <a
                     href={`mailto:${email}`}
-                    className="text-emerald-400 underline-offset-4 hover:underline"
+                    className="text-accent-deep underline-offset-4 hover:underline"
                   >
                     {email}
                   </a>
@@ -44,10 +44,10 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
               )}
               {hasPhone && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-slate-400">Phone</span>
+                  <span className="text-ink/80">Phone</span>
                   <a
                     href={`tel:${phone.replace(/\s+/g, "")}`}
-                    className="text-emerald-400 underline-offset-4 hover:underline"
+                    className="text-accent-deep underline-offset-4 hover:underline"
                   >
                     {phone}
                   </a>
@@ -55,8 +55,8 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
               )}
               {hasLocation && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-slate-400">Based in</span>
-                  <span className="text-slate-300">{location}</span>
+                  <span className="text-ink/80">Based in</span>
+                  <span className="text-ink">{location}</span>
                 </li>
               )}
             </ul>
@@ -67,7 +67,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
             src={profileImageUrl}
             alt={`${profile.public.name} — profile`}
             loading="lazy"
-            className="mx-auto size-44 rounded-2xl border border-slate-800 object-cover shadow-[0_24px_60px_-30px_rgba(16,185,129,0.35)] sm:mx-0"
+            className="mx-auto size-44 rounded-2xl border border-ink/15 object-cover shadow-[0_24px_60px_-30px_rgba(21,18,14,0.35)] sm:mx-0"
           />
         )}
       </div>

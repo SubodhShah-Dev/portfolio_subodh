@@ -17,14 +17,14 @@ export default function PublicErrorBoundary() {
   const notFound = isRouteErrorResponse(error) && error.status === 404;
 
   return (
-    <div role="alert" className="py-24 text-center">
-      <p className="font-meta text-sm tracking-widest text-emerald-400 uppercase">
+    <div role="alert" className="public-scope py-24 text-center">
+      <p className="font-meta text-sm tracking-widest text-accent-deep uppercase">
         {notFound ? "404" : "Error"}
       </p>
-      <h1 className="mt-4 font-display text-4xl font-semibold text-slate-100">
+      <h1 className="mt-4 font-display text-4xl font-semibold text-ink">
         {notFound ? "Page not found" : "Something went wrong"}
       </h1>
-      <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-slate-400">
+      <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-ink/80">
         {notFound
           ? "The page you are looking for does not exist or is no longer available."
           : "We couldn't load this page. Check your connection and try again."}

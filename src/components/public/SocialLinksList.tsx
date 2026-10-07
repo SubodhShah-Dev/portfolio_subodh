@@ -21,7 +21,7 @@ export function SocialLinksList({ links }: SocialLinksListProps) {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-emerald-400"
+              className="inline-flex items-center gap-1.5 text-xs text-ink/80 transition-colors hover:text-accent-deep"
             >
               {label}
               <svg

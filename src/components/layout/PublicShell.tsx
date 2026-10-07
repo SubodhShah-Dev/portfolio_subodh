@@ -30,8 +30,8 @@ function routeLinkClass(active: boolean): string {
   return [
     "rounded-md px-3 py-2 text-sm transition-colors duration-200",
     active
-      ? "text-slate-50 underline decoration-2 decoration-emerald-400 underline-offset-[10px]"
-      : "text-slate-400 hover:text-slate-100",
+      ? "text-ink underline decoration-2 decoration-accent underline-offset-[10px]"
+      : "text-ink/80 hover:text-ink",
   ].join(" ");
 }
 
@@ -39,8 +39,8 @@ function menuLinkClass(active: boolean): string {
   return [
     "block rounded-md px-3 py-2.5 text-sm transition-colors duration-200",
     active
-      ? "bg-slate-800/60 text-emerald-400"
-      : "text-slate-400 hover:bg-slate-800/40 hover:text-slate-100",
+      ? "bg-ink/8 text-accent-deep"
+      : "text-ink/80 hover:bg-ink/5 hover:text-ink",
   ].join(" ");
 }
 
@@ -165,15 +165,15 @@ export default function PublicShell({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950 font-body text-slate-400 antialiased">
+    <div className="flex min-h-screen flex-col bg-paper font-body text-ink/80 antialiased">
       <a
         href="#main-content"
-        className="sr-only z-100 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
+        className="sr-only z-100 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-ink focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
       >
         Skip to content
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-slate-800/70 bg-slate-950/85 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-ink/12 bg-paper/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
           <div className="min-w-0">{brand}</div>
 
@@ -189,7 +189,7 @@ export default function PublicShell({
           <button
             ref={menuButtonRef}
             type="button"
-            className="rounded-lg border border-slate-700 p-2 text-slate-300 transition-colors hover:border-emerald-500/50 hover:text-slate-100 lg:hidden"
+            className="rounded-lg border border-ink/30 p-2 text-ink transition-colors hover:border-accent/50 hover:text-ink lg:hidden"
             aria-expanded={menuOpen}
             aria-controls="public-menu"
             onClick={toggleMenu}
@@ -219,7 +219,7 @@ export default function PublicShell({
           <div
             ref={panelRef}
             id="public-menu"
-            className="border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-md lg:hidden"
+            className="border-t border-ink/12 bg-paper/95 backdrop-blur-md lg:hidden"
           >
             <nav
               aria-label="Site navigation"
@@ -227,7 +227,7 @@ export default function PublicShell({
             >
               {links.map((link) => renderLink(link, true))}
               {actions !== undefined && (
-                <div className="mt-3 border-t border-slate-800/70 pt-3">
+                <div className="mt-3 border-t border-ink/12 pt-3">
                   {actions}
                 </div>
               )}
@@ -242,7 +242,7 @@ export default function PublicShell({
         </div>
       </main>
 
-      <footer className="border-t border-slate-800/70">{footer}</footer>
+      <footer className="border-t border-ink/12">{footer}</footer>
     </div>
   );
 }

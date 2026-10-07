@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { Badge } from "../ui/Badge";
+import { Tag } from "./Tag";
 import type { Project } from "../../types/project";
 
 interface ProjectCardProps {
@@ -23,11 +23,11 @@ export function ProjectCard({
   return (
     <Link
       to={`/projects/${project.id}`}
-      className="group block overflow-hidden rounded-xl border border-slate-800/70 bg-slate-900/40 transition-colors hover:border-emerald-500/40"
+      className="group block overflow-hidden rounded-xl border border-ink/12 bg-paper-raised/40 transition-colors hover:border-accent/40"
     >
       {hasThumb && (
         <div
-          className={`overflow-hidden border-b border-slate-800/70 bg-slate-950 ${
+          className={`overflow-hidden border-b border-ink/12 bg-paper ${
             spotlight ? "aspect-[21/9]" : "aspect-[16/10]"
           }`}
         >
@@ -42,17 +42,17 @@ export function ProjectCard({
       <div className={spotlight ? "p-6" : "p-5"}>
         <div className="flex items-start justify-between gap-3">
           <h3
-            className={`font-display font-semibold text-slate-100 ${
+            className={`font-display font-semibold text-ink ${
               spotlight ? "text-2xl" : "text-lg"
             }`}
           >
             {project.title}
           </h3>
-          {showFeatured && project.featured && <Badge tone="emerald">Featured</Badge>}
+          {showFeatured && project.featured && <Tag accent>Featured</Tag>}
         </div>
         {project.subtitle.trim() !== "" && (
           <p
-            className={`mt-1.5 text-pretty text-slate-400 ${
+            className={`mt-1.5 text-pretty text-ink/80 ${
               spotlight ? "max-w-3xl text-base" : "line-clamp-2 text-sm"
             }`}
           >
@@ -61,7 +61,7 @@ export function ProjectCard({
         )}
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
           {project.date !== undefined && project.date.trim() !== "" && (
-            <p className="font-meta text-xs text-slate-400 tabular-nums">
+            <p className="font-meta text-xs text-ink/80 tabular-nums">
               {project.date}
             </p>
           )}
@@ -70,7 +70,7 @@ export function ProjectCard({
               {project.techStack.map((technology) => (
                 <li
                   key={technology}
-                  className="rounded-full border border-slate-800 bg-slate-950/70 px-2 py-0.5 font-meta text-[11px] text-slate-400"
+                  className="rounded-full border border-ink/15 bg-paper/70 px-2 py-0.5 font-meta text-[11px] text-ink/80"
                 >
                   {technology}
                 </li>
@@ -79,7 +79,7 @@ export function ProjectCard({
           )}
         </div>
         {spotlight && (
-          <p className="mt-5 font-meta text-xs text-emerald-400">
+          <p className="mt-5 font-meta text-xs text-accent-deep">
             View project →
           </p>
         )}

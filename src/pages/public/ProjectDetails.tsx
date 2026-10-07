@@ -1,7 +1,7 @@
 import { Link, useLoaderData } from "react-router";
 
 import NotFound from "./NotFound";
-import { Badge } from "../../components/ui/Badge";
+import { Tag } from "../../components/public/Tag";
 import type { Project } from "../../types/project";
 
 /**
@@ -27,25 +27,25 @@ export default function ProjectDetails() {
     <article className="space-y-10">
       <Link
         to="/projects"
-        className="inline-block font-meta text-sm text-slate-400 transition-colors hover:text-emerald-400"
+        className="inline-block font-meta text-sm text-ink/80 transition-colors hover:text-accent-deep"
       >
         ← Back to projects
       </Link>
 
       <header className="space-y-5">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight font-semibold text-slate-50">
+          <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight font-semibold text-ink">
             {project.title}
           </h1>
-          {project.featured && <Badge tone="emerald">Featured</Badge>}
+          {project.featured && <Tag accent>Featured</Tag>}
           {project.date !== undefined && project.date.trim() !== "" && (
-            <span className="font-meta text-sm text-slate-400 tabular-nums">
+            <span className="font-meta text-sm text-ink/80 tabular-nums">
               {project.date}
             </span>
           )}
         </div>
         {project.subtitle.trim() !== "" && (
-          <p className="max-w-3xl text-xl text-pretty text-slate-400">
+          <p className="max-w-3xl text-xl text-pretty text-ink/80">
             {project.subtitle}
           </p>
         )}
@@ -54,7 +54,7 @@ export default function ProjectDetails() {
             {project.techStack.map((technology) => (
               <li
                 key={technology}
-                className="rounded-full border border-slate-800 bg-slate-900/60 px-3 py-1 font-meta text-xs text-slate-400"
+                className="rounded-full border border-ink/15 bg-paper-raised/60 px-3 py-1 font-meta text-xs text-ink/80"
               >
                 {technology}
               </li>
@@ -68,7 +68,7 @@ export default function ProjectDetails() {
           src={project.thumbnailUrl}
           alt={`Screenshot of ${project.title}`}
           loading="lazy"
-          className="w-full rounded-xl border border-slate-800/70"
+          className="w-full rounded-xl border border-ink/12"
         />
       )}
 
@@ -76,11 +76,11 @@ export default function ProjectDetails() {
         <section aria-labelledby="overview-heading">
           <h2
             id="overview-heading"
-            className="font-display text-2xl font-semibold text-slate-100"
+            className="font-display text-2xl font-semibold text-ink"
           >
             Overview
           </h2>
-          <p className="mt-4 max-w-3xl whitespace-pre-wrap text-pretty text-base leading-8 text-slate-300">
+          <p className="mt-4 max-w-3xl whitespace-pre-wrap text-pretty text-base leading-8 text-ink">
             {project.description}
           </p>
         </section>
@@ -90,7 +90,7 @@ export default function ProjectDetails() {
         <section aria-labelledby="features-heading">
           <h2
             id="features-heading"
-            className="font-display text-2xl font-semibold text-slate-100"
+            className="font-display text-2xl font-semibold text-ink"
           >
             Features
           </h2>
@@ -98,9 +98,9 @@ export default function ProjectDetails() {
             {project.features.map((feature) => (
               <li
                 key={feature}
-                className="flex gap-3 text-pretty text-sm leading-7 text-slate-400"
+                className="flex gap-3 text-pretty text-sm leading-7 text-ink/80"
               >
-                <span aria-hidden="true" className="text-emerald-400">
+                <span aria-hidden="true" className="text-accent-deep">
                   →
                 </span>
                 {feature}
@@ -114,12 +114,12 @@ export default function ProjectDetails() {
         <section aria-labelledby="architecture-heading">
           <h2
             id="architecture-heading"
-            className="font-display text-2xl font-semibold text-slate-100"
+            className="font-display text-2xl font-semibold text-ink"
           >
             Architecture
           </h2>
-          <div className="mt-4 rounded-xl border border-slate-800/70 bg-slate-900/40 p-5">
-            <p className="whitespace-pre-wrap font-meta text-xs leading-6 text-slate-400">
+          <div className="mt-4 rounded-xl border border-ink/12 bg-paper-raised/40 p-5">
+            <p className="whitespace-pre-wrap font-meta text-xs leading-6 text-ink/80">
               {project.architecture}
             </p>
           </div>

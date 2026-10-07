@@ -1,15 +1,27 @@
 import type { ReactNode } from "react";
 
 export type AlertTone = "error" | "success" | "info";
+export type AlertVariant = "dark" | "light";
 
-const TONES: Record<AlertTone, string> = {
-  error: "border-red-500/30 bg-red-500/10 text-red-300",
-  success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
-  info: "border-sky-500/30 bg-sky-500/10 text-sky-300",
+const TONES: Record<AlertTone, Record<AlertVariant, string>> = {
+  error: {
+    dark: "border-red-500/30 bg-red-500/10 text-red-300",
+    light: "border-error/40 bg-error-tint text-ink",
+  },
+  success: {
+    dark: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+    light: "border-success/40 bg-success-tint text-ink",
+  },
+  info: {
+    dark: "border-sky-500/30 bg-sky-500/10 text-sky-300",
+    light: "border-ink/20 bg-paper-raised text-ink",
+  },
 };
 
 interface AlertProps {
   tone?: AlertTone;
+  /** Visual tone: "dark" (Carbon Dark admin, default) or "light" (public). */
+  variant?: AlertVariant;
   title?: string;
   /** Optional inline dismiss control for transient confirmations. */
   onDismiss?: () => void;
@@ -20,12 +32,20 @@ interface AlertProps {
  * Inline message banner (§43). Errors and successes are announced via
  * role="alert"/status — never color alone (§54).
  */
-export function Alert({ tone = "info", title, onDismiss, children }: AlertProps) {
+export function Alert({
+  tone = "error",
+  variant = "dark",
+  title,
+  onDismiss,
+  children,
+}: AlertProps) {
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
       aria-live={tone === "error" ? "assertive" : "polite"}
-      className={`flex items-start justify-between gap-4 rounded-lg border px-4 py-3 text-sm ${TONES[tone]}`}
+      className={`flex items-start justify-between gap-4 border px-4 py-3 text-sm ${
+        variant === "light" ? "rounded-none" : "rounded-lg"
+      } ${TONES[tone][variant]}`}
     >
       <div>
         {title !== undefined && <p className="font-medium">{title}</p>}

@@ -7,6 +7,11 @@ interface FormFieldProps {
   error?: string | null;
   hint?: string;
   required?: boolean;
+  /**
+   * Visual tone: "dark" (Carbon Dark admin, default) or "light"
+   * (Ink on Paper public form). Semantics and ids never change.
+   */
+  variant?: "dark" | "light";
   children: ReactNode;
 }
 
@@ -21,27 +26,46 @@ export function FormField({
   error,
   hint,
   required = false,
+  variant = "dark",
   children,
 }: FormFieldProps) {
   const showError = error !== undefined && error !== null && error !== "";
+  const light = variant === "light";
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-slate-300">
+      <label
+        htmlFor={htmlFor}
+        className={
+          light
+            ? "mb-2 block font-meta text-[0.6875rem] tracking-[0.14em] text-muted uppercase"
+            : "mb-1.5 block text-sm font-medium text-slate-300"
+        }
+      >
         {label}
         {required && (
-          <span className="ml-1 text-emerald-400" aria-hidden="true">
+          <span
+            className={`ml-1 ${light ? "text-accent-deep" : "text-emerald-400"}`}
+            aria-hidden="true"
+          >
             *
           </span>
         )}
       </label>
       {children}
       {showError ? (
-        <p id={`${htmlFor}-error`} role="alert" className="mt-1.5 text-xs text-red-400">
+        <p
+          id={`${htmlFor}-error`}
+          role="alert"
+          className={`mt-1.5 text-xs ${light ? "text-error" : "text-red-400"}`}
+        >
           {error}
         </p>
       ) : (
         hint !== undefined && (
-          <p id={`${htmlFor}-hint`} className="mt-1.5 text-xs text-slate-500">
+          <p
+            id={`${htmlFor}-hint`}
+            className={`mt-1.5 text-xs ${light ? "text-muted" : "text-slate-500"}`}
+          >
             {hint}
           </p>
         )
