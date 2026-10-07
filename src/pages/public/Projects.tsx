@@ -34,7 +34,7 @@ export default function Projects() {
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/12 pb-6">
         <h1
           id="projects-heading"
-          className="font-display text-4xl font-semibold text-ink sm:text-5xl"
+          className="font-display text-4xl text-ink sm:text-5xl"
         >
           Projects
         </h1>
@@ -53,7 +53,7 @@ export default function Projects() {
             type="button"
             aria-pressed={selectedTech === FILTER_ALL}
             onClick={() => setSelectedTech(FILTER_ALL)}
-            className={`cursor-pointer rounded-full border px-3.5 py-1.5 font-meta text-xs transition-colors ${
+            className={`cursor-pointer border px-3.5 py-1.5 font-meta text-xs transition-colors ${
               selectedTech === FILTER_ALL
                 ? "border-accent/50 bg-accent/10 text-accent-deep"
                 : "border-ink/30 bg-paper-raised/60 text-ink/80 hover:text-ink"
@@ -67,7 +67,7 @@ export default function Projects() {
               type="button"
               aria-pressed={selectedTech === technology}
               onClick={() => setSelectedTech(technology)}
-              className={`cursor-pointer rounded-full border px-3.5 py-1.5 font-meta text-xs transition-colors ${
+              className={`cursor-pointer border px-3.5 py-1.5 font-meta text-xs transition-colors ${
                 selectedTech === technology
                   ? "border-accent/50 bg-accent/10 text-accent-deep"
                   : "border-ink/30 bg-paper-raised/60 text-ink/80 hover:text-ink"

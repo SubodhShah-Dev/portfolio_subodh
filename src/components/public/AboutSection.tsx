@@ -67,7 +67,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
             src={profileImageUrl}
             alt={`${profile.public.name} — profile`}
             loading="lazy"
-            className="mx-auto size-44 rounded-2xl border border-ink/15 object-cover shadow-[0_24px_60px_-30px_rgba(21,18,14,0.35)] sm:mx-0"
+            className="mx-auto size-44 border border-ink/15 object-cover shadow-[0_24px_60px_-30px_rgba(21,18,14,0.35)] sm:mx-0"
           />
         )}
       </div>

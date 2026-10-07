@@ -28,19 +28,19 @@ const FOCUSABLE_SELECTOR =
 
 function routeLinkClass(active: boolean): string {
   return [
-    "rounded-md px-3 py-2 text-sm transition-colors duration-200",
+    "px-3 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
     active
-      ? "text-ink underline decoration-2 decoration-accent underline-offset-[10px]"
-      : "text-ink/80 hover:text-ink",
+      ? "text-ink underline decoration-2 decoration-accent underline-offset-[6px]"
+      : "text-muted hover:text-ink",
   ].join(" ");
 }
 
 function menuLinkClass(active: boolean): string {
   return [
-    "block rounded-md px-3 py-2.5 text-sm transition-colors duration-200",
+    "block px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
     active
       ? "bg-ink/8 text-accent-deep"
-      : "text-ink/80 hover:bg-ink/5 hover:text-ink",
+      : "text-muted hover:bg-ink/5 hover:text-ink",
   ].join(" ");
 }
 
@@ -126,6 +126,34 @@ export default function PublicShell({
     return () => observer.disconnect();
   }, [spyKey, location.pathname]);
 
+  // --- Reading progress: a 2px accent bar riding the header's bottom rule.
+  // Writes the transform directly from a rAF-throttled scroll listener — no
+  // state, so scrolling never re-renders the shell (§54).
+  const progressRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    let frame = 0;
+    const update = (): void => {
+      frame = 0;
+      const bar = progressRef.current;
+      if (bar === null) return;
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
+      bar.style.transform = `scaleX(${Math.min(Math.max(progress, 0), 1)})`;
+    };
+    const requestUpdate = (): void => {
+      if (frame === 0) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    update();
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (frame !== 0) cancelAnimationFrame(frame);
+    };
+  }, []);
+
   const renderLink = (link: ShellLink, mobile: boolean): ReactNode => {
     const className = mobile ? menuLinkClass : routeLinkClass;
     if (link.spyId !== undefined) {
@@ -168,18 +196,24 @@ export default function PublicShell({
     <div className="flex min-h-screen flex-col bg-paper font-body text-ink/80 antialiased">
       <a
         href="#main-content"
-        className="sr-only z-100 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-ink focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
+        className="sr-only z-100 bg-ink px-4 py-2 text-sm font-medium text-paper focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
       >
         Skip to content
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-ink/12 bg-paper/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
+      {/* Fixed paper fiber over the whole viewport (§56). */}
+      <div
+        aria-hidden="true"
+        className="paper-grain pointer-events-none fixed inset-0 z-50 opacity-[0.045] mix-blend-multiply"
+      />
+
+      <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-16 lg:px-10">
           <div className="min-w-0">{brand}</div>
 
           <nav
             aria-label="Site navigation"
-            className="hidden items-center gap-1 lg:flex"
+            className="hidden items-center gap-0.5 lg:flex"
           >
             {links.map((link) => renderLink(link, false))}
           </nav>
@@ -189,7 +223,7 @@ export default function PublicShell({
           <button
             ref={menuButtonRef}
             type="button"
-            className="rounded-lg border border-ink/30 p-2 text-ink transition-colors hover:border-accent/50 hover:text-ink lg:hidden"
+            className="border border-ink/30 p-2 text-ink transition-colors hover:border-accent hover:text-ink lg:hidden"
             aria-expanded={menuOpen}
             aria-controls="public-menu"
             onClick={toggleMenu}
@@ -215,11 +249,18 @@ export default function PublicShell({
           </button>
         </div>
 
+        <div
+          aria-hidden="true"
+          ref={progressRef}
+          className="pointer-events-none absolute -bottom-0.5 left-0 h-0.5 w-full origin-left bg-accent"
+          style={{ transform: "scaleX(0)" }}
+        />
+
         {menuOpen && (
           <div
             ref={panelRef}
             id="public-menu"
-            className="border-t border-ink/12 bg-paper/95 backdrop-blur-md lg:hidden"
+            className="border-t-2 border-ink bg-paper lg:hidden"
           >
             <nav
               aria-label="Site navigation"
@@ -242,7 +283,7 @@ export default function PublicShell({
         </div>
       </main>
 
-      <footer className="border-t border-ink/12">{footer}</footer>
+      <footer className="border-t-2 border-ink">{footer}</footer>
     </div>
   );
 }

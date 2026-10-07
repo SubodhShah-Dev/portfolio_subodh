@@ -18,7 +18,7 @@ export function EducationSection({ education, index }: EducationSectionProps) {
             className="grid gap-3 border-b border-ink/15/60 py-6 last:border-b-0 md:grid-cols-[1fr_auto] md:gap-10"
           >
             <div className="min-w-0">
-              <h3 className="font-display text-xl font-semibold text-ink">
+              <h3 className="font-display text-xl text-ink">
                 {entry.institutionUrl !== undefined && entry.institutionUrl.trim() !== "" ? (
                   <a
                     href={entry.institutionUrl}

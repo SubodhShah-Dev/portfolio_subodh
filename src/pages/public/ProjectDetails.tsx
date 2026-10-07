@@ -34,7 +34,7 @@ export default function ProjectDetails() {
 
       <header className="space-y-5">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight font-semibold text-ink">
+          <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight text-ink">
             {project.title}
           </h1>
           {project.featured && <Tag accent>Featured</Tag>}
@@ -54,7 +54,7 @@ export default function ProjectDetails() {
             {project.techStack.map((technology) => (
               <li
                 key={technology}
-                className="rounded-full border border-ink/15 bg-paper-raised/60 px-3 py-1 font-meta text-xs text-ink/80"
+                className="border border-ink/15 bg-paper-raised/60 px-3 py-1 font-meta text-xs text-ink/80"
               >
                 {technology}
               </li>
@@ -68,7 +68,7 @@ export default function ProjectDetails() {
           src={project.thumbnailUrl}
           alt={`Screenshot of ${project.title}`}
           loading="lazy"
-          className="w-full rounded-xl border border-ink/12"
+          className="w-full border border-ink/12"
         />
       )}
 
@@ -76,7 +76,7 @@ export default function ProjectDetails() {
         <section aria-labelledby="overview-heading">
           <h2
             id="overview-heading"
-            className="font-display text-2xl font-semibold text-ink"
+            className="font-display text-2xl text-ink"
           >
             Overview
           </h2>
@@ -90,7 +90,7 @@ export default function ProjectDetails() {
         <section aria-labelledby="features-heading">
           <h2
             id="features-heading"
-            className="font-display text-2xl font-semibold text-ink"
+            className="font-display text-2xl text-ink"
           >
             Features
           </h2>
@@ -114,11 +114,11 @@ export default function ProjectDetails() {
         <section aria-labelledby="architecture-heading">
           <h2
             id="architecture-heading"
-            className="font-display text-2xl font-semibold text-ink"
+            className="font-display text-2xl text-ink"
           >
             Architecture
           </h2>
-          <div className="mt-4 rounded-xl border border-ink/12 bg-paper-raised/40 p-5">
+          <div className="mt-4 border border-ink/12 bg-paper-raised/40 p-5">
             <p className="whitespace-pre-wrap font-meta text-xs leading-6 text-ink/80">
               {project.architecture}
             </p>

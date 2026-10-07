@@ -21,7 +21,7 @@ export default function PublicErrorBoundary() {
       <p className="font-meta text-sm tracking-widest text-accent-deep uppercase">
         {notFound ? "404" : "Error"}
       </p>
-      <h1 className="mt-4 font-display text-4xl font-semibold text-ink">
+      <h1 className="mt-4 font-display text-4xl text-ink">
         {notFound ? "Page not found" : "Something went wrong"}
       </h1>
       <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-ink/80">

@@ -18,9 +18,9 @@ export function CertificationsSection({
         {certifications.map((entry) => (
           <li
             key={entry.id}
-            className="rounded-xl border border-ink/12 bg-paper-raised/40 p-5 transition-colors hover:border-ink/30"
+            className="border border-ink/12 bg-paper-raised/40 p-5 transition-colors hover:border-ink/30"
           >
-            <h3 className="text-sm font-semibold text-ink">{entry.title}</h3>
+            <h3 className="text-sm font-normal text-ink">{entry.title}</h3>
             <p className="mt-1 text-sm text-accent-deep">{entry.issuer}</p>
             {entry.issueDate !== undefined && entry.issueDate.trim() !== "" && (
               <p className="mt-1 font-meta text-xs text-ink/80 tabular-nums">

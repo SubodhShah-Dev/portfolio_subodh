@@ -22,7 +22,7 @@ export function ExperienceSection({ experience, index }: ExperienceSectionProps)
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h3 className="font-display text-xl font-semibold text-ink">
+                <h3 className="font-display text-xl text-ink">
                   {entry.role}
                 </h3>
                 <p className="text-sm text-accent-deep">
@@ -55,7 +55,7 @@ export function ExperienceSection({ experience, index }: ExperienceSectionProps)
                   {entry.technologies.map((technology) => (
                     <li
                       key={technology}
-                      className="rounded-full border border-ink/15 bg-paper-raised/50 px-2.5 py-0.5 font-meta text-xs text-ink/80"
+                      className="border border-ink/15 bg-paper-raised/50 px-2.5 py-0.5 font-meta text-xs text-ink/80"
                     >
                       {technology}
                     </li>

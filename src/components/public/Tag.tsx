@@ -7,7 +7,7 @@ interface TagProps {
 }
 
 /**
- * Sharp mono tag for the public portfolio — replaces the rounded admin
+ * Sharp mono tag for the public portfolio — replaces the admin
  * Badge on public surfaces (featured marker, dates-adjacent labels).
  */
 export function Tag({ accent = false, children }: TagProps) {

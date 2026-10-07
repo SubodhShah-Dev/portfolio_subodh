@@ -61,6 +61,17 @@ export default function PublicLayout() {
     }
   }, [location.pathname, location.hash]);
 
+  // Paper is a light surface — lock the browser UI (scrollbars, form
+  // controls) to light while the public layout is mounted. Cleanup on
+  // unmount returns admin routes to their dark scheme.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.colorScheme = "light";
+    return () => {
+      root.style.colorScheme = "";
+    };
+  }, []);
+
   // Document metadata from site settings, with honest fallbacks (§47).
   useEffect(() => {
     const ownerName = profile?.public.name ?? "";
@@ -90,7 +101,7 @@ export default function PublicLayout() {
     return (
       <div className="public-scope flex min-h-screen items-center justify-center bg-paper px-4">
         <div className="text-center">
-          <h1 className="text-xl font-semibold text-ink">
+          <h1 className="font-display text-3xl text-ink">
             Temporarily unavailable
           </h1>
           <p className="mt-2 text-sm text-ink/80">
@@ -109,11 +120,11 @@ export default function PublicLayout() {
       {data.logoUrl !== null && (
         <img src={data.logoUrl} alt="" className="mb-2 h-7 w-auto" />
       )}
-      <span className="block truncate font-display text-lg font-semibold text-ink transition-colors group-hover:text-accent-deep">
+      <span className="block truncate font-display text-xl text-ink transition-colors group-hover:text-accent-deep">
         {name.trim() !== "" ? name : "Portfolio"}
       </span>
       {role.trim() !== "" && (
-        <span className="mt-0.5 block truncate font-meta text-[11px] tracking-wider text-ink/80 uppercase">
+        <span className="mt-0.5 block truncate font-meta text-[10px] tracking-[0.14em] text-muted uppercase">
           {role}
         </span>
       )}
@@ -138,7 +149,7 @@ export default function PublicLayout() {
         href={data.activeResume.downloadUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn-secondary w-full justify-center lg:w-auto"
+        className="btn-primary w-full justify-center lg:w-auto"
       >
         Download resume
       </a>
@@ -151,21 +162,21 @@ export default function PublicLayout() {
   const ownerName = profile?.public.name ?? "";
 
   const footer = (
-    <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 lg:px-10">
-      <div className="max-w-2xl">
+    <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
+      <div className="max-w-3xl">
         <p className="eyebrow">Get in touch</p>
-        <h2 className="mt-4 font-display text-3xl font-semibold text-balance text-ink sm:text-4xl">
+        <h2 className="mt-5 max-w-[16ch] font-display text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance text-ink italic">
           Let&apos;s build something together.
         </h2>
         {contactEmail !== null && (
           <a
             href={`mailto:${contactEmail}`}
-            className="mt-5 inline-block font-meta text-sm break-all text-accent-deep underline-offset-4 hover:underline sm:text-base"
+            className="mt-6 inline-block font-display text-[clamp(1.25rem,2vw,1.5rem)] break-all text-accent-deep underline decoration-accent decoration-1 underline-offset-4 hover:decoration-2"
           >
             {contactEmail}
           </a>
         )}
-        <div className="mt-7 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap gap-4">
           {contactEmail !== null && (
             <a className="cta-primary" href={`mailto:${contactEmail}`}>
               Say hello
@@ -177,14 +188,14 @@ export default function PublicLayout() {
         </div>
       </div>
 
-      <div className="mt-12 flex flex-col gap-4 border-t border-ink/12 pt-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mt-14 flex flex-col gap-4 border-t border-ink/30 pt-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           {data.footerText !== null && (
-            <p className="text-sm text-ink/80">{data.footerText}</p>
+            <p className="font-meta text-xs text-muted">{data.footerText}</p>
           )}
           <p
-            className={`text-xs text-ink/80 ${
-              data.footerText !== null ? "mt-1" : ""
+            className={`font-meta text-[11px] tracking-[0.08em] text-muted uppercase ${
+              data.footerText !== null ? "mt-1.5" : ""
             }`}
           >
             © {new Date().getFullYear()}

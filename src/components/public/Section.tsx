@@ -32,7 +32,7 @@ export function Section({ id, title, description, index, children }: SectionProp
         )}
         <h2
           id={headingId}
-          className="font-display text-3xl font-semibold text-balance text-ink sm:text-4xl"
+          className="font-display text-3xl text-balance text-ink sm:text-4xl"
         >
           {title}
         </h2>
