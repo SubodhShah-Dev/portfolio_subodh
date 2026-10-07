@@ -31,11 +31,14 @@ export default function Projects() {
 
   return (
     <section aria-labelledby="projects-heading">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 id="projects-heading" className="text-2xl font-semibold text-slate-100">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-slate-800/70 pb-6">
+        <h1
+          id="projects-heading"
+          className="font-display text-4xl font-semibold text-slate-100 sm:text-5xl"
+        >
           Projects
         </h1>
-        <p className="font-mono text-xs text-slate-500">
+        <p className="font-meta text-xs text-slate-600 tabular-nums">
           {projects.length} published
         </p>
       </div>
@@ -44,16 +47,16 @@ export default function Projects() {
         <div
           role="group"
           aria-label="Filter projects by technology"
-          className="mt-5 flex flex-wrap gap-2"
+          className="mt-6 flex flex-wrap gap-2"
         >
           <button
             type="button"
             aria-pressed={selectedTech === FILTER_ALL}
             onClick={() => setSelectedTech(FILTER_ALL)}
-            className={`cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors ${
+            className={`cursor-pointer rounded-full border px-3.5 py-1.5 font-meta text-xs transition-colors ${
               selectedTech === FILTER_ALL
                 ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
-                : "border-slate-700 bg-slate-900 text-slate-400 hover:text-slate-200"
+                : "border-slate-700/70 bg-slate-900/60 text-slate-400 hover:text-slate-200"
             }`}
           >
             All
@@ -64,10 +67,10 @@ export default function Projects() {
               type="button"
               aria-pressed={selectedTech === technology}
               onClick={() => setSelectedTech(technology)}
-              className={`cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors ${
+              className={`cursor-pointer rounded-full border px-3.5 py-1.5 font-meta text-xs transition-colors ${
                 selectedTech === technology
                   ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
-                  : "border-slate-700 bg-slate-900 text-slate-400 hover:text-slate-200"
+                  : "border-slate-700/70 bg-slate-900/60 text-slate-400 hover:text-slate-200"
               }`}
             >
               {technology}
@@ -76,14 +79,14 @@ export default function Projects() {
         </div>
       )}
 
-      <div className="mt-6">
+      <div className="mt-8">
         {visible.length === 0 ? (
           <EmptyState
             title="No projects to show"
             description="Published projects will appear here."
           />
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid gap-5 sm:grid-cols-2">
             {visible.map((project) => (
               <li key={project.id}>
                 <ProjectCard project={project} />

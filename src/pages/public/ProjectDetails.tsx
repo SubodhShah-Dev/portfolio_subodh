@@ -20,54 +20,67 @@ export default function ProjectDetails() {
   const hasGithub = project.githubUrl !== undefined && project.githubUrl.trim() !== "";
   const hasArchitecture =
     project.architecture !== undefined && project.architecture.trim() !== "";
+  const hasThumb =
+    project.thumbnailUrl !== undefined && project.thumbnailUrl.trim() !== "";
 
   return (
-    <article className="space-y-8">
+    <article className="space-y-10">
       <Link
         to="/projects"
-        className="inline-block text-sm text-emerald-400 hover:underline"
+        className="inline-block font-meta text-sm text-slate-500 transition-colors hover:text-emerald-400"
       >
         ← Back to projects
       </Link>
 
-      <header className="space-y-3">
+      <header className="space-y-5">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-3xl font-bold text-slate-100">{project.title}</h1>
+          <h1 className="font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-tight font-semibold text-slate-50">
+            {project.title}
+          </h1>
           {project.featured && <Badge tone="emerald">Featured</Badge>}
           {project.date !== undefined && project.date.trim() !== "" && (
-            <span className="font-mono text-sm text-slate-500">{project.date}</span>
+            <span className="font-meta text-sm text-slate-600 tabular-nums">
+              {project.date}
+            </span>
           )}
         </div>
         {project.subtitle.trim() !== "" && (
-          <p className="max-w-2xl text-lg text-slate-400">{project.subtitle}</p>
+          <p className="max-w-3xl text-xl text-pretty text-slate-400">
+            {project.subtitle}
+          </p>
         )}
-        <div className="flex flex-wrap gap-2">
-          {project.techStack.map((technology) => (
-            <span
-              key={technology}
-              className="rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs text-slate-300"
-            >
-              {technology}
-            </span>
-          ))}
-        </div>
+        {project.techStack.length > 0 && (
+          <ul className="flex flex-wrap gap-2">
+            {project.techStack.map((technology) => (
+              <li
+                key={technology}
+                className="rounded-full border border-slate-800 bg-slate-900/60 px-3 py-1 font-meta text-xs text-slate-400"
+              >
+                {technology}
+              </li>
+            ))}
+          </ul>
+        )}
       </header>
 
-      {project.thumbnailUrl !== undefined && project.thumbnailUrl.trim() !== "" && (
+      {hasThumb && (
         <img
           src={project.thumbnailUrl}
           alt={`Screenshot of ${project.title}`}
           loading="lazy"
-          className="w-full rounded-xl border border-slate-800"
+          className="w-full rounded-xl border border-slate-800/70"
         />
       )}
 
       {project.description.trim() !== "" && (
         <section aria-labelledby="overview-heading">
-          <h2 id="overview-heading" className="text-lg font-semibold text-slate-100">
+          <h2
+            id="overview-heading"
+            className="font-display text-2xl font-semibold text-slate-100"
+          >
             Overview
           </h2>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-400">
+          <p className="mt-4 max-w-3xl whitespace-pre-wrap text-pretty text-base leading-8 text-slate-300">
             {project.description}
           </p>
         </section>
@@ -75,12 +88,23 @@ export default function ProjectDetails() {
 
       {project.features.length > 0 && (
         <section aria-labelledby="features-heading">
-          <h2 id="features-heading" className="text-lg font-semibold text-slate-100">
+          <h2
+            id="features-heading"
+            className="font-display text-2xl font-semibold text-slate-100"
+          >
             Features
           </h2>
-          <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-slate-400">
+          <ul className="mt-4 max-w-3xl space-y-2.5">
             {project.features.map((feature) => (
-              <li key={feature}>{feature}</li>
+              <li
+                key={feature}
+                className="flex gap-3 text-pretty text-sm leading-7 text-slate-400"
+              >
+                <span aria-hidden="true" className="text-emerald-400">
+                  →
+                </span>
+                {feature}
+              </li>
             ))}
           </ul>
         </section>
@@ -90,12 +114,12 @@ export default function ProjectDetails() {
         <section aria-labelledby="architecture-heading">
           <h2
             id="architecture-heading"
-            className="text-lg font-semibold text-slate-100"
+            className="font-display text-2xl font-semibold text-slate-100"
           >
             Architecture
           </h2>
-          <div className="card mt-3 p-4">
-            <p className="whitespace-pre-wrap font-mono text-xs leading-6 text-slate-400">
+          <div className="mt-4 rounded-xl border border-slate-800/70 bg-slate-900/40 p-5">
+            <p className="whitespace-pre-wrap font-meta text-xs leading-6 text-slate-400">
               {project.architecture}
             </p>
           </div>
@@ -103,10 +127,10 @@ export default function ProjectDetails() {
       )}
 
       {(hasLiveDemo || hasGithub) && (
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-4 pt-2">
           {hasLiveDemo && (
             <a
-              className="btn-primary"
+              className="cta-primary"
               href={project.liveDemoUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -116,7 +140,7 @@ export default function ProjectDetails() {
           )}
           {hasGithub && (
             <a
-              className="btn-secondary"
+              className="cta-ghost"
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"

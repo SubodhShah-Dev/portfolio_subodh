@@ -17,17 +17,19 @@ export default function PublicErrorBoundary() {
   const notFound = isRouteErrorResponse(error) && error.status === 404;
 
   return (
-    <div role="alert" className="py-16 text-center">
-      <p className="text-sm font-medium text-emerald-400">{notFound ? "404" : "Error"}</p>
-      <h1 className="mt-3 text-2xl font-semibold text-slate-100">
+    <div role="alert" className="py-24 text-center">
+      <p className="font-meta text-sm tracking-widest text-emerald-400 uppercase">
+        {notFound ? "404" : "Error"}
+      </p>
+      <h1 className="mt-4 font-display text-4xl font-semibold text-slate-100">
         {notFound ? "Page not found" : "Something went wrong"}
       </h1>
-      <p className="mx-auto mt-3 max-w-md text-sm text-slate-400">
+      <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-slate-400">
         {notFound
           ? "The page you are looking for does not exist or is no longer available."
           : "We couldn't load this page. Check your connection and try again."}
       </p>
-      <div className="mt-8 flex justify-center gap-3">
+      <div className="mt-9 flex justify-center gap-3">
         {!notFound && (
           <Button
             variant="secondary"
