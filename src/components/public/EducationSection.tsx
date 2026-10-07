@@ -4,12 +4,13 @@ import { Section } from "./Section";
 
 interface EducationSectionProps {
   education: Education[];
+  index?: number;
 }
 
 /** Education history — degrees rendered only from stored fields (§16). */
-export function EducationSection({ education }: EducationSectionProps) {
+export function EducationSection({ education, index }: EducationSectionProps) {
   return (
-    <Section id="education" title="Education">
+    <Section id="education" title="Education" index={index}>
       <ul className="space-y-4">
         {education.map((entry) => (
           <li key={entry.id} className="card p-5">

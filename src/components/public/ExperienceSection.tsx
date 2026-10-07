@@ -4,12 +4,13 @@ import { Section } from "./Section";
 
 interface ExperienceSectionProps {
   experience: Experience[];
+  index?: number;
 }
 
 /** Work history as stacked cards — dates are user-facing strings (§15). */
-export function ExperienceSection({ experience }: ExperienceSectionProps) {
+export function ExperienceSection({ experience, index }: ExperienceSectionProps) {
   return (
-    <Section id="experience" title="Experience">
+    <Section id="experience" title="Experience" index={index}>
       <ul className="space-y-4">
         {experience.map((entry) => (
           <li key={entry.id} className="card p-5">

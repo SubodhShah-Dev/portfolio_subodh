@@ -4,12 +4,16 @@ import { Section } from "./Section";
 
 interface CertificationsSectionProps {
   certifications: Certification[];
+  index?: number;
 }
 
 /** Certification cards — credential links only when a URL exists (§17). */
-export function CertificationsSection({ certifications }: CertificationsSectionProps) {
+export function CertificationsSection({
+  certifications,
+  index,
+}: CertificationsSectionProps) {
   return (
-    <Section id="certifications" title="Certifications">
+    <Section id="certifications" title="Certifications" index={index}>
       <ul className="grid gap-4 sm:grid-cols-2">
         {certifications.map((entry) => (
           <li key={entry.id} className="card p-5">

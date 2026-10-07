@@ -6,6 +6,7 @@ import type { Project } from "../../types/project";
 
 interface ProjectsSectionProps {
   projects: Project[];
+  index?: number;
 }
 
 const PREVIEW_LIMIT = 6;
@@ -14,14 +15,14 @@ const PREVIEW_LIMIT = 6;
  * Homepage project preview (§13) — featured projects first, then the rest
  * in their stored order, capped at six with a link to the full listing.
  */
-export function ProjectsSection({ projects }: ProjectsSectionProps) {
+export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
   const featuredFirst = [...projects].sort(
     (left, right) => Number(right.featured) - Number(left.featured),
   );
   const preview = featuredFirst.slice(0, PREVIEW_LIMIT);
 
   return (
-    <Section id="projects" title="Projects">
+    <Section id="projects" title="Projects" index={index}>
       <ul className="grid gap-4 sm:grid-cols-2">
         {preview.map((project) => (
           <li key={project.id}>

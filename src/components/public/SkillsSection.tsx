@@ -4,6 +4,7 @@ import { Section } from "./Section";
 
 interface SkillsSectionProps {
   skills: Skill[];
+  index?: number;
 }
 
 interface SkillGroup {
@@ -27,11 +28,11 @@ function groupByCategory(skills: Skill[]): SkillGroup[] {
   return groups;
 }
 
-export function SkillsSection({ skills }: SkillsSectionProps) {
+export function SkillsSection({ skills, index }: SkillsSectionProps) {
   const groups = groupByCategory(skills);
 
   return (
-    <Section id="skills" title="Skills">
+    <Section id="skills" title="Skills" index={index}>
       <div className="space-y-5">
         {groups.map((group) => (
           <div key={group.category || "all"}>

@@ -4,10 +4,11 @@ import { Section } from "./Section";
 
 interface AboutSectionProps {
   profile: PortfolioProfile;
+  index?: number;
 }
 
 /** About section — bio plus only the contact details actually supplied (§8). */
-export function AboutSection({ profile }: AboutSectionProps) {
+export function AboutSection({ profile, index }: AboutSectionProps) {
   const { bio, profileImageUrl, location } = profile.public;
   const paragraphs = bio.split(/\n{2,}/).map((entry) => entry.trim()).filter((entry) => entry !== "");
   const email = profile.contact.email;
@@ -17,7 +18,7 @@ export function AboutSection({ profile }: AboutSectionProps) {
   const hasLocation = location !== undefined && location.trim() !== "";
 
   return (
-    <Section id="about" title="About">
+    <Section id="about" title="About" index={index}>
       <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-start">
         <div className="space-y-4">
           {paragraphs.map((paragraph, index) => (

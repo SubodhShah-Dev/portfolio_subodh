@@ -6,6 +6,7 @@ import { Section } from "./Section";
 interface ContactSectionProps {
   contactSettings: ContactSettings | null;
   profile: PortfolioProfile | null;
+  index?: number;
 }
 
 function firstNonBlank(
@@ -21,7 +22,11 @@ function firstNonBlank(
  * Contact section (§19) — configurable copy with values falling back to the
  * profile's published contact identity; only supplied fields render.
  */
-export function ContactSection({ contactSettings, profile }: ContactSectionProps) {
+export function ContactSection({
+  contactSettings,
+  profile,
+  index,
+}: ContactSectionProps) {
   const title =
     contactSettings?.title !== undefined && contactSettings.title.trim() !== ""
       ? contactSettings.title
@@ -40,7 +45,7 @@ export function ContactSection({ contactSettings, profile }: ContactSectionProps
   );
 
   return (
-    <Section id="contact" title={title} description={description}>
+    <Section id="contact" title={title} description={description} index={index}>
       <div className="grid gap-8 lg:grid-cols-2">
         <ul className="space-y-3 text-sm">
           {email !== undefined && (
