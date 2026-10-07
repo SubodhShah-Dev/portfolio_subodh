@@ -5,14 +5,14 @@ interface SocialLinksListProps {
 }
 
 /**
- * Sidebar social links (§18) — label falls back to the platform name, and
- * external links always open safely in a new tab.
+ * Social links row (§18) — renders in the footer; label falls back to the
+ * platform name, and external links always open safely in a new tab.
  */
 export function SocialLinksList({ links }: SocialLinksListProps) {
   if (links.length === 0) return null;
 
   return (
-    <ul className="space-y-1.5">
+    <ul className="flex flex-wrap gap-x-5 gap-y-2">
       {links.map((link) => {
         const label = link.label.trim() !== "" ? link.label : link.platform;
         return (

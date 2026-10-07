@@ -1,16 +1,17 @@
 import { useEffect } from "react";
-import { Link, NavLink, Outlet, useLocation, useRouteLoaderData } from "react-router";
+import { Link, Outlet, useLocation, useRouteLoaderData } from "react-router";
 
-import SidebarShell from "../components/layout/SidebarShell";
+import PublicShell, { type ShellLink } from "../components/layout/PublicShell";
 import { SocialLinksList } from "../components/public/SocialLinksList";
 import type { PublicLayoutData } from "../loaders/publicLoaders";
 
 /**
- * Public site layout — profile sidebar on every public route (§7).
+ * Public site layout — top-navigation shell around every public route (§7).
  *
  * Section anchor links render only for sections that are both enabled and
  * actually have content (§48), so navigation never points at empty anchors.
- * All data comes from the shared layout route loader.
+ * All data comes from the shared layout route loader; the shell owns only
+ * presentation, including scrollspy highlighting of section links.
  */
 
 const SECTION_LINKS: ReadonlyArray<{
@@ -26,13 +27,12 @@ const SECTION_LINKS: ReadonlyArray<{
   { hash: "#contact", label: "Contact", flag: "contact" },
 ];
 
-function navLinkClass(isActive: boolean): string {
-  return [
-    "mb-1 block rounded-lg border-l-2 px-3 py-2 text-sm transition-all duration-200",
-    isActive
-      ? "border-emerald-400 bg-slate-800/60 text-emerald-400"
-      : "border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200",
-  ].join(" ");
+/** First non-blank candidate — footer email falls back across sources. */
+function firstEmail(...candidates: (string | undefined)[]): string | null {
+  for (const candidate of candidates) {
+    if (candidate !== undefined && candidate.trim() !== "") return candidate;
+  }
+  return null;
 }
 
 export default function PublicLayout() {
@@ -109,81 +109,96 @@ export default function PublicLayout() {
       {data.logoUrl !== null && (
         <img src={data.logoUrl} alt="" className="mb-2 h-7 w-auto" />
       )}
-      <span className="block truncate text-sm font-semibold text-slate-100 transition-colors group-hover:text-emerald-400">
+      <span className="block truncate font-display text-lg font-semibold text-slate-100 transition-colors group-hover:text-emerald-400">
         {name.trim() !== "" ? name : "Portfolio"}
       </span>
       {role.trim() !== "" && (
-        <span className="mt-0.5 block truncate text-xs text-slate-500">{role}</span>
+        <span className="mt-0.5 block truncate font-meta text-[11px] tracking-wider text-slate-500 uppercase">
+          {role}
+        </span>
       )}
     </Link>
   );
 
   const visibleSections = SECTION_LINKS.filter((section) => flags[section.flag]);
+  const links: ShellLink[] = [
+    { key: "home", to: "/", label: "Home", end: true },
+    { key: "work", to: "/projects", label: "Work" },
+    ...visibleSections.map((section) => ({
+      key: section.hash,
+      to: { pathname: "/", hash: section.hash },
+      label: section.label,
+      spyId: section.hash.slice(1),
+    })),
+  ];
 
-  const nav = (
-    <>
-      <NavLink
-        to="/"
-        end
-        className={({ isActive }) => navLinkClass(isActive && location.hash === "")}
+  const actions =
+    data.activeResume !== null ? (
+      <a
+        href={data.activeResume.downloadUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn-secondary w-full justify-center lg:w-auto"
       >
-        Home
-      </NavLink>
-      <NavLink to="/projects" className={({ isActive }) => navLinkClass(isActive)}>
-        Work
-      </NavLink>
-
-      {visibleSections.length > 0 && (
-        <>
-          <p className="mt-5 mb-2 px-3 text-[11px] font-medium tracking-widest text-slate-600 uppercase">
-            Sections
-          </p>
-          {visibleSections.map((section) => (
-            <Link
-              key={section.hash}
-              to={{ pathname: "/", hash: section.hash }}
-              className="mb-1 block rounded-lg border-l-2 border-transparent px-3 py-2 text-sm text-slate-400 transition-all duration-200 hover:bg-slate-800/40 hover:text-slate-200"
-            >
-              {section.label}
-            </Link>
-          ))}
-        </>
-      )}
-    </>
-  );
-
-  const sidebarFooter =
-    data.activeResume !== null || data.socialLinks.length > 0 ? (
-      <div className="space-y-4">
-        {data.activeResume !== null && (
-          <a
-            href={data.activeResume.downloadUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-secondary w-full justify-center"
-          >
-            Download resume
-          </a>
-        )}
-        <SocialLinksList links={data.socialLinks} />
-      </div>
+        Download resume
+      </a>
     ) : undefined;
 
+  // Footer email only when the contact section is actually enabled (§48).
+  const contactEmail = flags.contact
+    ? firstEmail(data.contactSettings?.email, profile?.contact.email)
+    : null;
   const ownerName = profile?.public.name ?? "";
-  const siteFooter = (
-    <footer className="mt-16 border-t border-slate-800 pt-6 pb-2 text-xs text-slate-600">
-      {data.footerText !== null && <p>{data.footerText}</p>}
-      <p className={data.footerText !== null ? "mt-1" : ""}>
-        © {new Date().getFullYear()}
-        {ownerName.trim() !== "" ? ` ${ownerName}` : ""}
-      </p>
-    </footer>
+
+  const footer = (
+    <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 lg:px-10">
+      <div className="max-w-2xl">
+        <p className="eyebrow">Get in touch</p>
+        <h2 className="mt-4 font-display text-3xl font-semibold text-balance text-slate-100 sm:text-4xl">
+          Let&apos;s build something together.
+        </h2>
+        {contactEmail !== null && (
+          <a
+            href={`mailto:${contactEmail}`}
+            className="mt-5 inline-block font-meta text-sm break-all text-emerald-400 underline-offset-4 hover:underline sm:text-base"
+          >
+            {contactEmail}
+          </a>
+        )}
+        <div className="mt-7 flex flex-wrap gap-3">
+          {contactEmail !== null && (
+            <a className="cta-primary" href={`mailto:${contactEmail}`}>
+              Say hello
+            </a>
+          )}
+          <Link className="cta-ghost" to="/projects">
+            See my work
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-12 flex flex-col gap-4 border-t border-slate-800/70 pt-6 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          {data.footerText !== null && (
+            <p className="text-sm text-slate-500">{data.footerText}</p>
+          )}
+          <p
+            className={`text-xs text-slate-600 ${
+              data.footerText !== null ? "mt-1" : ""
+            }`}
+          >
+            © {new Date().getFullYear()}
+            {ownerName.trim() !== "" ? ` ${ownerName}` : ""}
+          </p>
+        </div>
+        <SocialLinksList links={data.socialLinks} />
+      </div>
+    </div>
   );
 
   return (
-    <SidebarShell brand={brand} nav={nav} footer={sidebarFooter}>
+    <PublicShell brand={brand} links={links} actions={actions} footer={footer}>
       <Outlet />
-      {siteFooter}
-    </SidebarShell>
+    </PublicShell>
   );
 }
