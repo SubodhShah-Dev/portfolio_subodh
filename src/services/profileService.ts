@@ -18,8 +18,9 @@ import { fetchDocById, upsertSingleDoc } from "./serviceUtils";
  * are document-level, so separation happens at the data-model layer.
  */
 
-const PUBLIC_PATH = "profile/public";
-const CONTACT_PATH = "profile/contact";
+const PATH = "profile";
+const PUBLIC_DOC_ID = "public";
+const CONTACT_DOC_ID = "contact";
 const CACHE_SCOPE = "profile";
 const COMBINED_CACHE_KEY = "profile:combined";
 
@@ -27,8 +28,8 @@ const COMBINED_CACHE_KEY = "profile:combined";
 export async function getProfile(): Promise<PortfolioProfile | null> {
   return cached(COMBINED_CACHE_KEY, async () => {
     const [publicProfile, contactProfile] = await Promise.all([
-      fetchDocById<PublicProfile>(PUBLIC_PATH, "public"),
-      fetchDocById<ContactProfile>(CONTACT_PATH, "contact"),
+      fetchDocById<PublicProfile>(PATH, PUBLIC_DOC_ID),
+      fetchDocById<ContactProfile>(PATH, CONTACT_DOC_ID),
     ]);
     if (publicProfile === null) return null;
     return {
@@ -39,13 +40,13 @@ export async function getProfile(): Promise<PortfolioProfile | null> {
 }
 
 export async function updateProfile(input: PublicProfileInput): Promise<void> {
-  await upsertSingleDoc(PUBLIC_PATH, "public", input);
+  await upsertSingleDoc(PATH, PUBLIC_DOC_ID, input);
   invalidateCache(CACHE_SCOPE);
 }
 
 export async function updateContactProfile(
   input: ContactProfileInput,
 ): Promise<void> {
-  await upsertSingleDoc(CONTACT_PATH, "contact", input);
+  await upsertSingleDoc(PATH, CONTACT_DOC_ID, input);
   invalidateCache(CACHE_SCOPE);
 }
