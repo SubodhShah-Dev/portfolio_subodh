@@ -31,14 +31,14 @@ export default function Projects() {
 
   return (
     <section aria-labelledby="projects-heading">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/12 pb-6">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-hairline pb-6">
         <h1
           id="projects-heading"
-          className="font-display text-4xl text-ink sm:text-5xl"
+          className="text-[clamp(2rem,4vw,3rem)] font-extrabold tracking-[-0.03em] text-ink"
         >
           Projects
         </h1>
-        <p className="font-meta text-xs text-ink/80 tabular-nums">
+        <p className="font-meta text-xs text-muted tabular-nums">
           {projects.length} published
         </p>
       </div>
@@ -55,8 +55,8 @@ export default function Projects() {
             onClick={() => setSelectedTech(FILTER_ALL)}
             className={`cursor-pointer border px-3.5 py-1.5 font-meta text-xs transition-colors ${
               selectedTech === FILTER_ALL
-                ? "border-accent/50 bg-accent/10 text-accent-deep"
-                : "border-ink/30 bg-paper-raised/60 text-ink/80 hover:text-ink"
+                ? "border-signal bg-signal text-on-signal"
+                : "border-hairline bg-raised text-muted hover:border-ink hover:text-ink"
             }`}
           >
             All
@@ -69,8 +69,8 @@ export default function Projects() {
               onClick={() => setSelectedTech(technology)}
               className={`cursor-pointer border px-3.5 py-1.5 font-meta text-xs transition-colors ${
                 selectedTech === technology
-                  ? "border-accent/50 bg-accent/10 text-accent-deep"
-                  : "border-ink/30 bg-paper-raised/60 text-ink/80 hover:text-ink"
+                  ? "border-signal bg-signal text-on-signal"
+                  : "border-hairline bg-raised text-muted hover:border-ink hover:text-ink"
               }`}
             >
               {technology}

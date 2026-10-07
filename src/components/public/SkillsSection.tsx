@@ -37,7 +37,7 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
         {groups.map((group) => (
           <div key={group.category || "all"}>
             {group.category.trim() !== "" && (
-              <h3 className="font-meta text-xs tracking-widest text-ink/80 uppercase">
+              <h3 className="font-meta text-xs tracking-widest text-muted uppercase">
                 {group.category}
               </h3>
             )}
@@ -49,7 +49,7 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
               {group.items.map((skill) => (
                 <li
                   key={skill.id}
-                  className="border border-ink/30 bg-paper-raised/60 px-3.5 py-1.5 text-sm text-ink transition-colors hover:border-accent/40 hover:text-ink"
+                  className="border border-hairline bg-raised px-3.5 py-1.5 text-sm text-ink transition-colors hover:border-signal hover:text-signal"
                 >
                   {skill.name}
                 </li>

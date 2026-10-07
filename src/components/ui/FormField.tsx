@@ -9,7 +9,7 @@ interface FormFieldProps {
   required?: boolean;
   /**
    * Visual tone: "dark" (Carbon Dark admin, default) or "light"
-   * (Ink on Paper public form). Semantics and ids never change.
+   * (Signal public form). Semantics and ids never change.
    */
   variant?: "dark" | "light";
   children: ReactNode;
@@ -44,7 +44,7 @@ export function FormField({
         {label}
         {required && (
           <span
-            className={`ml-1 ${light ? "text-accent-deep" : "text-emerald-400"}`}
+            className={`ml-1 ${light ? "text-signal-deep" : "text-emerald-400"}`}
             aria-hidden="true"
           >
             *

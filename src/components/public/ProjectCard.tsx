@@ -11,7 +11,11 @@ interface ProjectCardProps {
   spotlight?: boolean;
 }
 
-/** Reusable project card — thumbnail-led, shared by home, lists, and spotlight (§10). */
+/**
+ * Reusable project card — Signal treatment: hairline frame on raised
+ * surface, signal border + offset shadow on hover. Shared by home,
+ * lists, and the spotlight.
+ */
 export function ProjectCard({
   project,
   showFeatured = true,
@@ -23,11 +27,11 @@ export function ProjectCard({
   return (
     <Link
       to={`/projects/${project.id}`}
-      className="group block overflow-hidden border border-ink/12 bg-paper-raised/40 transition-colors hover:border-accent/40"
+      className="group block overflow-hidden border border-hairline bg-raised transition-all duration-200 hover:border-signal hover:shadow-[6px_6px_0_0_var(--color-signal)]"
     >
       {hasThumb && (
         <div
-          className={`overflow-hidden border-b border-ink/12 bg-paper ${
+          className={`overflow-hidden border-b border-hairline bg-canvas ${
             spotlight ? "aspect-[21/9]" : "aspect-[16/10]"
           }`}
         >
@@ -42,7 +46,7 @@ export function ProjectCard({
       <div className={spotlight ? "p-6" : "p-5"}>
         <div className="flex items-start justify-between gap-3">
           <h3
-            className={`font-display text-ink ${
+            className={`font-display font-extrabold tracking-[-0.02em] text-ink ${
               spotlight ? "text-2xl" : "text-lg"
             }`}
           >
@@ -52,7 +56,7 @@ export function ProjectCard({
         </div>
         {project.subtitle.trim() !== "" && (
           <p
-            className={`mt-1.5 text-pretty text-ink/80 ${
+            className={`mt-1.5 text-pretty text-muted ${
               spotlight ? "max-w-3xl text-base" : "line-clamp-2 text-sm"
             }`}
           >
@@ -61,7 +65,7 @@ export function ProjectCard({
         )}
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
           {project.date !== undefined && project.date.trim() !== "" && (
-            <p className="font-meta text-xs text-ink/80 tabular-nums">
+            <p className="font-meta text-xs text-muted tabular-nums">
               {project.date}
             </p>
           )}
@@ -70,7 +74,7 @@ export function ProjectCard({
               {project.techStack.map((technology) => (
                 <li
                   key={technology}
-                  className="border border-ink/15 bg-paper/70 px-2 py-0.5 font-meta text-[11px] text-ink/80"
+                  className="border border-hairline px-2 py-0.5 font-meta text-[11px] text-muted"
                 >
                   {technology}
                 </li>
@@ -79,7 +83,7 @@ export function ProjectCard({
           )}
         </div>
         {spotlight && (
-          <p className="mt-5 font-meta text-xs text-accent-deep">
+          <p className="mt-5 font-meta text-xs text-signal-deep">
             View project →
           </p>
         )}

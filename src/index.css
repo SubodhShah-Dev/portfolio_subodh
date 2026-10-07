@@ -59,12 +59,8 @@
   /* Grid texture lines (fixed overlay in the public shell). */
   --grid-line: rgb(20 20 20 / 0.05);
 
-  /* Legacy ink-on-paper tokens — still referenced by components that P2
-     rewrites (paper→canvas, accent→signal). Remove with P2. */
-  --color-paper: #fafaf7;
-  --color-paper-raised: #ffffff;
-  --color-accent: #3d34f5;
-  --color-accent-deep: #2a21d9;
+  /* Shared light-variant primitives (public Alert/FormField) reuse the
+     same reds/greens under their own names. */
   --color-error: #c0271a;
   --color-error-tint: #fbebe9;
   --color-success: #157a4b;
@@ -98,10 +94,6 @@
   --color-err-tint: #2a1210;
   --grid-line: rgb(242 241 237 / 0.05);
 
-  --color-paper: #0f0f13;
-  --color-paper-raised: #17171d;
-  --color-accent: #8b85ff;
-  --color-accent-deep: #a5a0ff;
   --color-error: #ff8a80;
   --color-error-tint: #2a1210;
   --color-success: #4ade9e;
@@ -109,9 +101,8 @@
 }
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+  /* No CSS scroll-behavior — lenis owns smooth scrolling when active; the
+     native fallback passes behavior explicitly to scrollIntoView. */
 
   /* Lenis smooth-scroll integration (class added at runtime). */
   html.lenis,
@@ -132,10 +123,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-
     *,
     *::before,
     *::after {
@@ -335,8 +322,8 @@
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-signal) 22%, transparent);
   }
 
-  /* Bridge so .card content (public EmptyState) reads on Signal until its
-     public instances are replaced with inline markup in P2. */
+  /* Bridge so shared .card content (public EmptyState on the projects
+     page) reads on Signal — admin instances never match this scope. */
   .public-scope .card {
     border-radius: 0;
     border-color: var(--color-hairline);

@@ -6,16 +6,16 @@ import { Link } from "react-router";
 export default function NotFound() {
   return (
     <div className="py-20 text-center">
-      <p className="font-display text-7xl text-ink/15 sm:text-8xl">
+      <p aria-hidden="true" className="text-7xl font-extrabold tracking-[-0.05em] text-signal sm:text-8xl">
         404
       </p>
-      <h1 className="mt-4 font-display text-3xl text-ink">
+      <h1 className="mt-4 text-3xl font-extrabold tracking-[-0.02em] text-ink">
         Page not found
       </h1>
-      <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-ink/80">
+      <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-muted">
         The page you are looking for does not exist or is no longer available.
       </p>
-      <Link to="/" className="cta-ghost mt-9">
+      <Link to="/" viewTransition className="cta-ghost mt-9">
         Back to home
       </Link>
     </div>

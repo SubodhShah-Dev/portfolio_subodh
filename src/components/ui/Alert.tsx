@@ -14,7 +14,7 @@ const TONES: Record<AlertTone, Record<AlertVariant, string>> = {
   },
   info: {
     dark: "border-sky-500/30 bg-sky-500/10 text-sky-300",
-    light: "border-ink/20 bg-paper-raised text-ink",
+    light: "border-hairline bg-raised text-ink",
   },
 };
 

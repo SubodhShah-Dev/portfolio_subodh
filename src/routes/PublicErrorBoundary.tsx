@@ -18,7 +18,7 @@ export default function PublicErrorBoundary() {
 
   return (
     <div role="alert" className="public-scope py-24 text-center">
-      <p className="font-meta text-sm tracking-widest text-accent-deep uppercase">
+      <p className="font-meta text-sm tracking-widest text-signal-deep uppercase">
         {notFound ? "404" : "Error"}
       </p>
       <h1 className="mt-4 font-display text-4xl text-ink">
