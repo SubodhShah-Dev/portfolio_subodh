@@ -243,6 +243,10 @@ export async function seedDemoData(): Promise<void> {
         date: project.date,
         featured: project.featured,
         thumbnailUrl: project.thumbnailUrl,
+        // Gallery strip: three deterministic placeholders per project.
+        images: [1, 2, 3].map(
+          (slot) => `https://picsum.photos/seed/${project.id}-g${slot}/1200/750`,
+        ),
         status: "published",
         order: index,
         publishedAt: serverTimestamp(),

@@ -39,3 +39,15 @@ export function scrollToTarget(target: HTMLElement): void {
     });
   }
 }
+
+/** Return to the top of the page — lenis when active, native otherwise. */
+export function scrollToTop(): void {
+  const reduced =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (instance !== null) {
+    instance.scrollTo(0, { duration: reduced ? 0 : 0.9 });
+  } else {
+    window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+  }
+}

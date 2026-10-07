@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { describe, expect, it } from "vitest";
@@ -72,5 +72,48 @@ describe("ProjectDetails", () => {
     expect(screen.queryByRole("heading", { name: "Features" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Live demo" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Source code" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Gallery" })).not.toBeInTheDocument();
+  });
+
+  it("renders the gallery strip and opens the lightbox from a thumbnail", async () => {
+    renderDetails(
+      makeProject({
+        title: "Gallery project",
+        description: "",
+        features: [],
+        techStack: [],
+        images: [
+          "https://example.com/one.png",
+          "https://example.com/two.png",
+          "https://example.com/three.png",
+        ],
+      }),
+    );
+
+    expect(await screen.findByRole("heading", { name: "Gallery project" })).toBeInTheDocument();
+    const gallery = screen.getByRole("region", { name: "Gallery" });
+    expect(gallery).toBeInTheDocument();
+    expect(screen.getAllByRole("img", { name: /Gallery project screenshot/ })).toHaveLength(3);
+    expect(
+      screen.queryByRole("dialog", { name: "Image viewer" }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Open gallery image 1" }));
+
+    const dialog = await screen.findByRole("dialog", { name: "Image viewer" });
+    expect(dialog).toBeInTheDocument();
+    expect(
+      screen.getByAltText("Gallery image 1 of 3"),
+    ).toHaveAttribute("src", "https://example.com/one.png");
+
+    fireEvent.click(screen.getByRole("button", { name: "Next image" }));
+    expect(
+      screen.getByAltText("Gallery image 2 of 3"),
+    ).toHaveAttribute("src", "https://example.com/two.png");
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(
+      screen.queryByRole("dialog", { name: "Image viewer" }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -8,9 +8,9 @@ import {
 } from "react";
 import { Link, NavLink, useLocation } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { Menu, Moon, Search, Sun, X } from "lucide-react";
+import { ArrowUp, Menu, Moon, Search, Sun, X } from "lucide-react";
 
-import { initLenis } from "../../utils/smoothScroll";
+import { initLenis, scrollToTop } from "../../utils/smoothScroll";
 import { currentTheme, toggleTheme, type Theme } from "../../utils/theme";
 
 const CommandPalette = lazy(() => import("../public/CommandPalette"));
@@ -168,6 +168,18 @@ export default function PublicShell({
     }
     return () => observer.disconnect();
   }, [spyKey, location.pathname]);
+
+  // --- Back-to-top: appears once the visitor is past the fold. Threshold
+  // state only flips twice, so scrolling stays cheap.
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  useEffect(() => {
+    const handleScroll = (): void => {
+      setShowBackToTop(window.scrollY > 640);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // --- Reading progress: a 2px signal bar riding the header's bottom rule.
   // Writes the transform directly from a rAF-throttled scroll listener — no
@@ -401,6 +413,24 @@ export default function PublicShell({
       </main>
 
       <footer className="band bg-band text-band-ink">{footer}</footer>
+
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            key="back-to-top"
+            type="button"
+            aria-label="Back to top"
+            onClick={scrollToTop}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 14 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center border-2 border-ink bg-signal text-on-signal shadow-[4px_4px_0_0_var(--color-ink)] transition-colors hover:bg-signal-deep"
+          >
+            <ArrowUp aria-hidden="true" className="size-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {paletteOpen && (
         <Suspense fallback={null}>

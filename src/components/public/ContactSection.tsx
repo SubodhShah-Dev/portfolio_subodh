@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+
 import type { ContactSettings } from "../../types/contact";
 import type { PortfolioProfile } from "../../types/profile";
 import { ContactForm } from "./ContactForm";
@@ -21,6 +24,7 @@ function firstNonBlank(
 /**
  * Contact section (§19) — configurable copy with values falling back to the
  * profile's published contact identity; only supplied fields render.
+ * The email row carries a copy button with an inline confirmation toast.
  */
 export function ContactSection({
   contactSettings,
@@ -44,12 +48,30 @@ export function ContactSection({
     profile?.public.location,
   );
 
+  const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    return () => {
+      if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+    };
+  }, []);
+
+  const copyEmail = (): void => {
+    const clipboard = navigator.clipboard;
+    if (email === undefined || clipboard === undefined) return;
+    void clipboard.writeText(email).then(() => {
+      setCopied(true);
+      if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+      resetTimer.current = window.setTimeout(() => setCopied(false), 2200);
+    });
+  };
+
   return (
     <Section id="contact" title={title} description={description} index={index}>
       <div className="grid gap-10 lg:grid-cols-2">
         <ul className="space-y-5 font-meta text-sm">
           {email !== undefined && (
-            <li className="flex items-baseline gap-3">
+            <li className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
               <span className="text-muted">Email</span>
               <a
                 href={`mailto:${email}`}
@@ -57,6 +79,13 @@ export function ContactSection({
               >
                 {email}
               </a>
+              <button
+                type="button"
+                onClick={copyEmail}
+                className="cursor-pointer border border-hairline px-2 py-0.5 font-meta text-[11px] tracking-[0.1em] text-muted uppercase transition-colors hover:border-signal hover:text-signal"
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
             </li>
           )}
           {phone !== undefined && (
@@ -79,6 +108,18 @@ export function ContactSection({
         </ul>
         <ContactForm />
       </div>
+
+      {copied && (
+        <motion.div
+          role="status"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed bottom-6 left-1/2 z-90 -translate-x-1/2 border-2 border-ink bg-ink px-4 py-2.5 font-meta text-xs tracking-[0.1em] text-canvas uppercase shadow-[5px_5px_0_0_var(--color-signal)]"
+        >
+          Email copied
+        </motion.div>
+      )}
     </Section>
   );
 }

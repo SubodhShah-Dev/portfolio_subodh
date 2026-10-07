@@ -80,7 +80,28 @@ export function ContactForm() {
       setValues({ name: "", email: "", message: "" });
       setErrors({});
       setSent(true);
+      celebrate();
     }
+  }
+
+  /** Tiny confetti burst on success — lazy, skipped in tests and for
+      reduced-motion visitors (canvas-confetti also self-disables). */
+  function celebrate(): void {
+    if (import.meta.env.MODE === "test") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    void import("canvas-confetti")
+      .then(({ default: confetti }) => {
+        void confetti({
+          particleCount: 90,
+          spread: 68,
+          scalar: 0.9,
+          origin: { y: 0.65 },
+          disableForReducedMotion: true,
+        });
+      })
+      .catch(() => {
+        /* celebration is best-effort */
+      });
   }
 
   return (

@@ -35,3 +35,25 @@ export function urlError(value: string, options: UrlErrorOptions = {}): string |
 
   return null;
 }
+
+/** Split a textarea into one-URL-per-line entries (trimmed, non-empty). */
+export function parseImageLines(value: string): string[] {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
+}
+
+/** First invalid non-empty gallery line as a message, or null when all pass. */
+export function galleryUrlsError(value: string): string | null {
+  const lines = value.split(/\r?\n/);
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line === undefined || line.trim() === "") continue;
+    const error = urlError(line, {
+      label: `Gallery image URL (line ${index + 1})`,
+    });
+    if (error !== null) return error;
+  }
+  return null;
+}

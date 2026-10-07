@@ -95,4 +95,30 @@ describe("PublicShell interactions", () => {
       expect(document.getElementById("public-menu")).toBeNull();
     });
   });
+
+  it("reveals the back-to-top control after scrolling past the fold", async () => {
+    renderShell();
+    await screen.findAllByText("Ada Lovelace");
+
+    expect(
+      screen.queryByRole("button", { name: "Back to top" }),
+    ).not.toBeInTheDocument();
+
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 900,
+    });
+    fireEvent.scroll(window);
+
+    expect(
+      await screen.findByRole("button", { name: "Back to top" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Back to top" }));
+
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 0,
+    });
+  });
 });

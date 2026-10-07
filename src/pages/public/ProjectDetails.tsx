@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link, useLoaderData } from "react-router";
 
 import NotFound from "./NotFound";
+import { Lightbox } from "../../components/public/Lightbox";
 import { Tag } from "../../components/public/Tag";
 import type { Project } from "../../types/project";
 
@@ -13,6 +15,7 @@ import type { Project } from "../../types/project";
  */
 export default function ProjectDetails() {
   const { project } = useLoaderData<{ project: Project | null }>();
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   if (project === null) return <NotFound />;
 
@@ -22,6 +25,7 @@ export default function ProjectDetails() {
     project.architecture !== undefined && project.architecture.trim() !== "";
   const hasThumb =
     project.thumbnailUrl !== undefined && project.thumbnailUrl.trim() !== "";
+  const gallery = (project.images ?? []).filter((url) => url.trim() !== "");
 
   return (
     <article className="space-y-10">
@@ -70,6 +74,30 @@ export default function ProjectDetails() {
           loading="lazy"
           className="w-full border border-hairline"
         />
+      )}
+
+      {gallery.length > 0 && (
+        <section aria-label="Gallery">
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {gallery.map((url, position) => (
+              <li key={`${url}-${position}`}>
+                <button
+                  type="button"
+                  onClick={() => setLightboxIndex(position)}
+                  aria-label={`Open gallery image ${position + 1}`}
+                  className="group block aspect-[16/10] w-full cursor-pointer overflow-hidden border border-hairline bg-canvas"
+                >
+                  <img
+                    src={url}
+                    alt={`${project.title} screenshot ${position + 1}`}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {project.description.trim() !== "" && (
@@ -149,6 +177,15 @@ export default function ProjectDetails() {
             </a>
           )}
         </div>
+      )}
+
+      {lightboxIndex !== null && gallery.length > 0 && (
+        <Lightbox
+          images={gallery}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onIndexChange={setLightboxIndex}
+        />
       )}
     </article>
   );

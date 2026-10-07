@@ -35,7 +35,11 @@ import {
   parseList,
   requiredError,
 } from "../../utils/validation";
-import { urlError } from "../../utils/urlValidation";
+import {
+  galleryUrlsError,
+  parseImageLines,
+  urlError,
+} from "../../utils/urlValidation";
 
 const adapter: CollectionAdapter<Project, ProjectInput> = {
   getAll: getAllProjects,
@@ -55,6 +59,7 @@ interface FormValues {
   githubUrl: string;
   liveDemoUrl: string;
   thumbnailUrl: string;
+  images: string;
   date: string;
   architecture: string;
   featured: boolean;
@@ -70,6 +75,7 @@ const EMPTY_VALUES: FormValues = {
   githubUrl: "",
   liveDemoUrl: "",
   thumbnailUrl: "",
+  images: "",
   date: "",
   architecture: "",
   featured: false,
@@ -87,6 +93,7 @@ function toValues(item: Project | null): FormValues {
     githubUrl: item.githubUrl ?? "",
     liveDemoUrl: item.liveDemoUrl ?? "",
     thumbnailUrl: item.thumbnailUrl ?? "",
+    images: (item.images ?? []).join("\n"),
     date: item.date ?? "",
     architecture: item.architecture ?? "",
     featured: item.featured,
@@ -101,6 +108,7 @@ function validate(values: FormValues): Record<string, string> {
     githubUrl: urlError(values.githubUrl, { label: "GitHub URL" }),
     liveDemoUrl: urlError(values.liveDemoUrl, { label: "Live demo URL" }),
     thumbnailUrl: urlError(values.thumbnailUrl, { label: "Thumbnail URL" }),
+    images: galleryUrlsError(values.images),
   });
 }
 
@@ -148,9 +156,8 @@ export default function ManageProjects() {
       ...(values.liveDemoUrl.trim() !== ""
         ? { liveDemoUrl: values.liveDemoUrl.trim() }
         : {}),
-      ...(values.thumbnailUrl.trim() !== ""
-        ? { thumbnailUrl: values.thumbnailUrl.trim() }
-        : {}),
+      thumbnailUrl: values.thumbnailUrl.trim(),
+      images: parseImageLines(values.images),
       ...(values.date.trim() !== "" ? { date: values.date.trim() } : {}),
       ...(values.architecture.trim() !== ""
         ? { architecture: values.architecture.trim() }
@@ -253,6 +260,19 @@ export default function ManageProjects() {
               setValues((current) => ({ ...current, thumbnailUrl }))
             }
           />
+          <div className="sm:col-span-2">
+            <TextAreaField
+              label="Gallery image URLs (one per line)"
+              id="project-images"
+              rows={3}
+              value={values.images}
+              error={errors.images}
+              hint="Shown as a lightbox strip on the project page. Clear the field to remove the gallery."
+              onChange={(images) =>
+                setValues((current) => ({ ...current, images }))
+              }
+            />
+          </div>
           <TextField
             label="Date"
             id="project-date"
