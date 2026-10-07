@@ -5,8 +5,8 @@ interface SocialLinksListProps {
 }
 
 /**
- * Social links row (§18) — renders in the footer; label falls back to the
- * platform name, and external links always open safely in a new tab.
+ * Social links row (§18) — renders in the footer band; label falls back to
+ * the platform name, and external links always open safely in a new tab.
  */
 export function SocialLinksList({ links }: SocialLinksListProps) {
   if (links.length === 0) return null;
@@ -21,9 +21,9 @@ export function SocialLinksList({ links }: SocialLinksListProps) {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-1.5 font-meta text-[11px] tracking-[0.12em] text-muted uppercase transition-colors hover:text-ink"
+              className="group inline-flex items-center gap-1.5 font-meta text-[11px] tracking-[0.12em] text-band-muted uppercase transition-colors hover:text-band-ink"
             >
-              <span className="underline decoration-accent decoration-1 underline-offset-4 group-hover:decoration-2">
+              <span className="underline decoration-signal-soft decoration-1 underline-offset-4 group-hover:decoration-2">
                 {label}
               </span>
               <svg

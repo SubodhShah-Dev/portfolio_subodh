@@ -350,6 +350,17 @@
   .public-scope .card > p + p {
     color: var(--color-muted);
   }
+
+  /* CTAs on the inverted footer band — ghost outline follows band ink. */
+  .public-scope .band .cta-ghost {
+    border-color: var(--color-band-ink);
+    color: var(--color-band-ink);
+  }
+
+  .public-scope .band .cta-ghost:hover:not(:disabled) {
+    background-color: var(--color-band-ink);
+    color: var(--color-band);
+  }
 }
 
 /* --- Public motion (JS adds .reveal only where IntersectionObserver works;

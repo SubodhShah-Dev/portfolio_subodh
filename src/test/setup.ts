@@ -38,3 +38,16 @@ if (typeof Element.prototype.scrollIntoView !== "function") {
     value: () => {},
   });
 }
+
+// cmdk (⌘K palette) measures its dialog with ResizeObserver; jsdom has none.
+if (typeof window.ResizeObserver !== "function") {
+  class ResizeObserverStub {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+  Object.defineProperty(window, "ResizeObserver", {
+    writable: true,
+    value: ResizeObserverStub,
+  });
+}

@@ -1,5 +1,19 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Link, NavLink, useLocation } from "react-router";
+import { AnimatePresence, motion } from "motion/react";
+import { Menu, Moon, Search, Sun, X } from "lucide-react";
+
+import { initLenis } from "../../utils/smoothScroll";
+import { currentTheme, toggleTheme, type Theme } from "../../utils/theme";
+
+const CommandPalette = lazy(() => import("../public/CommandPalette"));
 
 export interface ShellLink {
   key: string;
@@ -28,10 +42,8 @@ const FOCUSABLE_SELECTOR =
 
 function routeLinkClass(active: boolean): string {
   return [
-    "px-3 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
-    active
-      ? "text-ink underline decoration-2 decoration-accent underline-offset-[6px]"
-      : "text-muted hover:text-ink",
+    "relative px-3 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    active ? "text-ink" : "text-muted hover:text-ink",
   ].join(" ");
 }
 
@@ -39,19 +51,20 @@ function menuLinkClass(active: boolean): string {
   return [
     "block px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
     active
-      ? "bg-ink/8 text-accent-deep"
+      ? "bg-signal/10 text-signal-deep"
       : "text-muted hover:bg-ink/5 hover:text-ink",
   ].join(" ");
 }
 
 /**
  * Public site shell — sticky top navigation with scrollspy, non-modal mobile
- * menu, and a full-width footer (§7, §54, §55).
+ * menu, theme toggle, ⌘K palette, reading progress, and an inverted footer
+ * band (§7, §54, §55).
  *
  * Structure only: every piece of content arrives as props from PublicLayout,
  * which owns all loader data. Accessibility: skip link, single labelled
  * navigation landmark, Esc-to-close with focus restore on the menu button,
- * and reduced-motion-safe scrolling handled by the layout.
+ * and lenis kept off under reduced motion and in tests.
  */
 export default function PublicShell({
   brand,
@@ -92,6 +105,36 @@ export default function PublicShell({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [menuOpen]);
 
+  // --- Smooth scrolling: mounted once for the public site, skipped in tests
+  // and whenever the visitor prefers reduced motion.
+  useEffect(() => {
+    if (import.meta.env.MODE === "test") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    return initLenis();
+  }, []);
+
+  // --- Command palette: ⌘K / Ctrl+K toggles the lazy-loaded palette.
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // --- Theme: the document state is the source of truth (bootstrap script +
+  // applyTheme); this mirror only feeds the toggle icon swap.
+  const [theme, setTheme] = useState<Theme>(currentTheme);
+  const handleToggleTheme = (): void => {
+    setTheme(toggleTheme());
+  };
+  const themeLabel =
+    theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+
   // --- Scrollspy: highlight the section link whose section currently owns
   // the upper part of the viewport. Disabled outside browsers without the API
   // (tests, very old engines) — the nav simply keeps route highlighting.
@@ -126,7 +169,7 @@ export default function PublicShell({
     return () => observer.disconnect();
   }, [spyKey, location.pathname]);
 
-  // --- Reading progress: a 2px accent bar riding the header's bottom rule.
+  // --- Reading progress: a 2px signal bar riding the header's bottom rule.
   // Writes the transform directly from a rAF-throttled scroll listener — no
   // state, so scrolling never re-renders the shell (§54).
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -155,7 +198,17 @@ export default function PublicShell({
   }, []);
 
   const renderLink = (link: ShellLink, mobile: boolean): ReactNode => {
-    const className = mobile ? menuLinkClass : routeLinkClass;
+    const linkClass = mobile ? menuLinkClass : routeLinkClass;
+    const underline = (active: boolean): ReactNode =>
+      !mobile && active ? (
+        <motion.span
+          layoutId="nav-underline"
+          aria-hidden="true"
+          className="absolute inset-x-2.5 -bottom-0.5 h-0.5 bg-signal"
+          transition={{ type: "spring", stiffness: 460, damping: 36 }}
+        />
+      ) : null;
+
     if (link.spyId !== undefined) {
       const active = activeSpyId === link.spyId;
       return (
@@ -163,10 +216,11 @@ export default function PublicShell({
           key={link.key}
           to={link.to}
           aria-current={active ? "true" : undefined}
-          className={className(active)}
+          className={linkClass(active)}
           onClick={() => setOpenedAtKey(null)}
         >
           {link.label}
+          {underline(active)}
         </Link>
       );
     }
@@ -175,15 +229,26 @@ export default function PublicShell({
         key={link.key}
         to={link.to}
         end={link.end}
+        viewTransition
+        onClick={() => setOpenedAtKey(null)}
         className={({ isActive }) => {
           const active =
             isActive &&
             (!link.end || (location.hash === "" && activeSpyId === ""));
-          return className(active);
+          return linkClass(active);
         }}
-        onClick={() => setOpenedAtKey(null)}
       >
-        {link.label}
+        {({ isActive }) => {
+          const active =
+            isActive &&
+            (!link.end || (location.hash === "" && activeSpyId === ""));
+          return (
+            <>
+              {link.label}
+              {underline(active)}
+            </>
+          );
+        }}
       </NavLink>
     );
   };
@@ -193,23 +258,23 @@ export default function PublicShell({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-paper font-body text-ink/80 antialiased">
+    <div className="public-scope flex min-h-screen flex-col bg-canvas font-body text-ink antialiased">
       <a
         href="#main-content"
-        className="sr-only z-100 bg-ink px-4 py-2 text-sm font-medium text-paper focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
+        className="sr-only z-100 bg-ink px-4 py-2 text-sm font-medium text-canvas focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
       >
         Skip to content
       </a>
 
-      {/* Fixed paper fiber over the whole viewport (§56). */}
+      {/* Fixed dot-grid texture over the whole viewport (§56). */}
       <div
         aria-hidden="true"
-        className="paper-grain pointer-events-none fixed inset-0 z-50 opacity-[0.045] mix-blend-multiply"
+        className="grid-overlay pointer-events-none fixed inset-0 z-50"
       />
 
-      <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-16 lg:px-10">
-          <div className="min-w-0">{brand}</div>
+      <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/85 backdrop-blur-md">
+        <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-16 lg:px-10">
+          <div className="min-w-0 shrink">{brand}</div>
 
           <nav
             aria-label="Site navigation"
@@ -218,72 +283,135 @@ export default function PublicShell({
             {links.map((link) => renderLink(link, false))}
           </nav>
 
-          <div className="hidden lg:block">{actions}</div>
+          <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 lg:flex">
+              {actions}
+              <button
+                type="button"
+                onClick={() => setPaletteOpen(true)}
+                aria-label="Open command palette"
+                className="flex cursor-pointer items-center gap-2 border border-hairline px-2.5 py-1.5 text-muted transition-colors hover:border-signal hover:text-signal"
+              >
+                <Search aria-hidden="true" className="size-3.5" />
+                <span className="font-meta text-[10px] tracking-[0.1em] uppercase">
+                  Search
+                </span>
+                <kbd className="border border-hairline px-1 font-meta text-[10px]">
+                  ⌘K
+                </kbd>
+              </button>
+            </div>
 
-          <button
-            ref={menuButtonRef}
-            type="button"
-            className="border border-ink/30 p-2 text-ink transition-colors hover:border-accent hover:text-ink lg:hidden"
-            aria-expanded={menuOpen}
-            aria-controls="public-menu"
-            onClick={toggleMenu}
-          >
-            <span className="sr-only">
-              {menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            </span>
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
+            <button
+              type="button"
+              onClick={handleToggleTheme}
+              aria-label={themeLabel}
+              title={themeLabel}
+              className="relative flex size-9 cursor-pointer items-center justify-center border border-hairline text-ink transition-colors hover:border-signal hover:text-signal"
             >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={theme}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-center justify-center"
+                >
+                  {theme === "dark" ? (
+                    <Sun aria-hidden="true" className="size-[18px]" />
+                  ) : (
+                    <Moon aria-hidden="true" className="size-[18px]" />
+                  )}
+                </motion.span>
+              </AnimatePresence>
+            </button>
+
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="flex size-9 cursor-pointer items-center justify-center border border-hairline text-ink transition-colors hover:border-signal hover:text-signal lg:hidden"
+              aria-expanded={menuOpen}
+              aria-controls="public-menu"
+              onClick={toggleMenu}
+            >
+              <span className="sr-only">
+                {menuOpen ? "Close navigation menu" : "Open navigation menu"}
+              </span>
               {menuOpen ? (
-                <path d="M6 6l12 12M18 6L6 18" />
+                <X aria-hidden="true" className="size-[18px]" />
               ) : (
-                <path d="M4 7h16M4 12h16M4 17h16" />
+                <Menu aria-hidden="true" className="size-[18px]" />
               )}
-            </svg>
-          </button>
+            </button>
+          </div>
         </div>
 
         <div
           aria-hidden="true"
           ref={progressRef}
-          className="pointer-events-none absolute -bottom-0.5 left-0 h-0.5 w-full origin-left bg-accent"
+          className="pointer-events-none absolute -bottom-px left-0 h-0.5 w-full origin-left bg-signal"
           style={{ transform: "scaleX(0)" }}
         />
 
-        {menuOpen && (
-          <div
-            ref={panelRef}
-            id="public-menu"
-            className="border-t-2 border-ink bg-paper lg:hidden"
-          >
-            <nav
-              aria-label="Site navigation"
-              className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6"
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              ref={panelRef}
+              id="public-menu"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden border-t border-hairline bg-canvas lg:hidden"
             >
-              {links.map((link) => renderLink(link, true))}
-              {actions !== undefined && (
-                <div className="mt-3 border-t border-ink/12 pt-3">
-                  {actions}
-                </div>
-              )}
-            </nav>
-          </div>
-        )}
+              <nav
+                aria-label="Site navigation"
+                className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6"
+              >
+                {links.map((link, index) => (
+                  <motion.div
+                    key={link.key}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.03 * index,
+                      duration: 0.18,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                  >
+                    {renderLink(link, true)}
+                  </motion.div>
+                ))}
+                {actions !== undefined && (
+                  <div className="mt-3 border-t border-hairline pt-3">
+                    {actions}
+                  </div>
+                )}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
-        <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
           {children}
         </div>
       </main>
 
-      <footer className="border-t-2 border-ink">{footer}</footer>
+      <footer className="band bg-band text-band-ink">{footer}</footer>
+
+      {paletteOpen && (
+        <Suspense fallback={null}>
+          <CommandPalette
+            links={links}
+            theme={theme}
+            onToggleTheme={handleToggleTheme}
+            onClose={() => setPaletteOpen(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }
