@@ -42,7 +42,6 @@ export default function Home() {
       {flags.hero && profile !== null ? (
         <Hero
           profile={profile}
-          activeResume={data.activeResume}
           contactVisible={flags.contact}
         />
       ) : (

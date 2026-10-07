@@ -33,7 +33,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
             <ul className="flex flex-wrap gap-x-8 gap-y-3 pt-3 font-meta text-sm">
               {hasEmail && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-slate-600">Email</span>
+                  <span className="text-slate-400">Email</span>
                   <a
                     href={`mailto:${email}`}
                     className="text-emerald-400 underline-offset-4 hover:underline"
@@ -44,7 +44,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
               )}
               {hasPhone && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-slate-600">Phone</span>
+                  <span className="text-slate-400">Phone</span>
                   <a
                     href={`tel:${phone.replace(/\s+/g, "")}`}
                     className="text-emerald-400 underline-offset-4 hover:underline"
@@ -55,7 +55,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
               )}
               {hasLocation && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-slate-600">Based in</span>
+                  <span className="text-slate-400">Based in</span>
                   <span className="text-slate-300">{location}</span>
                 </li>
               )}

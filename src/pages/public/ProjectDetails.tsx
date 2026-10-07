@@ -27,7 +27,7 @@ export default function ProjectDetails() {
     <article className="space-y-10">
       <Link
         to="/projects"
-        className="inline-block font-meta text-sm text-slate-500 transition-colors hover:text-emerald-400"
+        className="inline-block font-meta text-sm text-slate-400 transition-colors hover:text-emerald-400"
       >
         ← Back to projects
       </Link>
@@ -39,7 +39,7 @@ export default function ProjectDetails() {
           </h1>
           {project.featured && <Badge tone="emerald">Featured</Badge>}
           {project.date !== undefined && project.date.trim() !== "" && (
-            <span className="font-meta text-sm text-slate-600 tabular-nums">
+            <span className="font-meta text-sm text-slate-400 tabular-nums">
               {project.date}
             </span>
           )}

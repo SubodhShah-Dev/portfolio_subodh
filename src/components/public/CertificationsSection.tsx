@@ -23,7 +23,7 @@ export function CertificationsSection({
             <h3 className="text-sm font-semibold text-slate-100">{entry.title}</h3>
             <p className="mt-1 text-sm text-emerald-400">{entry.issuer}</p>
             {entry.issueDate !== undefined && entry.issueDate.trim() !== "" && (
-              <p className="mt-1 font-meta text-xs text-slate-600 tabular-nums">
+              <p className="mt-1 font-meta text-xs text-slate-400 tabular-nums">
                 {entry.issueDate}
               </p>
             )}

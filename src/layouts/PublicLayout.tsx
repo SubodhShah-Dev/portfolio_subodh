@@ -113,7 +113,7 @@ export default function PublicLayout() {
         {name.trim() !== "" ? name : "Portfolio"}
       </span>
       {role.trim() !== "" && (
-        <span className="mt-0.5 block truncate font-meta text-[11px] tracking-wider text-slate-500 uppercase">
+        <span className="mt-0.5 block truncate font-meta text-[11px] tracking-wider text-slate-400 uppercase">
           {role}
         </span>
       )}
@@ -180,10 +180,10 @@ export default function PublicLayout() {
       <div className="mt-12 flex flex-col gap-4 border-t border-slate-800/70 pt-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           {data.footerText !== null && (
-            <p className="text-sm text-slate-500">{data.footerText}</p>
+            <p className="text-sm text-slate-400">{data.footerText}</p>
           )}
           <p
-            className={`text-xs text-slate-600 ${
+            className={`text-xs text-slate-400 ${
               data.footerText !== null ? "mt-1" : ""
             }`}
           >

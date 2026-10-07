@@ -1,9 +1,9 @@
+import { Link } from "react-router";
+
 import type { PortfolioProfile } from "../../types/profile";
-import type { Resume } from "../../types/resume";
 
 interface HeroProps {
   profile: PortfolioProfile;
-  activeResume: Resume | null;
   contactVisible: boolean;
 }
 
@@ -14,9 +14,10 @@ const GRAIN_URL =
 /**
  * Identity hero — full-width editorial treatment: glow + grain backdrop,
  * mono role eyebrow, display-serif name at a fluid clamp size, and the
- * primary calls to action (§7, §54).
+ * primary calls to action (§7, §54). The resume download lives only in
+ * the header actions so the composed page keeps a single instance.
  */
-export function Hero({ profile, activeResume, contactVisible }: HeroProps) {
+export function Hero({ profile, contactVisible }: HeroProps) {
   const { name, role, headline, location } = profile.public;
 
   return (
@@ -43,36 +44,20 @@ export function Hero({ profile, activeResume, contactVisible }: HeroProps) {
       )}
 
       {location !== undefined && location.trim() !== "" && (
-        <p className="mt-5 font-meta text-sm text-slate-500">
+        <p className="mt-5 font-meta text-sm text-slate-400">
           Based in {location}
         </p>
       )}
 
       <div className="mt-9 flex flex-wrap gap-4">
-        {activeResume !== null && (
-          <a
-            className="cta-primary"
-            href={activeResume.downloadUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Download resume
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="size-4"
-            >
-              <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.619L6.22 8.03a.75.75 0 0 0-1.06 1.06l4.5 4.5a.75.75 0 0 0 1.06 0l4.5-4.5a.75.75 0 1 0-1.06-1.06l-3.03 3.34V2.75Z" />
-              <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5a2.75 2.75 0 0 0 2.75-2.75v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
-            </svg>
-          </a>
-        )}
         {contactVisible && (
-          <a className="cta-ghost" href="#contact">
+          <a className="cta-primary" href="#contact">
             Get in touch
           </a>
         )}
+        <Link className="cta-ghost" to="/projects">
+          View my work
+        </Link>
       </div>
     </header>
   );

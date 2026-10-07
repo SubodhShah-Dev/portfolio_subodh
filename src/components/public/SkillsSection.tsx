@@ -37,7 +37,7 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
         {groups.map((group) => (
           <div key={group.category || "all"}>
             {group.category.trim() !== "" && (
-              <h3 className="font-meta text-xs tracking-widest text-slate-500 uppercase">
+              <h3 className="font-meta text-xs tracking-widest text-slate-400 uppercase">
                 {group.category}
               </h3>
             )}

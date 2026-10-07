@@ -50,7 +50,7 @@ export function ContactSection({
         <ul className="space-y-5 font-meta text-sm">
           {email !== undefined && (
             <li className="flex items-baseline gap-3">
-              <span className="text-slate-600">Email</span>
+              <span className="text-slate-400">Email</span>
               <a
                 href={`mailto:${email}`}
                 className="break-all text-emerald-400 underline-offset-4 hover:underline"
@@ -61,7 +61,7 @@ export function ContactSection({
           )}
           {phone !== undefined && (
             <li className="flex items-baseline gap-3">
-              <span className="text-slate-600">Phone</span>
+              <span className="text-slate-400">Phone</span>
               <a
                 href={`tel:${phone.replace(/\s+/g, "")}`}
                 className="text-emerald-400 underline-offset-4 hover:underline"
@@ -72,7 +72,7 @@ export function ContactSection({
           )}
           {location !== undefined && (
             <li className="flex items-baseline gap-3">
-              <span className="text-slate-600">Based in</span>
+              <span className="text-slate-400">Based in</span>
               <span className="text-slate-300">{location}</span>
             </li>
           )}

@@ -38,7 +38,7 @@ export default function Projects() {
         >
           Projects
         </h1>
-        <p className="font-meta text-xs text-slate-600 tabular-nums">
+        <p className="font-meta text-xs text-slate-400 tabular-nums">
           {projects.length} published
         </p>
       </div>

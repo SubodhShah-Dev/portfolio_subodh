@@ -236,7 +236,7 @@ export default function PublicShell({
         )}
       </header>
 
-      <main id="main-content" className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
           {children}
         </div>

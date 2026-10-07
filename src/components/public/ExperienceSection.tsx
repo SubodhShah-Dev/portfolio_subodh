@@ -41,7 +41,7 @@ export function ExperienceSection({ experience, index }: ExperienceSectionProps)
                 </p>
               </div>
               {entry.location !== undefined && entry.location.trim() !== "" && (
-                <p className="mt-1 font-meta text-xs text-slate-600">
+                <p className="mt-1 font-meta text-xs text-slate-400">
                   {entry.location}
                 </p>
               )}
@@ -63,7 +63,7 @@ export function ExperienceSection({ experience, index }: ExperienceSectionProps)
                 </ul>
               )}
             </div>
-            <p className="font-meta text-xs whitespace-nowrap text-slate-500 tabular-nums md:text-right">
+            <p className="font-meta text-xs whitespace-nowrap text-slate-400 tabular-nums md:text-right">
               {entry.startDate} – {entry.endDate ?? "Present"}
             </p>
           </li>

@@ -61,7 +61,7 @@ export function ProjectCard({
         )}
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
           {project.date !== undefined && project.date.trim() !== "" && (
-            <p className="font-meta text-xs text-slate-600 tabular-nums">
+            <p className="font-meta text-xs text-slate-400 tabular-nums">
               {project.date}
             </p>
           )}

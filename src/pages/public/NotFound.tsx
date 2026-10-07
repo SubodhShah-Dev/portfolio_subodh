@@ -6,7 +6,7 @@ import { Link } from "react-router";
 export default function NotFound() {
   return (
     <div className="py-20 text-center">
-      <p className="font-display text-7xl font-semibold text-slate-800 sm:text-8xl">
+      <p className="font-display text-7xl font-semibold text-slate-700 sm:text-8xl">
         404
       </p>
       <h1 className="mt-4 font-display text-3xl font-semibold text-slate-100">
