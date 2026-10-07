@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 
 import AdminPageShell from "../../components/admin/AdminPageShell";
 import { Alert } from "../../components/ui/Alert";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
+import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { AsyncContent } from "../../components/ui/AsyncContent";
 import { useAsync } from "../../hooks/useAsync";
+import { useMutation } from "../../hooks/useMutation";
 import { getAllCertifications } from "../../services/certificationService";
 import { getAllEducation } from "../../services/educationService";
 import { getAllExperience } from "../../services/experienceService";
@@ -17,6 +20,7 @@ import { getResumes } from "../../services/resumeService";
 import { getAllSkills } from "../../services/skillService";
 import { getAllSocialLinks } from "../../services/socialLinkService";
 import { getSiteSettings } from "../../services/settingsService";
+import { seedDemoData, SEED_COUNTS } from "../../services/seedService";
 import type { AppError } from "../../types/common";
 import type { PortfolioProfile } from "../../types/profile";
 import type { Resume } from "../../types/resume";
@@ -84,6 +88,23 @@ async function loadDashboard(): Promise<DashboardData> {
 export default function Dashboard() {
   const navigate = useNavigate();
   const dashboard = useAsync<DashboardData>(loadDashboard, []);
+  const [seedConfirmOpen, setSeedConfirmOpen] = useState(false);
+  const [seeded, setSeeded] = useState(false);
+  const seed = useMutation<void, void>(() => seedDemoData());
+
+  const openSeedConfirm = (): void => {
+    seed.reset();
+    setSeedConfirmOpen(true);
+  };
+
+  const confirmSeed = async (): Promise<void> => {
+    const result = await seed.execute(undefined);
+    setSeedConfirmOpen(false);
+    if (result.ok) {
+      setSeeded(true);
+      dashboard.reload();
+    }
+  };
 
   return (
     <AdminPageShell
@@ -114,6 +135,7 @@ export default function Dashboard() {
             data.certifications === 0 &&
             data.projects === 0 &&
             data.socialLinks === 0;
+          const canSeed = isEmptyPortfolio && data.settings === null;
 
           const cards: SectionCard[] = [
             { to: "/admin/profile", title: "Profile", count: data.profile === null ? 0 : 1, unit: "entry" },
@@ -128,14 +150,30 @@ export default function Dashboard() {
 
           return (
             <div className="space-y-6">
-              {isEmptyPortfolio && (
+              {seeded && (
+                <Alert tone="success">
+                  Sample content loaded — open the public site to see it. Every
+                  entry is normal content: edit it, publish drafts, or delete
+                  what you don't need.
+                </Alert>
+              )}
+              {seed.error !== null && (
+                <Alert tone="error">{seed.error.message}</Alert>
+              )}
+
+              {canSeed && (
                 <EmptyState
                   title="Your portfolio has no content yet"
-                  description="Start with your profile, then add skills and projects — the public site updates as soon as content is published."
+                  description="Start with your profile, or load a ready-made sample you can edit and replace as you go."
                   action={
-                    <Button onClick={() => void navigate("/admin/profile")}>
-                      Create your profile
-                    </Button>
+                    <div className="flex flex-wrap justify-center gap-3">
+                      <Button onClick={() => void navigate("/admin/profile")}>
+                        Create your profile
+                      </Button>
+                      <Button variant="secondary" onClick={openSeedConfirm}>
+                        Load sample content
+                      </Button>
+                    </div>
                   }
                 />
               )}
@@ -232,6 +270,16 @@ export default function Dashboard() {
                   hidden until you publish them.
                 </Alert>
               )}
+
+              <ConfirmDialog
+                open={seedConfirmOpen}
+                title="Load sample content?"
+                description={`Creates a sample profile, ${SEED_COUNTS.skills} skills, ${SEED_COUNTS.projects} projects, and site settings — published immediately. Experience, education, and certifications stay empty for your own entries. Everything can be edited or deleted from the admin.`}
+                confirmLabel="Load sample content"
+                busy={seed.status === "submitting"}
+                onConfirm={() => void confirmSeed()}
+                onCancel={() => setSeedConfirmOpen(false)}
+              />
             </div>
           );
         }}
