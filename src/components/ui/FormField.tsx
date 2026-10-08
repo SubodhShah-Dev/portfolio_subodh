@@ -8,7 +8,7 @@ interface FormFieldProps {
   hint?: string;
   required?: boolean;
   /**
-   * Visual tone: "dark" (Carbon Dark admin, default) or "light"
+   * Visual tone: "dark" (Ink Console admin, default) or "light"
    * (Signal public form). Semantics and ids never change.
    */
   variant?: "dark" | "light";

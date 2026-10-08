@@ -9,12 +9,34 @@ inbox.
 No content is fabricated anywhere: empty sections are hidden, empty lists show
 honest empty states, and nothing is invented to make the site look fuller.
 
+## Design
+
+Two coordinated visual systems in one stylesheet:
+
+- **Signal — the public portfolio.** Paper canvas (`#fafaf7`) with electric
+  ultramarine (`#3d34f5`), giant condensed Bricolage Grotesque display type,
+  IBM Plex Mono meta labels, hairline rules, sharp corners, and offset-shadow
+  press states, closing on an inverted ink footer band. A light/dark toggle
+  (localStorage → `prefers-color-scheme` → light) flips a full dark twin with
+  one class — admin pages are unaffected.
+- **Ink Console — the admin CMS.** Always dark: near-black ink canvas, raised
+  panels, the same ultramarine accent, Bricolage headings, mono nav, sharp
+  primitives. (Tailwind's slate/emerald utility names are kept but their
+  values are re-pointed in `@theme` — grep-verified admin-only usage.)
+
+Public-site touches: ⌘K command palette (lazy `cmdk`), Lenis smooth scrolling,
+route view transitions, a keyboard-navigable project gallery lightbox,
+confetti on contact send, copy-email toast, and a theme toggle in the header.
+The dashboard seeder is fill-missing: it only ever adds sample entries whose
+documents are absent and never overwrites owner content.
+
 ## Stack
 
 | Layer | Choice |
 | --- | --- |
 | UI | React 19, TypeScript ~5.9, Vite 8 |
-| Styling | Tailwind CSS 4, hand-rolled design-system classes |
+| Styling | Tailwind CSS 4, hand-rolled design-system classes, Fontsource variable fonts (Bricolage Grotesque, Instrument Sans, IBM Plex Mono) |
+| Libraries | lenis (smooth scroll), motion, cmdk (⌘K palette), lucide-react, canvas-confetti |
 | Routing | React Router v8 (`createBrowserRouter`, data routers, lazy admin routes) |
 | Backend | Firebase — Auth (email/password), Firestore, Storage (optional) |
 | Testing | Vitest 5, Testing Library, jsdom; Security Rules tests on the Emulator Suite |
@@ -56,13 +78,13 @@ npm run emulators    # emulators only (auth :9099, firestore :8080, storage :919
 src/
   components/
     admin/        Admin page building blocks (forms, rows, shell)
-    layout/       SidebarShell shared by both layouts
+    layout/       PublicShell (site chrome) + SidebarShell (admin)
     public/       Public site sections (hero, skills, projects, …)
     ui/           Design system (Button, Alert, ConfirmDialog, …)
   config/         Firebase init, emulator wiring, App Check
   context/        AuthContext — admin session + admins/{uid} verification
   hooks/          useAsync, useMutation, useOrderedCollection
-  layouts/        PublicLayout (profile sidebar), AdminLayout
+  layouts/        PublicLayout (Signal chrome), AdminLayout (Ink Console)
   loaders/        Route loaders for the public site
   pages/          Route components (public/, admin/)
   routes/         Router table, PublicErrorBoundary
