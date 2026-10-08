@@ -78,4 +78,10 @@ describe("galleryUrlsError", () => {
       "Gallery image URL (line 1) must be a valid http(s) URL.",
     );
   });
+
+  it("accepts a custom label for the same line format", () => {
+    expect(galleryUrlsError("nope", "Profile image URL")).toBe(
+      "Profile image URL (line 1) must be a valid http(s) URL.",
+    );
+  });
 });

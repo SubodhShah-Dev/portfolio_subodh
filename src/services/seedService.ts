@@ -44,12 +44,16 @@ const PROJECTS_PATH = "projects";
 /** Placeholder contact identity — replace it from Admin → Profile. */
 export const SEED_CONTACT_EMAIL = "hello@subodhshah.dev";
 
+/** Seed portrait — the owner's GitHub avatar; paste real URLs from Admin. */
+const SEED_AVATAR_URL = "https://avatars.githubusercontent.com/u/182909163?v=4";
+
 const PROFILE_PUBLIC = {
   name: "Subodh Shah",
   role: "Full Stack Developer",
   headline: "I build fast, reliable products from database to deployment.",
   bio: "I'm a full stack developer who enjoys turning complex problems into clean, approachable products — from database schema to the last pixel of the interface.\n\nOutside of work you'll find me exploring new frameworks, contributing to open source, and shaving seconds off my workflow with one small automation at a time.",
-  profileImageUrl: "https://picsum.photos/seed/subodh-portrait/640/800",
+  profileImageUrl: SEED_AVATAR_URL,
+  profileImageUrls: [SEED_AVATAR_URL],
 };
 
 interface SeedSkill {

@@ -44,14 +44,14 @@ export function parseImageLines(value: string): string[] {
     .filter((line) => line !== "");
 }
 
-/** First invalid non-empty gallery line as a message, or null when all pass. */
-export function galleryUrlsError(value: string): string | null {
+/** First invalid non-empty line as a message, or null when all pass. */
+export function galleryUrlsError(value: string, label = "Gallery image URL"): string | null {
   const lines = value.split(/\r?\n/);
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
     if (line === undefined || line.trim() === "") continue;
     const error = urlError(line, {
-      label: `Gallery image URL (line ${index + 1})`,
+      label: `${label} (line ${index + 1})`,
     });
     if (error !== null) return error;
   }

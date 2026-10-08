@@ -1,5 +1,7 @@
 import type { PortfolioProfile } from "../../types/profile";
+import { resolveProfileImages } from "../../utils/profileImages";
 
+import { ProfileStack } from "./ProfileStack";
 import { Section } from "./Section";
 
 interface AboutSectionProps {
@@ -9,7 +11,8 @@ interface AboutSectionProps {
 
 /** About section — bio plus only the contact details actually supplied (§8). */
 export function AboutSection({ profile, index }: AboutSectionProps) {
-  const { bio, profileImageUrl, location } = profile.public;
+  const { bio, location } = profile.public;
+  const imageUrls = resolveProfileImages(profile.public);
   const paragraphs = bio.split(/\n{2,}/).map((entry) => entry.trim()).filter((entry) => entry !== "");
   const email = profile.contact.email;
   const phone = profile.contact.phone;
@@ -62,13 +65,10 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
             </ul>
           )}
         </div>
-        {profileImageUrl !== undefined && profileImageUrl.trim() !== "" && (
-          <img
-            src={profileImageUrl}
-            alt={`${profile.public.name} — profile`}
-            loading="lazy"
-            className="mx-auto size-44 border border-ink object-cover shadow-[8px_8px_0_0_var(--color-signal)] sm:mx-0"
-          />
+        {imageUrls.length > 0 && (
+          <div className="mx-auto sm:mx-0">
+            <ProfileStack images={imageUrls} name={profile.public.name} />
+          </div>
         )}
       </div>
     </Section>

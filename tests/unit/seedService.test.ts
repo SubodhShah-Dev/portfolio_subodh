@@ -182,7 +182,10 @@ describe("seedDemoData", () => {
     const profilePayload = setMock.mock.calls.find(
       ([reference]) => (reference as { path: string }).path === "profile/public",
     )?.[1] as Record<string, unknown>;
-    expect(profilePayload.profileImageUrl).toMatch(/^https:\/\/picsum\.photos\//);
+    expect(profilePayload.profileImageUrl).toMatch(
+      /^https:\/\/avatars\.githubusercontent\.com\//,
+    );
+    expect(profilePayload.profileImageUrls).toEqual([profilePayload.profileImageUrl]);
 
     const skillPayload = setMock.mock.calls.find(
       ([reference]) => (reference as { path: string }).path === "skills/typescript",
