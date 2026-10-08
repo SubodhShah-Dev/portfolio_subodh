@@ -157,30 +157,56 @@ export default function PublicLayout() {
   const ownerName = profile?.public.name ?? "";
 
   const footer = (
-    <div className="mx-auto w-full max-w-7xl px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
-      <div className="max-w-3xl">
-        <p className="eyebrow">Get in touch</p>
-        <h2 className="mt-5 max-w-[16ch] font-display text-[clamp(2.25rem,5vw,4rem)] font-extrabold leading-[0.95] tracking-[-0.03em] text-balance">
-          Let&apos;s build something together.
-        </h2>
-        {contactEmail !== null && (
-          <a
-            href={`mailto:${contactEmail}`}
-            className="mt-6 inline-block font-display text-[clamp(1.25rem,2vw,1.75rem)] font-semibold break-all text-signal-soft underline decoration-signal-soft underline-offset-4 transition-colors hover:text-band-ink"
-          >
-            {contactEmail}
-          </a>
-        )}
-        <div className="mt-8 flex flex-wrap gap-4">
+    <div className="relative mx-auto w-full max-w-7xl overflow-hidden px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+      {/* Spinning lime sunburst — pure decoration. */}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 64 64"
+        className="animate-spin-slow absolute -top-3 right-5 hidden size-24 text-lime lg:block"
+      >
+        <g stroke="currentColor" strokeWidth="4" strokeLinecap="round">
+          <line x1="32" y1="2" x2="32" y2="62" />
+          <line x1="2" y1="32" x2="62" y2="32" />
+          <line x1="11" y1="11" x2="53" y2="53" />
+          <line x1="53" y1="11" x2="11" y2="53" />
+        </g>
+        <circle cx="32" cy="32" r="14" fill="currentColor" />
+      </svg>
+
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="max-w-3xl">
+          <p className="eyebrow">Get in touch</p>
+          <h2 className="mt-5 max-w-[16ch] font-display text-[clamp(2.25rem,5vw,4rem)] font-extrabold leading-[0.95] tracking-[-0.03em] text-balance">
+            Let&apos;s build something together.
+          </h2>
           {contactEmail !== null && (
-            <a className="cta-primary" href={`mailto:${contactEmail}`}>
-              Say hello
+            <a
+              href={`mailto:${contactEmail}`}
+              className="mt-6 inline-block font-display text-[clamp(1.25rem,2vw,1.75rem)] font-semibold break-all text-lime underline underline-offset-4 transition-colors hover:text-band-ink"
+            >
+              {contactEmail}
             </a>
           )}
-          <Link className="cta-ghost" to="/projects" viewTransition>
-            See my work
-          </Link>
+          <div className="mt-8 flex flex-wrap gap-4">
+            {contactEmail !== null && (
+              <a className="cta-primary" href={`mailto:${contactEmail}`}>
+                Say hello
+              </a>
+            )}
+            <Link className="cta-ghost" to="/projects" viewTransition>
+              See my work
+            </Link>
+          </div>
         </div>
+
+        {data.socialLinks.length > 0 && (
+          <div className="flex flex-col gap-4 lg:items-end">
+            <p className="font-meta text-[11px] tracking-[0.14em] text-lime uppercase">
+              Find me on
+            </p>
+            <SocialLinksList links={data.socialLinks} />
+          </div>
+        )}
       </div>
 
       <div className="mt-16 flex flex-col gap-5 border-t border-band-muted/30 pt-6 sm:flex-row sm:items-start sm:justify-between">
@@ -199,7 +225,6 @@ export default function PublicLayout() {
             {ownerName.trim() !== "" ? ` ${ownerName}` : ""}
           </p>
         </div>
-        <SocialLinksList links={data.socialLinks} />
       </div>
     </div>
   );

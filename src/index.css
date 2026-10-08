@@ -355,6 +355,13 @@
     background-size: 72px 72px;
   }
 
+  /* Full-bleed breakout: edge-to-edge within the shell container. The shell
+     root clips the ±scrollbar/2 overhang (overflow-x: clip keeps sticky
+     positioning intact — clip never creates a scroll container). */
+  .bleed {
+    margin-inline: calc(50% - 50vw);
+  }
+
   /* --- Signal, scoped to the public shell ---------------------------------
      Everything below requires a .public-scope ancestor (PublicShell root,
      paused screen, route error boundary). Utilities still win over all of
@@ -488,6 +495,13 @@
     background-color: var(--color-lime);
     border-color: var(--color-on-accent);
     color: var(--color-on-accent);
+  }
+
+  /* Lime pills on saturated bands keep a fixed navy frame in both modes
+     (the flipping ink token would go near-white on the dark canvas). */
+  .public-scope .band .cta-primary,
+  .public-scope .bg-signal .cta-primary {
+    border-color: var(--color-on-accent);
   }
 }
 
