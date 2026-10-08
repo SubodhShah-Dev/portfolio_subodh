@@ -13,7 +13,7 @@ export function CertificationsSection({
   index,
 }: CertificationsSectionProps) {
   return (
-    <Section id="certifications" title="Certifications" index={index} tone="pink">
+    <Section id="certifications" title="Certifications" index={index}>
       <ul className="grid gap-5 sm:grid-cols-2">
         {certifications.map((entry) => (
           <li key={entry.id} className="pop-card p-5">

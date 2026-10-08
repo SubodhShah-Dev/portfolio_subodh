@@ -10,13 +10,13 @@ interface HeroProps {
 }
 
 /**
- * Identity hero — Signal × Pop cobalt band (§7): full-bleed signal block with
- * pop decor (bobbing lime circle, spinning star, stripes), a lime role
- * sticker, the name in giant condensed Bricolage revealed word-by-word
- * behind overflow masks, a drawn lime rule, then the calls to action. Word
- * wrappers keep real space text nodes so the accessible name stays exactly
- * the display name. The resume download lives only in the header actions so
- * the composed page keeps a single instance.
+ * Identity hero — Pop Mono (§7): paper on paper with ink type — no color
+ * band. Cobalt appears only as the drawn rule; decor is developer-themed: a
+ * bobbing terminal pop-card with a `</>` sticker badge (desktop only). The
+ * name lands in giant condensed Bricolage revealed word-by-word behind
+ * overflow masks. Word wrappers keep real space text nodes so the accessible
+ * name stays exactly the display name. The resume download lives only in the
+ * header actions so the composed page keeps a single instance.
  */
 export function Hero({ profile, contactVisible }: HeroProps) {
   const { name, role, headline, location } = profile.public;
@@ -37,24 +37,39 @@ export function Hero({ profile, contactVisible }: HeroProps) {
     role.trim() !== "" || (location !== undefined && location.trim() !== "");
 
   return (
-    <header className="bleed relative -mt-12 flex scroll-mt-24 flex-col justify-end overflow-hidden bg-signal pt-14 pb-14 text-on-signal lg:-mt-16 lg:min-h-[78svh] lg:pt-24 lg:pb-20">
-      {/* Pop decor — desktop only, pure decoration. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="animate-pop-bob absolute top-[14%] right-[7%] hidden size-28 rounded-full border-2 border-on-accent bg-lime lg:block" />
-        <div
-          className="absolute top-[26%] right-[16%] hidden h-24 w-40 lg:block"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(90deg, var(--color-on-signal) 0 4px, transparent 4px 14px)",
-          }}
-        />
-        <svg
-          viewBox="0 0 100 100"
-          className="animate-spin-slow absolute right-[9%] bottom-[16%] hidden size-20 fill-pink stroke-on-accent lg:block"
-          style={{ strokeWidth: 2 }}
-        >
-          <polygon points="50,3 61,38 98,38 68,60 79,95 50,73 21,95 32,60 2,38 39,38" />
-        </svg>
+    <header className="relative -mt-12 flex scroll-mt-24 flex-col justify-end overflow-hidden pt-14 pb-14 lg:-mt-16 lg:min-h-[78svh] lg:pt-24 lg:pb-20">
+      {/* Developer decor — terminal card + `</>` sticker, desktop only.
+          Pure decoration: aria-hidden, pointer-events-none, z-0 (content
+          sits above at z-10). */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute top-[9%] right-[5%] z-0 hidden w-[19.5rem] xl:block"
+      >
+        <div className="animate-pop-bob">
+          <div className="pop-card rotate-[2deg] p-4">
+            <div className="flex items-center gap-1.5 border-b-2 border-ink pb-2.5">
+              <span className="size-2.5 rounded-full bg-signal" />
+              <span className="size-2.5 rounded-full border-2 border-ink" />
+              <span className="size-2.5 rounded-full border-2 border-ink" />
+              <span className="ml-auto font-meta text-[9px] tracking-[0.14em] text-muted uppercase">
+                terminal
+              </span>
+            </div>
+            <div className="mt-3 space-y-1.5 font-meta text-xs">
+              <p className="text-muted">~/portfolio</p>
+              <p className="text-ink">
+                <span className="text-signal-deep">$</span> npm run dev
+              </p>
+              <p className="text-signal-deep">
+                ➜ localhost:5173{" "}
+                <span className="animate-pulse text-ink">▍</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <span className="absolute -bottom-7 -left-9 flex size-14 -rotate-6 items-center justify-center rounded-full bg-ink font-meta text-lg font-bold text-canvas shadow-[5px_5px_0_0_var(--color-signal)]">
+          {"</>"}
+        </span>
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-4 sm:px-6 lg:px-10">
@@ -64,18 +79,18 @@ export function Hero({ profile, contactVisible }: HeroProps) {
             style={{ animationDelay: "0ms" }}
           >
             {role.trim() !== "" && (
-              <span className="rounded-full border-2 border-on-accent bg-lime px-3 py-1 text-on-accent">
+              <span className="rounded-full border-2 border-ink bg-raised px-3 py-1 text-ink">
                 {role}
               </span>
             )}
             {location !== undefined && location.trim() !== "" && (
-              <span className="text-on-signal/85">Based in {location}</span>
+              <span className="text-muted">Based in {location}</span>
             )}
           </div>
         )}
 
         <h1
-          className={`mt-7 font-display ${nameSize} font-stretch-[85%] font-extrabold leading-[0.86] tracking-[-0.045em] text-on-signal`}
+          className={`mt-7 font-display ${nameSize} font-stretch-[85%] font-extrabold leading-[0.86] tracking-[-0.045em] text-ink`}
         >
           {words.map((word, index) => (
             <Fragment key={`${word}-${index}`}>
@@ -94,13 +109,13 @@ export function Hero({ profile, contactVisible }: HeroProps) {
 
         <div
           aria-hidden="true"
-          className="animate-draw mt-9 h-1 w-full origin-left bg-lime"
+          className="animate-draw mt-9 h-1 w-full origin-left bg-signal"
           style={{ animationDelay: "400ms" }}
         />
 
         {headline.trim() !== "" && (
           <p
-            className="animate-rise mt-7 max-w-[46ch] font-body text-[clamp(1.125rem,2vw,1.5rem)] leading-relaxed text-on-signal/90"
+            className="animate-rise mt-7 max-w-[46ch] font-body text-[clamp(1.125rem,2vw,1.5rem)] leading-relaxed text-muted"
             style={{ animationDelay: "550ms" }}
           >
             {headline}

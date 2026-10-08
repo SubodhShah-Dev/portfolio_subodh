@@ -32,7 +32,7 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
   const groups = groupByCategory(skills);
 
   return (
-    <Section id="skills" title="Skills" index={index} tone="lime">
+    <Section id="skills" title="Skills" index={index}>
       <div className="space-y-8">
         {groups.map((group) => (
           <div key={group.category || "all"}>

@@ -36,34 +36,32 @@ export default function ProjectDetails() {
         ← Back to projects
       </Link>
 
-      <header className="bleed border-y-2 border-ink bg-signal py-10 text-on-signal lg:py-14">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-on-signal">
-              {project.title}
-            </h1>
-            {project.featured && <Tag accent>Featured</Tag>}
-            {project.date !== undefined && project.date.trim() !== "" && (
-              <span className="font-meta text-sm text-on-signal/80 tabular-nums">
-                {project.date}
-              </span>
-            )}
-          </div>
-          {project.subtitle.trim() !== "" && (
-            <p className="max-w-3xl text-xl text-pretty leading-relaxed text-on-signal/90">
-              {project.subtitle}
-            </p>
-          )}
-          {project.techStack.length > 0 && (
-            <ul className="mt-5 flex flex-wrap gap-2">
-              {project.techStack.map((technology) => (
-                <li key={technology} className="chip">
-                  {technology}
-                </li>
-              ))}
-            </ul>
+      <header className="space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-ink">
+            {project.title}
+          </h1>
+          {project.featured && <Tag accent>Featured</Tag>}
+          {project.date !== undefined && project.date.trim() !== "" && (
+            <span className="font-meta text-sm text-muted tabular-nums">
+              {project.date}
+            </span>
           )}
         </div>
+        {project.subtitle.trim() !== "" && (
+          <p className="max-w-3xl text-xl text-pretty leading-relaxed text-muted">
+            {project.subtitle}
+          </p>
+        )}
+        {project.techStack.length > 0 && (
+          <ul className="flex flex-wrap gap-2">
+            {project.techStack.map((technology) => (
+              <li key={technology} className="chip">
+                {technology}
+              </li>
+            ))}
+          </ul>
+        )}
       </header>
 
       {hasThumb && (

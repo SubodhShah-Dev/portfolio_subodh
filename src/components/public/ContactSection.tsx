@@ -68,7 +68,7 @@ export function ContactSection({
 
   return (
     <Section id="contact" title={title} description={description} index={index}>
-      <div className="grid gap-10 lg:grid-cols-2">
+      <div className="grid gap-10 lg:grid-cols-[20rem_minmax(0,1fr)]">
         <ul className="space-y-4 font-meta text-sm">
           {email !== undefined && (
             <li className="pop-card flex flex-wrap items-baseline gap-x-3 gap-y-2 px-4 py-3.5">
@@ -106,7 +106,7 @@ export function ContactSection({
             </li>
           )}
         </ul>
-        <div className="lime-panel tone-band pop-card bg-lime p-6 sm:p-8">
+        <div className="pop-card p-6 sm:p-8">
           <ContactForm />
         </div>
       </div>
@@ -117,7 +117,7 @@ export function ContactSection({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-6 left-1/2 z-90 -translate-x-1/2 border-2 border-ink bg-ink px-4 py-2.5 font-meta text-xs tracking-[0.1em] text-canvas uppercase shadow-[5px_5px_0_0_var(--color-lime)]"
+          className="fixed bottom-6 left-1/2 z-90 -translate-x-1/2 border-2 border-ink bg-ink px-4 py-2.5 font-meta text-xs tracking-[0.1em] text-canvas uppercase shadow-[5px_5px_0_0_var(--color-signal)]"
         >
           Email copied
         </motion.div>

@@ -13,18 +13,21 @@ honest empty states, and nothing is invented to make the site look fuller.
 
 Two coordinated visual systems in one stylesheet:
 
-- **Signal × Pop — the public portfolio.** Paper canvas (`#fafaf7`), electric
-  ultramarine (`#3d34f5`) cobalt hero/footer bands, lime (`#cfff3a`) pop
-  accents, giant condensed Bricolage Grotesque display type, IBM Plex Mono
-  meta labels, and hard offset shadows (`shadow-pop`) on chunky-radius
-  cards and press-down pill buttons. Sections ride tinted full-bleed bands
-  (lime Skills, pink-soft Certifications, sky Education) pinned to the
-  light palette in both themes, arrow-circle section badges, a cobalt
-  project-detail header, and a swipeable stacked photo deck in About. A
-  light/dark toggle (localStorage → `prefers-color-scheme` → light) flips
-  one class — bright fills keep fixed navy text via `--color-on-accent`,
-  and borders/shadows follow `--color-ink` so the neobrutalist frame turns
-  light on the dark canvas. Admin pages are unaffected.
+- **Pop Mono — the public portfolio.** Monochrome base with one accent:
+  paper canvas (`#fafaf7`) and near-black ink (`#141414`) carry the page,
+  electric ultramarine (`#3d34f5`) cobalt carries links, focus rings, hover
+  floods, the reading-progress bar, and small highlights; giant condensed
+  Bricolage Grotesque display type, IBM Plex Mono meta labels, and hard
+  offset shadows (`shadow-pop`) on chunky-radius cards and press-down pill
+  buttons (black primary / white outlined, both flooding cobalt on hover).
+  Sections ride hairline dividers with arrow-circle badges; the hero is
+  paper-on-paper with cobalt drawn rule and a bobbing terminal-card /
+  `</>` decor; the footer is a full-bleed black band with `signal-soft`
+  accents and a swipeable stacked photo deck in About. A light/dark toggle
+  (localStorage → `prefers-color-scheme` → light) flips one class — white
+  pills keep fixed navy text via `--color-on-accent`, and borders/shadows
+  follow `--color-ink` so the neobrutalist frame turns light on the dark
+  canvas. Admin pages are unaffected.
 - **Ink Console — the admin CMS.** Always dark: near-black ink canvas, raised
   panels, the same ultramarine accent, Bricolage headings, mono nav, sharp
   primitives. (Tailwind's slate/emerald utility names are kept but their

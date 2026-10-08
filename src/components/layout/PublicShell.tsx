@@ -43,9 +43,9 @@ const FOCUSABLE_SELECTOR =
 function routeLinkClass(active: boolean): string {
   return [
     "relative rounded-full px-3.5 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
-    // on-accent is fixed navy — the lime pill never flips, so its text must
-    // not either (text-ink would go near-white on lime in dark mode).
-    active ? "text-on-accent" : "text-muted hover:text-ink",
+    // The pill behind the active link flips with ink (black in light, white
+    // in dark), so its label flips too — text-canvas on the ink pill.
+    active ? "text-canvas" : "text-muted hover:text-ink",
   ].join(" ");
 }
 
@@ -53,7 +53,7 @@ function menuLinkClass(active: boolean): string {
   return [
     "block rounded-lg px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
     active
-      ? "bg-lime text-on-accent"
+      ? "bg-ink text-canvas"
       : "text-muted hover:bg-ink/5 hover:text-ink",
   ].join(" ");
 }
@@ -218,7 +218,7 @@ export default function PublicShell({
         <motion.span
           layoutId="nav-pill"
           aria-hidden="true"
-          className="absolute inset-0 -z-10 rounded-full border-2 border-ink bg-lime"
+          className="absolute inset-0 -z-10 rounded-full bg-ink"
           transition={{ type: "spring", stiffness: 460, damping: 36 }}
         />
       ) : null;
@@ -272,7 +272,7 @@ export default function PublicShell({
   };
 
   return (
-    <div className="public-scope flex min-h-screen flex-col overflow-x-clip bg-canvas font-body text-ink antialiased">
+    <div className="public-scope flex min-h-screen flex-col bg-canvas font-body text-ink antialiased">
       <a
         href="#main-content"
         className="sr-only z-100 bg-ink px-4 py-2 text-sm font-medium text-canvas focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
@@ -305,7 +305,7 @@ export default function PublicShell({
                 type="button"
                 onClick={() => setPaletteOpen(true)}
                 aria-label="Open command palette"
-                className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-ink transition-colors hover:bg-lime hover:text-on-accent"
+                className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-ink transition-colors hover:bg-ink hover:text-canvas"
               >
                 <Search aria-hidden="true" className="size-3.5" />
                 <span className="font-meta text-[10px] tracking-[0.1em] uppercase">
@@ -322,7 +322,7 @@ export default function PublicShell({
               onClick={handleToggleTheme}
               aria-label={themeLabel}
               title={themeLabel}
-              className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-lime hover:text-on-accent"
+              className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-canvas"
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
@@ -345,7 +345,7 @@ export default function PublicShell({
             <button
               ref={menuButtonRef}
               type="button"
-              className="flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-lime hover:text-on-accent lg:hidden"
+              className="flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-canvas lg:hidden"
               aria-expanded={menuOpen}
               aria-controls="public-menu"
               onClick={toggleMenu}
@@ -365,7 +365,7 @@ export default function PublicShell({
         <div
           aria-hidden="true"
           ref={progressRef}
-          className="pointer-events-none absolute -bottom-px left-0 h-0.5 w-full origin-left bg-lime"
+          className="pointer-events-none absolute -bottom-px left-0 h-0.5 w-full origin-left bg-signal"
           style={{ transform: "scaleX(0)" }}
         />
 
@@ -432,7 +432,7 @@ export default function PublicShell({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 14 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-lime text-on-accent shadow-pop transition-transform hover:-translate-y-0.5"
+            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal shadow-pop transition-transform hover:-translate-y-0.5"
           >
             <ArrowUp aria-hidden="true" className="size-5" />
           </motion.button>

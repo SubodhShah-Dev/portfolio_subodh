@@ -53,7 +53,7 @@ export function ProfileStack({ images, name }: ProfileStackProps) {
   const frame =
     "absolute inset-0 overflow-hidden rounded-chunk border-2 border-ink bg-raised shadow-pop";
   const plate =
-    "absolute inset-0 translate-x-2 translate-y-2 rotate-3 rounded-chunk border-2 border-ink bg-lime";
+    "absolute inset-0 translate-x-2 translate-y-2 rotate-3 rounded-chunk border-2 border-ink bg-signal";
 
   if (count === 1) {
     return (

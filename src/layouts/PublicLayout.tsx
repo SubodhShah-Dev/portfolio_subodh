@@ -158,21 +158,6 @@ export default function PublicLayout() {
 
   const footer = (
     <div className="relative mx-auto w-full max-w-7xl overflow-hidden px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
-      {/* Spinning lime sunburst — pure decoration. */}
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 64 64"
-        className="animate-spin-slow absolute -top-3 right-5 hidden size-24 text-lime lg:block"
-      >
-        <g stroke="currentColor" strokeWidth="4" strokeLinecap="round">
-          <line x1="32" y1="2" x2="32" y2="62" />
-          <line x1="2" y1="32" x2="62" y2="32" />
-          <line x1="11" y1="11" x2="53" y2="53" />
-          <line x1="53" y1="11" x2="11" y2="53" />
-        </g>
-        <circle cx="32" cy="32" r="14" fill="currentColor" />
-      </svg>
-
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="max-w-3xl">
           <p className="eyebrow">Get in touch</p>
@@ -182,7 +167,7 @@ export default function PublicLayout() {
           {contactEmail !== null && (
             <a
               href={`mailto:${contactEmail}`}
-              className="mt-6 inline-block font-display text-[clamp(1.25rem,2vw,1.75rem)] font-semibold break-all text-lime underline underline-offset-4 transition-colors hover:text-band-ink"
+              className="mt-6 inline-block font-display text-[clamp(1.25rem,2vw,1.75rem)] font-semibold break-all text-signal-soft underline underline-offset-4 transition-colors hover:text-band-ink"
             >
               {contactEmail}
             </a>
@@ -201,7 +186,7 @@ export default function PublicLayout() {
 
         {data.socialLinks.length > 0 && (
           <div className="flex flex-col gap-4 lg:items-end">
-            <p className="font-meta text-[11px] tracking-[0.14em] text-lime uppercase">
+            <p className="font-meta text-[11px] tracking-[0.14em] text-signal-soft uppercase">
               Find me on
             </p>
             <SocialLinksList links={data.socialLinks} />

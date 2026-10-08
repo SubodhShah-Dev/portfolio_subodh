@@ -55,8 +55,8 @@ export default function Projects() {
             onClick={() => setSelectedTech(FILTER_ALL)}
             className={`cursor-pointer rounded-full border-2 border-ink px-3.5 py-1.5 font-meta text-xs transition-colors ${
               selectedTech === FILTER_ALL
-                ? "tone-band bg-ink text-lime"
-                : "bg-raised text-ink hover:bg-lime hover:text-on-accent"
+                ? "bg-ink text-canvas"
+                : "bg-raised text-ink hover:bg-signal hover:text-on-signal"
             }`}
           >
             All
@@ -69,8 +69,8 @@ export default function Projects() {
               onClick={() => setSelectedTech(technology)}
               className={`cursor-pointer rounded-full border-2 border-ink px-3.5 py-1.5 font-meta text-xs transition-colors ${
                 selectedTech === technology
-                  ? "tone-band bg-ink text-lime"
-                  : "bg-raised text-ink hover:bg-lime hover:text-on-accent"
+                  ? "bg-ink text-canvas"
+                  : "bg-raised text-ink hover:bg-signal hover:text-on-signal"
               }`}
             >
               {technology}
