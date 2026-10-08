@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import Home from "../../src/pages/public/Home";
 import {
+  HIDDEN_FLAGS,
   makeCertification,
   makeEducation,
   makeExperience,
@@ -12,6 +13,7 @@ import {
   makeProfile,
   makeProject,
   makeSkill,
+  makeSocialLink,
 } from "../fixtures/publicContent";
 
 function renderHome(data: ReturnType<typeof makeLayoutData>) {
@@ -76,6 +78,21 @@ describe("Home", () => {
     expect(screen.queryByRole("heading", { name: "Skills" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/^Name/)).not.toBeInTheDocument();
     expect(screen.queryByText("Download resume")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /GitHub/ })).not.toBeInTheDocument();
+  });
+
+  it("shows the social links in the hero when configured", async () => {
+    renderHome(
+      makeLayoutData({
+        profile: makeProfile(),
+        flags: { ...HIDDEN_FLAGS, hero: true },
+        socialLinks: [makeSocialLink()],
+      }),
+    );
+
+    const github = await screen.findByRole("link", { name: /GitHub/ });
+    expect(github).toHaveAttribute("target", "_blank");
+    expect(github).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("respects disabled sections even when content exists", async () => {

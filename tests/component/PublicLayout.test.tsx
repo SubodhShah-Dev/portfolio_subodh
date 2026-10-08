@@ -80,6 +80,21 @@ describe("PublicLayout", () => {
     ).toBeInTheDocument();
   });
 
+  it("keeps the raw email address out of the footer", async () => {
+    renderLayout(
+      makeLayoutData({
+        profile: makeProfile({
+          contact: { id: "contact", email: "ada@example.com" },
+        }),
+        flags: { ...HIDDEN_FLAGS, contact: true },
+      }),
+    );
+
+    const sayHello = await screen.findByRole("link", { name: "Say hello" });
+    expect(sayHello).toHaveAttribute("href", "mailto:ada@example.com");
+    expect(screen.queryByText("ada@example.com")).not.toBeInTheDocument();
+  });
+
   it("shows a paused notice instead of the site when disabled", async () => {
     renderLayout(makeLayoutData({ siteEnabled: false }));
 

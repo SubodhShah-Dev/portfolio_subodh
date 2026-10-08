@@ -182,14 +182,6 @@ export default function PublicLayout() {
           <h2 className="mt-5 max-w-[16ch] font-display text-[clamp(2.25rem,5vw,4rem)] font-extrabold leading-[0.95] tracking-[-0.03em] text-balance">
             Let&apos;s build something together.
           </h2>
-          {contactEmail !== null && (
-            <a
-              href={`mailto:${contactEmail}`}
-              className="mt-6 inline-block font-display text-[clamp(1.25rem,2vw,1.75rem)] font-semibold break-all text-signal-soft underline underline-offset-4 transition-colors hover:text-band-ink"
-            >
-              {contactEmail}
-            </a>
-          )}
           <div className="mt-8 flex flex-wrap gap-4">
             {contactEmail !== null && (
               <a className="cta-primary" href={`mailto:${contactEmail}`}>

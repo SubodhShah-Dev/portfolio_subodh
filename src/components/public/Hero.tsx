@@ -2,25 +2,29 @@ import { Fragment } from "react";
 import { Link } from "react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
+import { SocialLinksList } from "./SocialLinksList";
 import type { PortfolioProfile } from "../../types/profile";
+import type { SocialLink } from "../../types/socialLink";
 
 interface HeroProps {
   profile: PortfolioProfile;
   contactVisible: boolean;
+  socialLinks: SocialLink[];
 }
 
 /**
  * Identity hero — Pop Mono (§7): paper on paper with ink type — no color
- * band. Cobalt appears as the drawn rule and as the `</>` glyph that replaces
- * the first "o" of the display name; decor is a bobbing terminal pop-card
- * (desktop only). The name lands in giant condensed Bricolage revealed
- * word-by-word behind overflow masks, with an aria-label keeping the
- * accessible name exactly the display name. The role sits under the top row
- * as plain display text — impactful, but clearly below the name. The resume
- * download lives only in the header actions so the composed page keeps a
- * single instance.
+ * band. Cobalt appears as the drawn rule and as the `</>` circle icon that
+ * replaces the first "o" of the display name; decor is a bobbing terminal
+ * pop-card (desktop only). The name lands in giant condensed Bricolage
+ * revealed word-by-word behind overflow masks, with an aria-label keeping
+ * the accessible name exactly the display name. The role sits under the top
+ * row as plain display text — impactful, but clearly below the name. Social
+ * links repeat the footer's pills (inverted for paper) below the CTAs, and
+ * the resume download lives only in the header actions so the composed page
+ * keeps a single instance.
  */
-export function Hero({ profile, contactVisible }: HeroProps) {
+export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
   const { name, role, headline, location } = profile.public;
 
   const displayName = name.trim() !== "" ? name.trim() : "Portfolio";
@@ -38,8 +42,8 @@ export function Hero({ profile, contactVisible }: HeroProps) {
   const hasTopRow =
     role.trim() !== "" || (location !== undefined && location.trim() !== "");
 
-  // First "o"/"O" of the display name renders as a `</>` glyph — the h1's
-  // aria-label below keeps the accessible name exactly the display name.
+  // First "o"/"O" of the display name renders as the `</>` circle icon —
+  // the h1's aria-label below keeps the accessible name the display name.
   const glyphWordIndex = words.findIndex((word) => /[oO]/.test(word));
   const glyphCharIndex =
     glyphWordIndex === -1 ? -1 : words[glyphWordIndex].search(/[oO]/);
@@ -114,9 +118,11 @@ export function Hero({ profile, contactVisible }: HeroProps) {
                     {hasGlyph && (
                       <span
                         aria-hidden="true"
-                        className="font-meta text-[0.6em] font-medium text-signal"
+                        className="mx-[0.03em] inline-flex size-[0.7em] translate-y-[-0.04em] items-center justify-center rounded-full bg-ink font-meta align-middle text-canvas shadow-[0.045em_0.045em_0_0_var(--color-signal)]"
                       >
-                        {"</>"}
+                        <span className="text-[0.28em] leading-none font-bold">
+                          {"</>"}
+                        </span>
                       </span>
                     )}
                     {after}
@@ -163,6 +169,15 @@ export function Hero({ profile, contactVisible }: HeroProps) {
             />
           </Link>
         </div>
+
+        {socialLinks.length > 0 && (
+          <div
+            className="animate-rise mt-7"
+            style={{ animationDelay: "850ms" }}
+          >
+            <SocialLinksList links={socialLinks} tone="paper" />
+          </div>
+        )}
       </div>
     </header>
   );
