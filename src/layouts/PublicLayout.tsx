@@ -5,7 +5,7 @@ import { Download } from "lucide-react";
 import PublicShell, { type ShellLink } from "../components/layout/PublicShell";
 import { SocialLinksList } from "../components/public/SocialLinksList";
 import type { PublicLayoutData } from "../loaders/publicLoaders";
-import { scrollToTarget } from "../utils/smoothScroll";
+import { scrollToTarget, scrollToTop } from "../utils/smoothScroll";
 import { currentTheme } from "../utils/theme";
 
 /**
@@ -51,10 +51,11 @@ export default function PublicLayout() {
     if (target !== null) scrollToTarget(target);
   }, [location.hash, location.pathname]);
 
-  // Reset scroll on plain route changes (no hash involved).
+  // Reset scroll on plain route changes (no hash involved) — through lenis
+  // when it is active, so returning Home glides like every other nav jump.
   useEffect(() => {
     if (location.hash === "") {
-      window.scrollTo(0, 0);
+      scrollToTop();
     }
   }, [location.pathname, location.hash]);
 

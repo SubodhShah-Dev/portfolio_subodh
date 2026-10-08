@@ -10,7 +10,13 @@ import { Link, useLocation } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUp, Menu, Moon, Search, Sun, X } from "lucide-react";
 
-import { initLenis, scrollToTop, scrollToTarget } from "../../utils/smoothScroll";
+import {
+  initLenis,
+  NAV_ANCHOR_OFFSET,
+  NAV_ANCHOR_TOLERANCE,
+  scrollToTop,
+  scrollToTarget,
+} from "../../utils/smoothScroll";
 import { currentTheme, toggleTheme, type Theme } from "../../utils/theme";
 
 const CommandPalette = lazy(() => import("../public/CommandPalette"));
@@ -138,8 +144,8 @@ export default function PublicShell({
     theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
 
   // --- Scrollspy: the LAST spy section whose top has crossed the sticky
-  // header offset (96px — matches scroll-mt-24 and the lenis anchor scroll)
-  // owns the highlight, so reaching the footer keeps Contact lit instead of
+  // header band (scroll-mt-24's 96px + the settle tolerance shared with
+  // scrollToTarget) owns the highlight, so reaching the footer keeps Contact lit instead of
   // falling back to Home, and the top of the page always falls back to Home.
   // rAF-throttled like the progress bar; state only updates inside the rAF
   // callback (no setState-in-effect). The state records the pathname that
@@ -153,7 +159,7 @@ export default function PublicShell({
     if (spyKey === "") return;
 
     const ids = spyKey.split("|").filter((id) => id !== "");
-    const SPY_OFFSET = 96;
+    const SPY_OFFSET = NAV_ANCHOR_OFFSET + NAV_ANCHOR_TOLERANCE;
     let frame = 0;
 
     const update = (): void => {

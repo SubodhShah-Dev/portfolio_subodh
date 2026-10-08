@@ -214,6 +214,26 @@ describe("PublicShell scrollspy", () => {
     ).toBeNull();
   });
 
+  it("lights a section that landed within the settle tolerance band", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    // 100px sits between the 96px header offset and the offset + settle
+    // tolerance — an anchor flight that re-measured mid-shift lands here,
+    // and the clicked section must still own the highlight.
+    setSectionTops({ about: -100, projects: 100, contact: 900 });
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "Work" }).getAttribute("aria-current"),
+      ).toBe("true");
+    });
+    expect(
+      screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+    ).toBeNull();
+  });
+
   it("keeps Contact lit at the end of the page instead of falling back to Home", async () => {
     renderSpyShell();
     await screen.findByRole("navigation", { name: "Site navigation" });
