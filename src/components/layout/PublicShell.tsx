@@ -10,7 +10,7 @@ import { Link, useLocation } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUp, Menu, Moon, Search, Sun, X } from "lucide-react";
 
-import { initLenis, scrollToTop } from "../../utils/smoothScroll";
+import { initLenis, scrollToTop, scrollToTarget } from "../../utils/smoothScroll";
 import { currentTheme, toggleTheme, type Theme } from "../../utils/theme";
 
 const CommandPalette = lazy(() => import("../public/CommandPalette"));
@@ -137,45 +137,54 @@ export default function PublicShell({
   const themeLabel =
     theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
 
-  // --- Scrollspy: highlight the section link whose section currently owns
-  // the upper part of the viewport. Disabled outside browsers without the API
-  // (tests, very old engines) — the nav simply keeps route highlighting.
-  // The state records the pathname that produced it, so a route change
-  // DERIVES an empty highlight (no setState-in-effect): sections that don't
-  // exist on the new page can never stay aria-current.
+  // --- Scrollspy: the LAST spy section whose top has crossed the sticky
+  // header offset (96px — matches scroll-mt-24 and the lenis anchor scroll)
+  // owns the highlight, so reaching the footer keeps Contact lit instead of
+  // falling back to Home, and the top of the page always falls back to Home.
+  // rAF-throttled like the progress bar; state only updates inside the rAF
+  // callback (no setState-in-effect). The state records the pathname that
+  // produced it, so a route change DERIVES an empty highlight: sections that
+  // don't exist on the new page can never stay aria-current.
   const [spyState, setSpyState] = useState({ pathname: "", id: "" });
   const activeSpyId =
     spyState.pathname === location.pathname ? spyState.id : "";
   const spyKey = links.map((link) => link.spyId ?? "").join("|");
   useEffect(() => {
-    if (spyKey === "" || typeof IntersectionObserver !== "function") return;
+    if (spyKey === "") return;
 
     const ids = spyKey.split("|").filter((id) => id !== "");
-    const visible = new Map<string, boolean>();
-    let lastActive = "";
+    const SPY_OFFSET = 96;
+    let frame = 0;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          visible.set(entry.target.id, entry.isIntersecting);
+    const update = (): void => {
+      frame = 0;
+      let active = "";
+      for (const id of ids) {
+        const element = document.getElementById(id);
+        if (
+          element !== null &&
+          element.getBoundingClientRect().top <= SPY_OFFSET
+        ) {
+          active = id;
         }
-        // Sections stack in DOM order — the first visible one owns the state.
-        const active = ids.find((id) => visible.get(id) === true) ?? "";
-        if (active !== lastActive) {
-          lastActive = active;
-          setSpyState({ pathname: location.pathname, id: active });
-        }
-      },
-      // Top edge aligns with scroll-mt-24 (96px) — the same offset the
-      // lenis anchor scroll uses, so highlight and landing always agree.
-      { rootMargin: "-96px 0px -55% 0px", threshold: 0 },
-    );
-
-    for (const id of ids) {
-      const element = document.getElementById(id);
-      if (element !== null) observer.observe(element);
-    }
-    return () => observer.disconnect();
+      }
+      setSpyState((prev) =>
+        prev.pathname === location.pathname && prev.id === active
+          ? prev
+          : { pathname: location.pathname, id: active },
+      );
+    };
+    const requestUpdate = (): void => {
+      if (frame === 0) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    requestUpdate();
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (frame !== 0) cancelAnimationFrame(frame);
+    };
   }, [spyKey, location.pathname]);
 
   // --- Back-to-top: appears once the visitor is past the fold. Threshold
@@ -254,7 +263,24 @@ export default function PublicShell({
         viewTransition={!isHashLink}
         aria-current={active ? "true" : undefined}
         className={linkClass(active)}
-        onClick={() => setOpenedAtKey(null)}
+        onClick={() => {
+          setOpenedAtKey(null);
+          // Scroll on click too: the layout's hash effect only reacts to a
+          // location change, so re-clicking the section you're already on
+          // would otherwise do nothing. rAF lets the router commit first;
+          // cross-route deep links are covered by the same effect.
+          if (
+            typeof link.to === "object" &&
+            link.to.hash !== undefined &&
+            link.to.hash.length > 1
+          ) {
+            const targetId = link.to.hash.slice(1);
+            requestAnimationFrame(() => {
+              const target = document.getElementById(targetId);
+              if (target !== null) scrollToTarget(target);
+            });
+          }
+        }}
       >
         {link.label}
         {underline(active)}

@@ -1,11 +1,18 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Timestamp } from "firebase/firestore";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import PublicLayout from "../../src/layouts/PublicLayout";
+import * as smoothScroll from "../../src/utils/smoothScroll";
+import type * as SmoothScrollModule from "../../src/utils/smoothScroll";
 import { HIDDEN_FLAGS, makeLayoutData, makeProfile } from "../fixtures/publicContent";
+
+vi.mock("../../src/utils/smoothScroll", async (importOriginal) => {
+  const actual = await importOriginal<typeof SmoothScrollModule>();
+  return { ...actual, scrollToTarget: vi.fn() };
+});
 
 function renderShell() {
   const data = makeLayoutData({
@@ -124,30 +131,15 @@ describe("PublicShell interactions", () => {
 });
 
 describe("PublicShell scrollspy", () => {
-  let latestCallback: IntersectionObserverCallback | null = null;
-
   beforeEach(() => {
     document.documentElement.classList.remove("dark");
     window.localStorage.clear();
-    latestCallback = null;
-    vi.stubGlobal(
-      "IntersectionObserver",
-      class {
-        constructor(callback: IntersectionObserverCallback) {
-          latestCallback = callback;
-        }
-        observe(): void {
-          // Elements are reported manually through the captured callback.
-        }
-        disconnect(): void {
-          // No-op — jsdom has no observer to tear down.
-        }
-      },
-    );
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
+    document.documentElement.classList.remove("dark");
+    window.localStorage.clear();
   });
 
   function renderSpyShell() {
@@ -183,30 +175,88 @@ describe("PublicShell scrollspy", () => {
     return router;
   }
 
-  const fireIntersection = (id: string, isIntersecting = true): void => {
-    expect(latestCallback).not.toBeNull();
-    act(() => {
-      latestCallback?.(
-        [{ target: { id }, isIntersecting }] as unknown as IntersectionObserverEntry[],
-        {} as IntersectionObserver,
-      );
-    });
-  };
+  /** jsdom has no layout — pin each section's top edge in viewport coords. */
+  function setSectionTops(tops: Record<string, number>): void {
+    for (const [id, top] of Object.entries(tops)) {
+      const element = document.getElementById(id);
+      expect(element).not.toBeNull();
+      vi.spyOn(element, "getBoundingClientRect").mockReturnValue({
+        top,
+        bottom: top + 400,
+        left: 0,
+        right: 1200,
+        width: 1200,
+        height: 400,
+        x: 0,
+        y: top,
+        toJSON: () => ({}),
+      } as DOMRect);
+    }
+  }
 
-  it("highlights Work while the homepage projects section is in view", async () => {
+  it("highlights Work while the projects section crosses the header offset", async () => {
     renderSpyShell();
     await screen.findByRole("navigation", { name: "Site navigation" });
 
-    const work = screen.getByRole("link", { name: "Work" });
-    expect(work.getAttribute("aria-current")).toBeNull();
-
-    fireIntersection("projects");
+    setSectionTops({ about: -400, projects: -100, contact: 800 });
+    fireEvent.scroll(window);
 
     await waitFor(() => {
-      expect(work.getAttribute("aria-current")).toBe("true");
+      expect(
+        screen.getByRole("link", { name: "Work" }).getAttribute("aria-current"),
+      ).toBe("true");
     });
     expect(
       screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+    ).toBeNull();
+    expect(
+      screen.getByRole("link", { name: "Contact" }).getAttribute("aria-current"),
+    ).toBeNull();
+  });
+
+  it("keeps Contact lit at the end of the page instead of falling back to Home", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    setSectionTops({ about: -3000, projects: -2400, contact: -1800 });
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("link", { name: "Contact" })
+          .getAttribute("aria-current"),
+      ).toBe("true");
+    });
+    expect(
+      screen.getByRole("link", { name: "Home" }).getAttribute("aria-current"),
+    ).toBeNull();
+  });
+
+  it("falls back to Home once no section owns the header offset", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    setSectionTops({ about: -3000, projects: -2400, contact: -1800 });
+    fireEvent.scroll(window);
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("link", { name: "Contact" })
+          .getAttribute("aria-current"),
+      ).toBe("true");
+    });
+
+    setSectionTops({ about: 900, projects: 1500, contact: 2100 });
+    fireEvent.scroll(window);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "Home" }).getAttribute("aria-current"),
+      ).toBe("true");
+    });
+    expect(
+      screen.getByRole("link", { name: "Contact" }).getAttribute("aria-current"),
     ).toBeNull();
   });
 
@@ -214,7 +264,8 @@ describe("PublicShell scrollspy", () => {
     renderSpyShell();
     await screen.findByRole("navigation", { name: "Site navigation" });
 
-    fireIntersection("contact");
+    setSectionTops({ about: -900, projects: -500, contact: -100 });
+    fireEvent.scroll(window);
     await waitFor(() => {
       expect(
         screen
@@ -235,6 +286,24 @@ describe("PublicShell scrollspy", () => {
           .getByRole("link", { name: "Contact" })
           .getAttribute("aria-current"),
       ).toBeNull();
+    });
+  });
+
+  it("scrolls to a section when its link is re-clicked on the same hash", async () => {
+    renderSpyShell();
+    const contact = await screen.findByRole("link", { name: "Contact" });
+
+    fireEvent.click(contact);
+    await waitFor(() => {
+      expect(smoothScroll.scrollToTarget).toHaveBeenCalled();
+    });
+
+    // Same hash → the layout's location.hash effect does not re-run; only
+    // the click handler can scroll again.
+    vi.clearAllMocks();
+    fireEvent.click(screen.getByRole("link", { name: "Contact" }));
+    await waitFor(() => {
+      expect(smoothScroll.scrollToTarget).toHaveBeenCalled();
     });
   });
 });
