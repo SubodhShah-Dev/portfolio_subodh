@@ -362,6 +362,35 @@
     margin-inline: calc(50% - 50vw);
   }
 
+  /* Light-palette island: tinted bands (lime/pink/sky) and the lime contact
+     panel have FIXED light fills in both themes, so every semantic token
+     inside the subtree is pinned to its light value — text, cards, borders,
+     and shadows stay dark-on-light even under :root.dark. */
+  .public-scope .tone-band {
+    --color-canvas: #fafaf7;
+    --color-raised: #ffffff;
+    --color-ink: #141414;
+    --color-muted: #55555f;
+    --color-faint: #8a8a93;
+    --color-hairline: #1414141f;
+    --color-signal: #3d34f5;
+    --color-signal-deep: #2a21d9;
+    --color-signal-soft: #a9a4ff;
+    --color-on-signal: #ffffff;
+    --color-band: #3d34f5;
+    --color-band-ink: #fafaf7;
+    --color-band-muted: #dfe0ff;
+    --color-ok: #157a4b;
+    --color-ok-tint: #e7f4ec;
+    --color-err: #c0271a;
+    --color-err-tint: #fbebe9;
+    --color-error: #c0271a;
+    --color-error-tint: #fbebe9;
+    --color-success: #157a4b;
+    --color-success-tint: #e7f4ec;
+    --grid-line: rgb(20 20 20 / 0.05);
+  }
+
   /* --- Signal, scoped to the public shell ---------------------------------
      Everything below requires a .public-scope ancestor (PublicShell root,
      paused screen, route error boundary). Utilities still win over all of
@@ -502,6 +531,27 @@
   .public-scope .band .cta-primary,
   .public-scope .bg-signal .cta-primary {
     border-color: var(--color-on-accent);
+  }
+
+  /* Contact form submit sits ON the lime panel — invert to a white pill
+     (sample), flooding ink on hover. */
+  .public-scope .lime-panel .btn-primary {
+    background-color: var(--color-raised);
+    border-color: var(--color-on-accent);
+    color: var(--color-on-accent);
+    box-shadow: var(--shadow-pop);
+  }
+
+  .public-scope .lime-panel .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-ink);
+    color: var(--color-canvas);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop-lg);
+  }
+
+  .public-scope .lime-panel .btn-primary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
   }
 }
 

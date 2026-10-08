@@ -43,7 +43,9 @@ const FOCUSABLE_SELECTOR =
 function routeLinkClass(active: boolean): string {
   return [
     "relative rounded-full px-3.5 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
-    active ? "text-ink" : "text-muted hover:text-ink",
+    // on-accent is fixed navy — the lime pill never flips, so its text must
+    // not either (text-ink would go near-white on lime in dark mode).
+    active ? "text-on-accent" : "text-muted hover:text-ink",
   ].join(" ");
 }
 

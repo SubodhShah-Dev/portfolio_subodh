@@ -13,13 +13,10 @@ export function CertificationsSection({
   index,
 }: CertificationsSectionProps) {
   return (
-    <Section id="certifications" title="Certifications" index={index}>
-      <ul className="grid gap-4 sm:grid-cols-2">
+    <Section id="certifications" title="Certifications" index={index} tone="pink">
+      <ul className="grid gap-5 sm:grid-cols-2">
         {certifications.map((entry) => (
-          <li
-            key={entry.id}
-            className="border border-hairline bg-raised p-5 transition-colors hover:border-signal"
-          >
+          <li key={entry.id} className="pop-card p-5">
             <h3 className="text-sm font-semibold text-ink">{entry.title}</h3>
             <p className="mt-1 text-sm text-signal-deep">{entry.issuer}</p>
             {entry.issueDate !== undefined && entry.issueDate.trim() !== "" && (

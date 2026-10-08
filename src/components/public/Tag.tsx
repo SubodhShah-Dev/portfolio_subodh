@@ -13,10 +13,8 @@ interface TagProps {
 export function Tag({ accent = false, children }: TagProps) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center border px-2 py-0.5 font-meta text-[0.625rem] tracking-[0.12em] uppercase ${
-        accent
-          ? "border-signal bg-signal text-on-signal"
-          : "border-hairline text-muted"
+      className={`inline-flex shrink-0 items-center rounded-full border-2 border-ink px-2.5 py-0.5 font-meta text-[0.625rem] tracking-[0.12em] uppercase ${
+        accent ? "bg-lime text-on-accent" : "text-ink"
       }`}
     >
       {children}

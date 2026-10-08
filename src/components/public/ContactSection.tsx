@@ -69,9 +69,9 @@ export function ContactSection({
   return (
     <Section id="contact" title={title} description={description} index={index}>
       <div className="grid gap-10 lg:grid-cols-2">
-        <ul className="space-y-5 font-meta text-sm">
+        <ul className="space-y-4 font-meta text-sm">
           {email !== undefined && (
-            <li className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
+            <li className="pop-card flex flex-wrap items-baseline gap-x-3 gap-y-2 px-4 py-3.5">
               <span className="text-muted">Email</span>
               <a
                 href={`mailto:${email}`}
@@ -82,14 +82,14 @@ export function ContactSection({
               <button
                 type="button"
                 onClick={copyEmail}
-                className="cursor-pointer border border-hairline px-2 py-0.5 font-meta text-[11px] tracking-[0.1em] text-muted uppercase transition-colors hover:border-signal hover:text-signal"
+                className="ml-auto cursor-pointer rounded-full border-2 border-ink px-2.5 py-0.5 font-meta text-[11px] tracking-[0.1em] text-ink uppercase transition-colors hover:bg-ink hover:text-canvas"
               >
                 {copied ? "Copied" : "Copy"}
               </button>
             </li>
           )}
           {phone !== undefined && (
-            <li className="flex items-baseline gap-3">
+            <li className="pop-card flex items-baseline gap-3 px-4 py-3.5">
               <span className="text-muted">Phone</span>
               <a
                 href={`tel:${phone.replace(/\s+/g, "")}`}
@@ -100,13 +100,15 @@ export function ContactSection({
             </li>
           )}
           {location !== undefined && (
-            <li className="flex items-baseline gap-3">
+            <li className="pop-card flex items-baseline gap-3 px-4 py-3.5">
               <span className="text-muted">Based in</span>
               <span className="text-ink">{location}</span>
             </li>
           )}
         </ul>
-        <ContactForm />
+        <div className="lime-panel tone-band pop-card bg-lime p-6 sm:p-8">
+          <ContactForm />
+        </div>
       </div>
 
       {copied && (
@@ -115,7 +117,7 @@ export function ContactSection({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-6 left-1/2 z-90 -translate-x-1/2 border-2 border-ink bg-ink px-4 py-2.5 font-meta text-xs tracking-[0.1em] text-canvas uppercase shadow-[5px_5px_0_0_var(--color-signal)]"
+          className="fixed bottom-6 left-1/2 z-90 -translate-x-1/2 border-2 border-ink bg-ink px-4 py-2.5 font-meta text-xs tracking-[0.1em] text-canvas uppercase shadow-[5px_5px_0_0_var(--color-lime)]"
         >
           Email copied
         </motion.div>

@@ -36,35 +36,34 @@ export default function ProjectDetails() {
         ← Back to projects
       </Link>
 
-      <header className="space-y-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-ink">
-            {project.title}
-          </h1>
-          {project.featured && <Tag accent>Featured</Tag>}
-          {project.date !== undefined && project.date.trim() !== "" && (
-            <span className="font-meta text-sm text-muted tabular-nums">
-              {project.date}
-            </span>
+      <header className="bleed border-y-2 border-ink bg-signal py-10 text-on-signal lg:py-14">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-on-signal">
+              {project.title}
+            </h1>
+            {project.featured && <Tag accent>Featured</Tag>}
+            {project.date !== undefined && project.date.trim() !== "" && (
+              <span className="font-meta text-sm text-on-signal/80 tabular-nums">
+                {project.date}
+              </span>
+            )}
+          </div>
+          {project.subtitle.trim() !== "" && (
+            <p className="max-w-3xl text-xl text-pretty leading-relaxed text-on-signal/90">
+              {project.subtitle}
+            </p>
+          )}
+          {project.techStack.length > 0 && (
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {project.techStack.map((technology) => (
+                <li key={technology} className="chip">
+                  {technology}
+                </li>
+              ))}
+            </ul>
           )}
         </div>
-        {project.subtitle.trim() !== "" && (
-          <p className="max-w-3xl text-xl text-pretty leading-relaxed text-muted">
-            {project.subtitle}
-          </p>
-        )}
-        {project.techStack.length > 0 && (
-          <ul className="flex flex-wrap gap-2">
-            {project.techStack.map((technology) => (
-              <li
-                key={technology}
-                className="border border-hairline px-3 py-1 font-meta text-xs text-muted"
-              >
-                {technology}
-              </li>
-            ))}
-          </ul>
-        )}
       </header>
 
       {hasThumb && (
@@ -72,20 +71,20 @@ export default function ProjectDetails() {
           src={project.thumbnailUrl}
           alt={`Screenshot of ${project.title}`}
           loading="lazy"
-          className="w-full border border-hairline"
+          className="w-full rounded-chunk border-2 border-ink shadow-pop"
         />
       )}
 
       {gallery.length > 0 && (
         <section aria-label="Gallery">
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             {gallery.map((url, position) => (
               <li key={`${url}-${position}`}>
                 <button
                   type="button"
                   onClick={() => setLightboxIndex(position)}
                   aria-label={`Open gallery image ${position + 1}`}
-                  className="group block aspect-[16/10] w-full cursor-pointer overflow-hidden border border-hairline bg-canvas"
+                  className="group block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop-sm transition-transform duration-150 hover:-translate-y-0.5"
                 >
                   <img
                     src={url}

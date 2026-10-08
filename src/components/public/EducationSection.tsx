@@ -10,7 +10,7 @@ interface EducationSectionProps {
 /** Education history as hairline rows — degrees rendered only from stored fields (§16). */
 export function EducationSection({ education, index }: EducationSectionProps) {
   return (
-    <Section id="education" title="Education" index={index}>
+    <Section id="education" title="Education" index={index} tone="sky">
       <ul>
         {education.map((entry) => (
           <li

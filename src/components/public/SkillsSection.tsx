@@ -32,7 +32,7 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
   const groups = groupByCategory(skills);
 
   return (
-    <Section id="skills" title="Skills" index={index}>
+    <Section id="skills" title="Skills" index={index} tone="lime">
       <div className="space-y-8">
         {groups.map((group) => (
           <div key={group.category || "all"}>
@@ -42,14 +42,16 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
               </h3>
             )}
             <ul
-              className={`flex flex-wrap gap-2.5 ${
+              className={`flex flex-wrap gap-3 ${
                 group.category.trim() !== "" ? "mt-3.5" : ""
               }`}
             >
-              {group.items.map((skill) => (
+              {group.items.map((skill, position) => (
                 <li
                   key={skill.id}
-                  className="border border-hairline bg-raised px-3.5 py-1.5 text-sm text-ink transition-colors hover:border-signal hover:text-signal"
+                  className={`chip cursor-default transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-pop-sm ${
+                    position % 2 === 0 ? "-rotate-1" : "rotate-1"
+                  }`}
                 >
                   {skill.name}
                 </li>

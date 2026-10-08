@@ -27,7 +27,7 @@ export function ProjectCard({
   return (
     <Link
       to={`/projects/${project.id}`}
-      className="group block overflow-hidden border border-hairline bg-raised transition-all duration-200 hover:border-signal hover:shadow-[6px_6px_0_0_var(--color-signal)]"
+      className="group pop-card pop-card-link block overflow-hidden"
     >
       {hasThumb && (
         <div

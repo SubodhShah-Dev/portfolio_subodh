@@ -53,10 +53,10 @@ export default function Projects() {
             type="button"
             aria-pressed={selectedTech === FILTER_ALL}
             onClick={() => setSelectedTech(FILTER_ALL)}
-            className={`cursor-pointer border px-3.5 py-1.5 font-meta text-xs transition-colors ${
+            className={`cursor-pointer rounded-full border-2 border-ink px-3.5 py-1.5 font-meta text-xs transition-colors ${
               selectedTech === FILTER_ALL
-                ? "border-signal bg-signal text-on-signal"
-                : "border-hairline bg-raised text-muted hover:border-ink hover:text-ink"
+                ? "tone-band bg-ink text-lime"
+                : "bg-raised text-ink hover:bg-lime hover:text-on-accent"
             }`}
           >
             All
@@ -67,10 +67,10 @@ export default function Projects() {
               type="button"
               aria-pressed={selectedTech === technology}
               onClick={() => setSelectedTech(technology)}
-              className={`cursor-pointer border px-3.5 py-1.5 font-meta text-xs transition-colors ${
+              className={`cursor-pointer rounded-full border-2 border-ink px-3.5 py-1.5 font-meta text-xs transition-colors ${
                 selectedTech === technology
-                  ? "border-signal bg-signal text-on-signal"
-                  : "border-hairline bg-raised text-muted hover:border-ink hover:text-ink"
+                  ? "tone-band bg-ink text-lime"
+                  : "bg-raised text-ink hover:bg-lime hover:text-on-accent"
               }`}
             >
               {technology}
