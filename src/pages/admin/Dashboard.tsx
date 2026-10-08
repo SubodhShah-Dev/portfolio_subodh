@@ -20,7 +20,7 @@ import { getResumes } from "../../services/resumeService";
 import { getAllSkills } from "../../services/skillService";
 import { getAllSocialLinks } from "../../services/socialLinkService";
 import { getSiteSettings } from "../../services/settingsService";
-import { seedDemoData, SEED_COUNTS } from "../../services/seedService";
+import { seedDemoData, SEED_COUNTS, type SeedResult } from "../../services/seedService";
 import type { AppError } from "../../types/common";
 import type { PortfolioProfile } from "../../types/profile";
 import type { Resume } from "../../types/resume";
@@ -90,7 +90,8 @@ export default function Dashboard() {
   const dashboard = useAsync<DashboardData>(loadDashboard, []);
   const [seedConfirmOpen, setSeedConfirmOpen] = useState(false);
   const [seeded, setSeeded] = useState(false);
-  const seed = useMutation<void, void>(() => seedDemoData());
+  const [seedSummary, setSeedSummary] = useState<SeedResult | null>(null);
+  const seed = useMutation<void, SeedResult>(() => seedDemoData());
 
   const openSeedConfirm = (): void => {
     seed.reset();
@@ -102,6 +103,7 @@ export default function Dashboard() {
     setSeedConfirmOpen(false);
     if (result.ok) {
       setSeeded(true);
+      setSeedSummary(result.data);
       dashboard.reload();
     }
   };
@@ -135,7 +137,13 @@ export default function Dashboard() {
             data.certifications === 0 &&
             data.projects === 0 &&
             data.socialLinks === 0;
-          const canSeed = isEmptyPortfolio && data.settings === null;
+          // The seeder fills whatever sample entries are still missing, so it
+          // stays available as long as at least one seed document is absent.
+          const anyFillableMissing =
+            data.profile === null ||
+            data.settings === null ||
+            data.skills === 0 ||
+            data.projects === 0;
 
           const cards: SectionCard[] = [
             { to: "/admin/profile", title: "Profile", count: data.profile === null ? 0 : 1, unit: "entry" },
@@ -152,16 +160,19 @@ export default function Dashboard() {
             <div className="space-y-6">
               {seeded && (
                 <Alert tone="success">
-                  Sample content loaded — open the public site to see it. Every
-                  entry is normal content: edit it, publish drafts, or delete
-                  what you don't need.
+                  Sample content loaded
+                  {seedSummary !== null
+                    ? ` — ${seedSummary.filled.length} added, ${seedSummary.skipped.length} already in place`
+                    : ""}
+                  . Open the public site to see it. Every entry is normal content:
+                  edit it, publish drafts, or delete what you don't need.
                 </Alert>
               )}
               {seed.error !== null && (
                 <Alert tone="error">{seed.error.message}</Alert>
               )}
 
-              {canSeed && (
+              {isEmptyPortfolio && (
                 <EmptyState
                   title="Your portfolio has no content yet"
                   description="Start with your profile, or load a ready-made sample you can edit and replace as you go."
@@ -260,6 +271,13 @@ export default function Dashboard() {
                         View public site
                       </NavLink>
                     </li>
+                    {anyFillableMissing && !isEmptyPortfolio && (
+                      <li className="pt-2">
+                        <Button variant="secondary" onClick={openSeedConfirm}>
+                          Add missing sample content
+                        </Button>
+                      </li>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -274,7 +292,7 @@ export default function Dashboard() {
               <ConfirmDialog
                 open={seedConfirmOpen}
                 title="Load sample content?"
-                description={`Creates a sample profile, ${SEED_COUNTS.skills} skills, ${SEED_COUNTS.projects} projects, and site settings — published immediately. Experience, education, and certifications stay empty for your own entries. Everything can be edited or deleted from the admin.`}
+                description={`Adds whatever the sample is still missing — a profile, ${SEED_COUNTS.skills} skills, ${SEED_COUNTS.projects} projects, and site settings — published immediately. Existing content is never overwritten. Experience, education, and certifications stay empty for your own entries. Everything can be edited or deleted from the admin.`}
                 confirmLabel="Load sample content"
                 busy={seed.status === "submitting"}
                 onConfirm={() => void confirmSeed()}
