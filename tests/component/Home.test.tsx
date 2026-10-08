@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import Home from "../../src/pages/public/Home";
 import {
@@ -125,6 +125,55 @@ describe("Home", () => {
     expect(
       screen.getByRole("link", { name: "View all projects" }),
     ).toBeInTheDocument();
+  });
+
+  it("switches the desktop showcase to a static grid with a featured bento cell", async () => {
+    // Desktop breakpoint true, everything else (reduced motion, color
+    // scheme) keeps the setup stub's false.
+    vi.stubGlobal(
+      "matchMedia",
+      (query: string): MediaQueryList => ({
+        matches: query.includes("min-width: 1024px"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    );
+    try {
+      renderHome(
+        makeLayoutData({
+          profile: makeProfile(),
+          flags: { ...HIDDEN_FLAGS, projects: true },
+          projects: [
+            makeProject({ title: "Alpha app", featured: true }),
+            makeProject({ id: "project-2", title: "Beta service" }),
+          ],
+        }),
+      );
+
+      expect(
+        await screen.findByRole("link", { name: /Alpha app/ }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("region", { name: "Projects showcase" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Next slide" }),
+      ).not.toBeInTheDocument();
+      expect(document.querySelector("[data-featured-hero]")).not.toBeNull();
+      expect(
+        screen.getByRole("link", { name: /Beta service/ }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "View all projects" }),
+      ).toBeInTheDocument();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("respects disabled sections even when content exists", async () => {
