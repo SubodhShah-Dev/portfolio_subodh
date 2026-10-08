@@ -51,3 +51,22 @@ if (typeof window.ResizeObserver !== "function") {
     value: ResizeObserverStub,
   });
 }
+
+// embla (homepage showcase) tracks slides-in-view with IntersectionObserver.
+if (typeof window.IntersectionObserver !== "function") {
+  class IntersectionObserverStub {
+    root = null;
+    rootMargin = "";
+    thresholds: number[] = [];
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return [];
+    }
+  }
+  Object.defineProperty(window, "IntersectionObserver", {
+    writable: true,
+    value: IntersectionObserverStub,
+  });
+}

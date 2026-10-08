@@ -21,10 +21,10 @@ Two coordinated visual systems in one stylesheet:
   offset shadows (`shadow-pop`) on chunky-radius cards and press-down pill
   buttons (black primary / white outlined, both flooding cobalt on hover).
   Sections ride hairline dividers with arrow-circle badges; the hero is
-  paper-on-paper with a cobalt drawn rule, a `</>` glyph standing in for the
-  name's first *o*, and a bobbing terminal-card decor; the footer is a
-  full-bleed black band with `signal-soft` accents and a swipeable stacked
-  photo deck in About. A light/dark toggle
+  paper-on-paper with a cobalt drawn rule, the name's first *o* rendered as
+  a circular `</>` icon, social pills under the CTAs, and a bobbing
+  terminal-card decor; the footer is a full-bleed black band with
+  `signal-soft` accents and a swipeable stacked photo deck in About. A light/dark toggle
   (localStorage → `prefers-color-scheme` → light) flips one class — white
   pills keep fixed navy text via `--color-on-accent`, and borders/shadows
   follow `--color-ink` so the neobrutalist frame turns light on the dark
@@ -36,8 +36,9 @@ Two coordinated visual systems in one stylesheet:
 
 Public-site touches: a scrollspy nav whose order mirrors the homepage scroll
 chain (Work lights up for both the `/projects` route and the homepage
-projects section), full-width split project cards (image left / content
-right), ⌘K command palette (lazy `cmdk`), Lenis smooth scrolling,
+projects section, and the last section stays lit through the footer), an embla
+carousel showcase of featured projects on the homepage while `/projects` keeps
+its two-column grid, ⌘K command palette (lazy `cmdk`), Lenis smooth scrolling,
 route view transitions, a keyboard-navigable project gallery lightbox,
 confetti on contact send, copy-email toast, and a theme toggle in the header.
 The About photo deck is edited as one-URL-per-line in Admin → Profile

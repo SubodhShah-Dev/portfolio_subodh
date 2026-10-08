@@ -95,6 +95,38 @@ describe("Home", () => {
     expect(github).toHaveAttribute("rel", "noopener noreferrer");
   });
 
+  it("presents homepage projects as a carousel showcase", async () => {
+    renderHome(
+      makeLayoutData({
+        profile: makeProfile(),
+        flags: { ...HIDDEN_FLAGS, projects: true },
+        projects: [
+          makeProject({ title: "Alpha app" }),
+          makeProject({ id: "project-2", title: "Beta service" }),
+        ],
+      }),
+    );
+
+    const region = await screen.findByRole("region", {
+      name: "Projects showcase",
+    });
+    expect(region).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Previous slide" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Next slide" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Go to slide 1" }),
+    ).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("link", { name: /Alpha app/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Beta service/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "View all projects" }),
+    ).toBeInTheDocument();
+  });
+
   it("respects disabled sections even when content exists", async () => {
     renderHome(
       makeLayoutData({

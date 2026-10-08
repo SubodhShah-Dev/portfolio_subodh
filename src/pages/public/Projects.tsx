@@ -86,10 +86,10 @@ export default function Projects() {
             description="Published projects will appear here."
           />
         ) : (
-          <ul className="grid gap-6">
+          <ul className="grid gap-5 sm:grid-cols-2">
             {visible.map((project) => (
               <li key={project.id}>
-                <ProjectCard project={project} layout="split" />
+                <ProjectCard project={project} />
               </li>
             ))}
           </ul>
