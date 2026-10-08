@@ -4,7 +4,7 @@ import SidebarShell from "../components/layout/SidebarShell";
 import { useAuth } from "../hooks/useAuth";
 
 /**
- * Admin CMS layout (§61) — flat grouped sidebar shared with the public site.
+ * Admin CMS layout (§61) — flat grouped sidebar, Ink Console (Signal) skin.
  *
  * Static navigation structure (system chrome, not portfolio content).
  * Rendered only inside ProtectedRoute, so the user is always a verified admin.
@@ -34,16 +34,16 @@ const websiteLinks: readonly NavLinkItem[] = [
 
 function itemClass(isActive: boolean): string {
   return [
-    "mb-1 block rounded-lg border-l-2 px-3 py-2 text-sm transition-all duration-200",
+    "mb-1 block border-l-2 px-3 py-2 font-meta text-[13px] tracking-[0.04em] transition-all duration-200",
     isActive
-      ? "border-emerald-400 bg-slate-800/60 text-emerald-400"
-      : "border-transparent text-slate-400 hover:bg-slate-800/40 hover:text-slate-200",
+      ? "border-emerald-400 bg-emerald-500/10 text-emerald-400"
+      : "border-transparent text-slate-400 hover:bg-slate-800/50 hover:text-slate-200",
   ].join(" ");
 }
 
 function GroupLabel({ children }: { children: string }) {
   return (
-    <p className="mt-5 mb-2 px-3 text-[11px] font-medium tracking-widest text-slate-600 uppercase">
+    <p className="mt-5 mb-2 px-3 font-meta text-[10px] font-medium tracking-[0.18em] text-slate-600 uppercase">
       {children}
     </p>
   );
@@ -64,9 +64,11 @@ export default function AdminLayout() {
 
   const brand = (
     <div>
-      <p className="text-sm font-semibold text-slate-100">Portfolio CMS</p>
+      <p className="font-display text-[15px] font-bold tracking-[-0.01em] text-slate-100">
+        Portfolio CMS
+      </p>
       {user?.email !== undefined && (
-        <p className="mt-0.5 truncate text-xs text-slate-500">{user.email}</p>
+        <p className="mt-0.5 truncate font-meta text-xs text-slate-500">{user.email}</p>
       )}
     </div>
   );
@@ -97,7 +99,7 @@ export default function AdminLayout() {
         onClick={() => {
           void handleSignOut();
         }}
-        className="mb-1 block w-full cursor-pointer rounded-lg border-l-2 border-transparent px-3 py-2 text-left text-sm text-slate-400 transition-all duration-200 hover:bg-slate-800/40 hover:text-slate-200"
+        className="mb-1 block w-full cursor-pointer border-l-2 border-transparent px-3 py-2 text-left font-meta text-[13px] tracking-[0.04em] text-slate-400 transition-all duration-200 hover:bg-slate-800/50 hover:text-slate-200"
       >
         Logout
       </button>

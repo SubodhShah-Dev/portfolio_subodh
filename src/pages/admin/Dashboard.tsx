@@ -187,9 +187,9 @@ export default function Dashboard() {
                     className="card block p-5 transition-colors hover:border-emerald-500/40"
                   >
                     <p className="text-sm text-slate-400">{card.title}</p>
-                    <p className="mt-2 text-2xl font-semibold text-slate-100">
+                    <p className="mt-2 font-display text-3xl font-bold tracking-[-0.02em] text-slate-100">
                       {card.count}
-                      <span className="ml-1.5 text-sm font-normal text-slate-500">
+                      <span className="ml-1.5 font-body text-sm font-normal text-slate-500">
                         {card.unit}
                       </span>
                     </p>

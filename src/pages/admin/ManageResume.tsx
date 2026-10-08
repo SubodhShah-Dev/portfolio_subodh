@@ -120,7 +120,7 @@ export default function ManageResume() {
                 id="resume-file"
                 type="file"
                 accept="application/pdf"
-                className="block w-full cursor-pointer text-sm text-slate-400 file:mr-3 file:cursor-pointer file:rounded-lg file:border file:border-slate-700 file:bg-slate-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-300 hover:file:border-emerald-500/50"
+                className="block w-full cursor-pointer text-sm text-slate-400 file:mr-3 file:cursor-pointer file:border file:border-slate-700 file:bg-slate-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-300 hover:file:border-emerald-500/50"
                 onChange={(event) => onPickFile(event.target.files?.[0] ?? null)}
               />
             </FormField>

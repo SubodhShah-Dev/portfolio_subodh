@@ -1,3 +1,5 @@
+import { ArrowUpRight } from "lucide-react";
+
 import type { SocialLink } from "../../types/socialLink";
 
 interface SocialLinksListProps {
@@ -26,14 +28,10 @@ export function SocialLinksList({ links }: SocialLinksListProps) {
               <span className="underline decoration-signal-soft decoration-1 underline-offset-4 group-hover:decoration-2">
                 {label}
               </span>
-              <svg
+              <ArrowUpRight
                 aria-hidden="true"
-                viewBox="0 0 20 20"
-                fill="currentColor"
                 className="size-3 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-              >
-                <path d="M12.293 3.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1 0 1.414l-7 7a1 1 0 0 1-1.414-1.414L14.586 9H4a1 1 0 1 1 0-2h10.586l-2.293-2.293a1 1 0 0 1 0-1.414Z" />
-              </svg>
+              />
             </a>
           </li>
         );

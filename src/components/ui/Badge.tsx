@@ -18,11 +18,11 @@ interface BadgeProps {
   children: ReactNode;
 }
 
-/** Small pill for statuses, counts, and categories (§56). */
+/** Small sharp-cornered tag for statuses, counts, and categories (§56). */
 export function Badge({ tone = "slate", className = "", children }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${TONES[tone]} ${className}`}
+      className={`inline-flex items-center border px-2.5 py-0.5 text-xs font-medium ${TONES[tone]} ${className}`}
     >
       {children}
     </span>

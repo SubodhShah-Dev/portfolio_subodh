@@ -15,16 +15,18 @@
       Applied only under `.public-scope` (public shell root, paused screen,
       error boundary) — the admin never carries that class.
 
-   2. Carbon Dark — the ADMIN. Canvas bg-slate-950 · cards bg-slate-900 ·
-      accent text-emerald-400 · system font stack. The shared primitives
-      below (.card, .btn-*, .input) are byte-stable and must stay so.
+   2. Ink Console — the ADMIN. Always dark: slate/emerald/sky/red utility
+      names are kept (they are used exclusively by admin surfaces) but their
+      VALUES are re-pointed in @theme to the Signal ink system — near-black
+      canvas, raised panels, ultramarine accent, Bricolage headings. Shared
+      primitives below (.card, .btn-*, .input) are sharp-cornered Signal.
 
-   3. Admin never reads the Signal tokens; Signal surfaces never read slate
-      utilities. Both stylesheets coexist without leaking.
+   3. Admin never reads the Signal semantic tokens; public surfaces never
+      read slate utilities. Both systems coexist without leaking.
 --------------------------------------------------------------------------- */
 
 @theme {
-  /* Admin stacks — untouched. */
+  /* System stacks — fallbacks for the bare font-sans/font-mono utilities. */
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
@@ -65,6 +67,32 @@
   --color-error-tint: #fbebe9;
   --color-success: #157a4b;
   --color-success-tint: #e7f4ec;
+
+  /* --- ADMIN palette remap (Ink Console) ---------------------------------
+     slate/emerald/sky/red utility names appear ONLY on admin surfaces
+     (grep-verified: the only "slate" hits outside admin are the substring
+     in "translate-x"). Their values are re-pointed to the Signal ink
+     system so the whole CMS redesigns without touching 140+ call sites.
+     Admin is always dark, so accent values are the dark-mode signal. */
+  --color-slate-950: #0f0f13; /* canvas */
+  --color-slate-900: #17171d; /* cards, inputs, buttons */
+  --color-slate-800: #26262f; /* borders, skeleton-era fills */
+  --color-slate-700: #35353f; /* stronger borders */
+  --color-slate-600: #7e7e89; /* group labels — 4.7:1 on canvas */
+  --color-slate-500: #8a8a93; /* meta text — 5.4:1 */
+  --color-slate-400: #a5a4b0; /* nav/meta text — 8.0:1 */
+  --color-slate-300: #c9c8d2; /* labels */
+  --color-slate-200: #e6e5ec; /* hover text */
+  --color-slate-100: #f2f1ed; /* headings */
+  --color-emerald-500: #8b85ff; /* accent fill — signal on ink (6.3:1 w/ slate-950 text) */
+  --color-emerald-400: #a5a0ff; /* accent text/hover — 8.6:1 on canvas */
+  --color-emerald-300: #b9b5ff; /* accent hover text */
+  --color-sky-500: #8b85ff; /* info badges → signal family */
+  --color-sky-400: #a5a0ff;
+  --color-sky-300: #b9b5ff;
+  --color-red-500: #ff6f61; /* error */
+  --color-red-400: #ff8a80; /* error text — 7.4:1 on slate-900 */
+  --color-red-300: #ffaba4;
 
   /* One motion language. */
   --ease-signal: cubic-bezier(0.16, 1, 0.3, 1);
@@ -146,20 +174,20 @@
     animation-timing-function: var(--ease-signal);
   }
 
-  /* Body: Signal canvas by default; admin surfaces self-paint bg-slate-950
-     and most admin text sets its own color — keep the historic slate-400
-     default so nothing in the admin shifts. The public shell sets
-     explicit ink colors on its root. */
+  /* Body: Signal canvas by default; admin surfaces self-paint bg-slate-950.
+     The remapped slate-400 default reads on the admin ink canvas; the public
+     shell sets explicit ink colors on its root. Body copy is Instrument Sans
+     everywhere (admin headings fall back to Bricolage via the h1–h6 rule). */
   body {
     background-color: var(--color-canvas);
     color: var(--color-slate-400);
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Carbon Dark headings (admin). The .public-scope rule below re-typesets
-     public headings. */
+  /* Admin headings — Bricolage display face (the .public-scope rule below
+     re-typesets public headings to the same values). */
   h1,
   h2,
   h3,
@@ -167,8 +195,9 @@
   h5,
   h6 {
     color: var(--color-slate-100);
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 
   ::selection {
@@ -184,32 +213,32 @@
 }
 
 @layer components {
-  /* --- Carbon Dark primitives (admin) — byte-stable ------------------------ */
+  /* --- Admin primitives (Ink Console) — sharp Signal corners --------------- */
 
   .card {
-    @apply rounded-xl border border-slate-800 bg-slate-900;
+    @apply border border-slate-800 bg-slate-900;
   }
 
   .btn-primary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-500 px-4 py-2
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-emerald-500 px-4 py-2
       text-sm font-medium text-slate-950 transition-all duration-300 hover:bg-emerald-400
       disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-secondary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-700
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-slate-700
       bg-slate-900 px-4 py-2 text-sm font-medium text-slate-300 transition-all duration-300
       hover:border-emerald-500/50 hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-danger {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-500/30
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-red-500/30
       bg-slate-900 px-4 py-2 text-sm font-medium text-red-400 transition-all duration-300
       hover:border-red-500/60 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .input {
-    @apply w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100
+    @apply w-full border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100
       placeholder:text-slate-500 focus:border-emerald-500/50 focus:outline-none;
   }
 

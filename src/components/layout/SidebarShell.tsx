@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLocation } from "react-router";
+import { Menu, X } from "lucide-react";
 
 interface SidebarShellProps {
   /** Sidebar identity block — rendered in the sidebar and (compact) mobile bar. */
@@ -16,7 +17,7 @@ const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
- * Responsive sidebar shell shared by the public site and the admin CMS (§55).
+ * Responsive sidebar shell for the admin CMS (§55).
  *
  * - ≥lg: fixed 256px sidebar, content offset to the right.
  * - <lg: sticky top bar + focus-trapped slide-in drawer (same nav model —
@@ -94,7 +95,7 @@ export default function SidebarShell({ brand, nav, footer, children }: SidebarSh
     <div className="min-h-screen bg-slate-950">
       <a
         href="#main-content"
-        className="sr-only z-100 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
+        className="sr-only z-100 bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
       >
         Skip to content
       </a>
@@ -105,15 +106,13 @@ export default function SidebarShell({ brand, nav, footer, children }: SidebarSh
         <button
           ref={menuButtonRef}
           type="button"
-          className="rounded-lg border border-slate-700 p-2 text-slate-300 transition-colors hover:border-emerald-500/50 hover:text-slate-100"
+          className="border border-slate-700 p-2 text-slate-300 transition-colors hover:border-emerald-500/50 hover:text-slate-100"
           aria-expanded={drawerOpen}
           aria-controls="sidebar-drawer"
           onClick={() => setOpenedAtKey(location.key)}
         >
           <span className="sr-only">Open navigation menu</span>
-          <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M4 7h16M4 12h16M4 17h16" />
-          </svg>
+          <Menu aria-hidden="true" className="h-5 w-5" />
         </button>
       </header>
 
@@ -148,13 +147,11 @@ export default function SidebarShell({ brand, nav, footer, children }: SidebarSh
               <div className="min-w-0">{brand}</div>
               <button
                 type="button"
-                className="rounded-lg border border-slate-700 p-2 text-slate-300 hover:border-emerald-500/50 hover:text-slate-100"
+                className="border border-slate-700 p-2 text-slate-300 hover:border-emerald-500/50 hover:text-slate-100"
                 onClick={() => setOpenedAtKey(null)}
               >
                 <span className="sr-only">Close navigation menu</span>
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
+                <X aria-hidden="true" className="h-5 w-5" />
               </button>
             </div>
             {sidebarBody}
