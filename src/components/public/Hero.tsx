@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { SocialLinksList } from "./SocialLinksList";
-import { scrollToTarget } from "../../utils/smoothScroll";
+import { scrollToId } from "../../utils/smoothScroll";
 import type { PortfolioProfile } from "../../types/profile";
 import type { SocialLink } from "../../types/socialLink";
 
@@ -161,14 +161,11 @@ export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
                 className="cta-primary group w-full sm:w-auto"
                 to={{ pathname: "/", hash: "#contact" }}
                 onClick={() => {
-                  // Same anchor flight as the navbar's hash links: rAF lets
-                  // the router commit first, then lenis takes over (the
-                  // layout's hash effect covers hash changes; this covers
-                  // re-clicks on the same hash).
-                  requestAnimationFrame(() => {
-                    const target = document.getElementById("contact");
-                    if (target !== null) scrollToTarget(target);
-                  });
+                  // Same anchor flight as the navbar's hash links — waits
+                  // for #contact to mount on cross-route arrivals; the
+                  // layout's hash effect covers hash changes, this covers
+                  // re-clicks on the same hash.
+                  scrollToId("contact");
                 }}
               >
                 Get in touch

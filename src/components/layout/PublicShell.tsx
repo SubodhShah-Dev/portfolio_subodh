@@ -14,8 +14,8 @@ import {
   initLenis,
   NAV_ANCHOR_OFFSET,
   NAV_ANCHOR_TOLERANCE,
+  scrollToId,
   scrollToTop,
-  scrollToTarget,
 } from "../../utils/smoothScroll";
 import { currentTheme, toggleTheme, type Theme } from "../../utils/theme";
 
@@ -276,11 +276,9 @@ export default function PublicShell({
             link.to.hash !== undefined &&
             link.to.hash.length > 1
           ) {
-            const targetId = link.to.hash.slice(1);
-            requestAnimationFrame(() => {
-              const target = document.getElementById(targetId);
-              if (target !== null) scrollToTarget(target);
-            });
+            // Waits for the anchor to mount on cross-route arrivals, then
+            // flies; same-hash re-clicks find it on the first frame.
+            scrollToId(link.to.hash.slice(1));
           } else {
             // Route links: navigating to the SAME location leaves the
             // layout's reset effect without a dep change (Home at /, Work

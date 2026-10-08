@@ -11,7 +11,7 @@ import { HIDDEN_FLAGS, makeLayoutData, makeProfile } from "../fixtures/publicCon
 
 vi.mock("../../src/utils/smoothScroll", async (importOriginal) => {
   const actual = await importOriginal<typeof SmoothScrollModule>();
-  return { ...actual, scrollToTarget: vi.fn() };
+  return { ...actual, scrollToId: vi.fn() };
 });
 
 function renderShell() {
@@ -315,7 +315,7 @@ describe("PublicShell scrollspy", () => {
 
     fireEvent.click(contact);
     await waitFor(() => {
-      expect(smoothScroll.scrollToTarget).toHaveBeenCalled();
+      expect(smoothScroll.scrollToId).toHaveBeenCalledWith("contact");
     });
 
     // Same hash → the layout's location.hash effect does not re-run; only
@@ -323,7 +323,7 @@ describe("PublicShell scrollspy", () => {
     vi.clearAllMocks();
     fireEvent.click(screen.getByRole("link", { name: "Contact" }));
     await waitFor(() => {
-      expect(smoothScroll.scrollToTarget).toHaveBeenCalled();
+      expect(smoothScroll.scrollToId).toHaveBeenCalledWith("contact");
     });
   });
 });

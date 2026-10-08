@@ -5,7 +5,7 @@ import { Download } from "lucide-react";
 import PublicShell, { type ShellLink } from "../components/layout/PublicShell";
 import { SocialLinksList } from "../components/public/SocialLinksList";
 import type { PublicLayoutData } from "../loaders/publicLoaders";
-import { scrollToTarget, scrollToTop } from "../utils/smoothScroll";
+import { scrollToId, scrollToTop } from "../utils/smoothScroll";
 import { currentTheme } from "../utils/theme";
 
 /**
@@ -44,11 +44,11 @@ export default function PublicLayout() {
   const { profile, flags } = data;
 
   // Scroll to the section target when arriving with a hash (incl. from other
-  // routes) — routed through lenis when it is active.
+  // routes). scrollToId waits for the anchor to mount — on cross-route
+  // arrivals the URL commits before the destination DOM swaps in.
   useEffect(() => {
     if (location.hash === "") return;
-    const target = document.getElementById(location.hash.slice(1));
-    if (target !== null) scrollToTarget(target);
+    scrollToId(location.hash.slice(1));
   }, [location.hash, location.pathname]);
 
   // Reset scroll on plain route changes (no hash involved) — through lenis
