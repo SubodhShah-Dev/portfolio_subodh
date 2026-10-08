@@ -271,10 +271,6 @@ export default function PublicShell({
         className={linkClass(active)}
         onClick={() => {
           setOpenedAtKey(null);
-          // Scroll on click too: the layout's hash effect only reacts to a
-          // location change, so re-clicking the section you're already on
-          // would otherwise do nothing. rAF lets the router commit first;
-          // cross-route deep links are covered by the same effect.
           if (
             typeof link.to === "object" &&
             link.to.hash !== undefined &&
@@ -285,6 +281,13 @@ export default function PublicShell({
               const target = document.getElementById(targetId);
               if (target !== null) scrollToTarget(target);
             });
+          } else {
+            // Route links: navigating to the SAME location leaves the
+            // layout's reset effect without a dep change (Home at /, Work
+            // at /projects), so the click would do nothing while scrolled.
+            // Scroll here too — the effect covers cross-route clicks with
+            // the same harmless double call.
+            requestAnimationFrame(() => scrollToTop());
           }
         }}
       >

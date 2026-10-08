@@ -109,7 +109,16 @@ export default function PublicLayout() {
   const role = profile?.public.role ?? "";
 
   const brand = (
-    <Link to="/" viewTransition className="group flex min-w-0 items-center gap-2.5">
+    <Link
+      to="/"
+      viewTransition
+      className="group flex min-w-0 items-center gap-2.5"
+      onClick={() => {
+        // Same-location clicks (logo while already on /) skip the layout's
+        // reset effect — scroll explicitly, as the nav links do.
+        requestAnimationFrame(() => scrollToTop());
+      }}
+    >
       {data.logoUrl !== null && (
         <img src={data.logoUrl} alt="" className="h-6 w-auto shrink-0" />
       )}
@@ -189,7 +198,16 @@ export default function PublicLayout() {
                 Say hello
               </a>
             )}
-            <Link className="cta-ghost" to="/projects" viewTransition>
+            <Link
+              className="cta-ghost"
+              to="/projects"
+              viewTransition
+              onClick={() => {
+                // Same-location clicks (footer while already on /projects)
+                // skip the layout's reset effect — scroll explicitly.
+                requestAnimationFrame(() => scrollToTop());
+              }}
+            >
               See my work
             </Link>
           </div>

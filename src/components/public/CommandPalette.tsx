@@ -2,6 +2,7 @@ import { Command } from "cmdk";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
+import { scrollToTarget, scrollToTop } from "../../utils/smoothScroll";
 import type { Theme } from "../../utils/theme";
 import type { ShellLink } from "../layout/PublicShell";
 
@@ -74,6 +75,18 @@ export default function CommandPalette({
                   const path = linkToPath(link.to);
                   void navigate(path, { viewTransition: !path.includes("#") });
                   onClose();
+                  // Mirror the nav links: same-location navigations never
+                  // change the layout's scroll deps, so scroll explicitly.
+                  requestAnimationFrame(() => {
+                    if (path.includes("#")) {
+                      const target = document.getElementById(
+                        path.slice(path.indexOf("#") + 1),
+                      );
+                      if (target !== null) scrollToTarget(target);
+                    } else {
+                      scrollToTop();
+                    }
+                  });
                 }}
                 className="flex cursor-pointer items-center justify-between px-3 py-2.5 text-sm text-ink data-[highlighted]:bg-signal data-[highlighted]:text-on-signal"
               >
