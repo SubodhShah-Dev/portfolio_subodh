@@ -118,9 +118,9 @@ export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
                     {hasGlyph && (
                       <span
                         aria-hidden="true"
-                        className="mx-[0.03em] inline-flex size-[0.7em] translate-y-[-0.04em] items-center justify-center rounded-full bg-ink font-meta align-middle text-canvas shadow-[0.045em_0.045em_0_0_var(--color-signal)]"
+                        className="mx-[0.03em] inline-flex size-[0.53em] items-center justify-center rounded-full bg-ink font-meta align-middle text-canvas shadow-[0.035em_0.035em_0_0_var(--color-signal)]"
                       >
-                        <span className="text-[0.28em] leading-none font-bold">
+                        <span className="text-[0.21em] leading-none font-bold">
                           {"</>"}
                         </span>
                       </span>
