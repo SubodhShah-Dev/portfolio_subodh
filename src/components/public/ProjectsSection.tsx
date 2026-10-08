@@ -36,9 +36,8 @@ function useDesktopLayout(): boolean {
 /**
  * Homepage project preview (§13) — featured-first preview capped at six.
  * Below 1024px it's the swipeable showcase carousel; at 1024px+ it becomes
- * a static 3-column grid of the /projects cards with no carousel chrome,
- * and the leading featured project occupies a 2×2 bento cell (2×2 + 5
- * cards = exactly 3×3 — no empty cells at the cap).
+ * a static 3-column grid of the /projects cards with no carousel chrome —
+ * featured projects keep a normal cell, same as every other card.
  */
 export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
   const featuredFirst = [...projects].sort(
@@ -51,18 +50,11 @@ export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
     <Section id="projects" title="Projects" index={index}>
       {desktop ? (
         <ul className="grid grid-cols-3 gap-4">
-          {preview.map((project, projectIndex) => {
-            const hero = projectIndex === 0 && project.featured;
-            return (
-              <li
-                key={project.id}
-                data-featured-hero={hero ? "" : undefined}
-                className={hero ? "col-span-2 row-span-2" : undefined}
-              >
-                <ProjectCard project={project} hero={hero} />
-              </li>
-            );
-          })}
+          {preview.map((project) => (
+            <li key={project.id}>
+              <ProjectCard project={project} />
+            </li>
+          ))}
         </ul>
       ) : (
         <ProjectShowcase projects={preview} />

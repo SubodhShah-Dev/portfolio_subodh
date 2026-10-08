@@ -39,8 +39,8 @@ Public-site touches: a scrollspy nav whose order mirrors the homepage scroll
 chain (Work lights up for both the `/projects` route and the homepage
 projects section, and the last section stays lit through the footer), an embla
 carousel showcase of featured projects below `lg` that turns into a static
-3-column grid — leading featured project in a 2×2 bento cell, no carousel
-chrome — at `lg`+ on the homepage, while `/projects` keeps
+3-column card grid with no carousel chrome — at `lg`+ on the homepage,
+while `/projects` keeps
 its two-column grid, ⌘K command palette (lazy `cmdk`), Lenis smooth scrolling,
 route view transitions, a keyboard-navigable project gallery lightbox,
 confetti on contact send, copy-email toast, and a theme toggle in the header.

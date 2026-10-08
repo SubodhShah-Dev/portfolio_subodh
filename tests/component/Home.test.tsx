@@ -127,7 +127,7 @@ describe("Home", () => {
     ).toBeInTheDocument();
   });
 
-  it("switches the desktop showcase to a static grid with a featured bento cell", async () => {
+  it("switches the desktop showcase to a static card grid", async () => {
     // Desktop breakpoint true, everything else (reduced motion, color
     // scheme) keeps the setup stub's false.
     vi.stubGlobal(
@@ -164,7 +164,6 @@ describe("Home", () => {
       expect(
         screen.queryByRole("button", { name: "Next slide" }),
       ).not.toBeInTheDocument();
-      expect(document.querySelector("[data-featured-hero]")).not.toBeNull();
       expect(
         screen.getByRole("link", { name: /Beta service/ }),
       ).toBeInTheDocument();
