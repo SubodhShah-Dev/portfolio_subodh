@@ -11,12 +11,14 @@ interface HeroProps {
 
 /**
  * Identity hero — Pop Mono (§7): paper on paper with ink type — no color
- * band. Cobalt appears only as the drawn rule; decor is developer-themed: a
- * bobbing terminal pop-card with a `</>` sticker badge (desktop only). The
- * name lands in giant condensed Bricolage revealed word-by-word behind
- * overflow masks. Word wrappers keep real space text nodes so the accessible
- * name stays exactly the display name. The resume download lives only in the
- * header actions so the composed page keeps a single instance.
+ * band. Cobalt appears as the drawn rule and as the `</>` glyph that replaces
+ * the first "o" of the display name; decor is a bobbing terminal pop-card
+ * (desktop only). The name lands in giant condensed Bricolage revealed
+ * word-by-word behind overflow masks, with an aria-label keeping the
+ * accessible name exactly the display name. The role sits under the top row
+ * as plain display text — impactful, but clearly below the name. The resume
+ * download lives only in the header actions so the composed page keeps a
+ * single instance.
  */
 export function Hero({ profile, contactVisible }: HeroProps) {
   const { name, role, headline, location } = profile.public;
@@ -36,11 +38,17 @@ export function Hero({ profile, contactVisible }: HeroProps) {
   const hasTopRow =
     role.trim() !== "" || (location !== undefined && location.trim() !== "");
 
+  // First "o"/"O" of the display name renders as a `</>` glyph — the h1's
+  // aria-label below keeps the accessible name exactly the display name.
+  const glyphWordIndex = words.findIndex((word) => /[oO]/.test(word));
+  const glyphCharIndex =
+    glyphWordIndex === -1 ? -1 : words[glyphWordIndex].search(/[oO]/);
+
   return (
     <header className="relative -mt-12 flex scroll-mt-24 flex-col justify-end overflow-hidden pt-14 pb-14 lg:-mt-16 lg:min-h-[78svh] lg:pt-24 lg:pb-20">
-      {/* Developer decor — terminal card + `</>` sticker, desktop only.
-          Pure decoration: aria-hidden, pointer-events-none, z-0 (content
-          sits above at z-10). */}
+      {/* Developer decor — bobbing terminal card, desktop only. Pure
+          decoration: aria-hidden, pointer-events-none, z-0 (content sits
+          above at z-10). */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute top-[9%] right-[5%] z-0 hidden w-[19.5rem] xl:block"
@@ -67,9 +75,6 @@ export function Hero({ profile, contactVisible }: HeroProps) {
             </div>
           </div>
         </div>
-        <span className="absolute -bottom-7 -left-9 flex size-14 -rotate-6 items-center justify-center rounded-full bg-ink font-meta text-lg font-bold text-canvas shadow-[5px_5px_0_0_var(--color-signal)]">
-          {"</>"}
-        </span>
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-4 sm:px-6 lg:px-10">
@@ -79,7 +84,7 @@ export function Hero({ profile, contactVisible }: HeroProps) {
             style={{ animationDelay: "0ms" }}
           >
             {role.trim() !== "" && (
-              <span className="rounded-full border-2 border-ink bg-raised px-3 py-1 text-ink">
+              <span className="font-display text-[clamp(1.05rem,1.5vw,1.35rem)] font-semibold normal-case tracking-[-0.01em] text-ink">
                 {role}
               </span>
             )}
@@ -90,21 +95,36 @@ export function Hero({ profile, contactVisible }: HeroProps) {
         )}
 
         <h1
+          aria-label={displayName}
           className={`mt-7 font-display ${nameSize} font-stretch-[85%] font-extrabold leading-[0.86] tracking-[-0.045em] text-ink`}
         >
-          {words.map((word, index) => (
-            <Fragment key={`${word}-${index}`}>
-              {index > 0 && " "}
-              <span className="inline-block overflow-hidden align-bottom">
-                <span
-                  className="animate-word inline-block leading-[1.1]"
-                  style={{ animationDelay: `${120 + index * 70}ms` }}
-                >
-                  {word}
+          {words.map((word, index) => {
+            const hasGlyph = index === glyphWordIndex;
+            const before = hasGlyph ? word.slice(0, glyphCharIndex) : word;
+            const after = hasGlyph ? word.slice(glyphCharIndex + 1) : "";
+            return (
+              <Fragment key={`${word}-${index}`}>
+                {index > 0 && " "}
+                <span className="inline-block overflow-hidden align-bottom">
+                  <span
+                    className="animate-word inline-block leading-[1.1]"
+                    style={{ animationDelay: `${120 + index * 70}ms` }}
+                  >
+                    {before}
+                    {hasGlyph && (
+                      <span
+                        aria-hidden="true"
+                        className="font-meta text-[0.6em] font-medium text-signal"
+                      >
+                        {"</>"}
+                      </span>
+                    )}
+                    {after}
+                  </span>
                 </span>
-              </span>
-            </Fragment>
-          ))}
+              </Fragment>
+            );
+          })}
         </h1>
 
         <div

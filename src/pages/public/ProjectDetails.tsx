@@ -65,29 +65,33 @@ export default function ProjectDetails() {
       </header>
 
       {hasThumb && (
-        <img
-          src={project.thumbnailUrl}
-          alt={`Screenshot of ${project.title}`}
-          loading="lazy"
-          className="w-full rounded-chunk border-2 border-ink shadow-pop"
-        />
+        <div className="aspect-[16/9] w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
+          <img
+            src={project.thumbnailUrl}
+            alt={`Screenshot of ${project.title}`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        </div>
       )}
 
       {gallery.length > 0 && (
         <section aria-label="Gallery">
-          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <ul className="grid gap-4 sm:grid-cols-2">
             {gallery.map((url, position) => (
               <li key={`${url}-${position}`}>
                 <button
                   type="button"
                   onClick={() => setLightboxIndex(position)}
                   aria-label={`Open gallery image ${position + 1}`}
-                  className="group block aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop-sm transition-transform duration-150 hover:-translate-y-0.5"
+                  className="group block aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop-sm transition-transform duration-150 hover:-translate-y-0.5"
                 >
                   <img
                     src={url}
                     alt={`${project.title} screenshot ${position + 1}`}
                     loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                   />
                 </button>

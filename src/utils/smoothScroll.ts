@@ -31,7 +31,7 @@ export function scrollToTarget(target: HTMLElement): void {
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (instance !== null) {
-    instance.scrollTo(target, { offset: -72, duration: reduced ? 0 : 1.1 });
+    instance.scrollTo(target, { offset: -96, duration: reduced ? 0 : 1.1 });
   } else if (typeof target.scrollIntoView === "function") {
     target.scrollIntoView({
       behavior: reduced ? "auto" : "smooth",

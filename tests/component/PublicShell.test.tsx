@@ -1,8 +1,8 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Timestamp } from "firebase/firestore";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import PublicLayout from "../../src/layouts/PublicLayout";
 import { HIDDEN_FLAGS, makeLayoutData, makeProfile } from "../fixtures/publicContent";
@@ -119,6 +119,122 @@ describe("PublicShell interactions", () => {
     Object.defineProperty(window, "scrollY", {
       configurable: true,
       value: 0,
+    });
+  });
+});
+
+describe("PublicShell scrollspy", () => {
+  let latestCallback: IntersectionObserverCallback | null = null;
+
+  beforeEach(() => {
+    document.documentElement.classList.remove("dark");
+    window.localStorage.clear();
+    latestCallback = null;
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        constructor(callback: IntersectionObserverCallback) {
+          latestCallback = callback;
+        }
+        observe(): void {
+          // Elements are reported manually through the captured callback.
+        }
+        disconnect(): void {
+          // No-op — jsdom has no observer to tear down.
+        }
+      },
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function renderSpyShell() {
+    const data = makeLayoutData({
+      profile: makeProfile(),
+      flags: { ...HIDDEN_FLAGS, about: true, projects: true, contact: true },
+    });
+    const router = createMemoryRouter(
+      [
+        {
+          id: "public",
+          path: "/",
+          loader: () => Promise.resolve(data),
+          element: <PublicLayout />,
+          children: [
+            {
+              index: true,
+              element: (
+                <div>
+                  <section id="about" />
+                  <section id="projects" />
+                  <section id="contact" />
+                </div>
+              ),
+            },
+            { path: "projects", element: <p>Projects page</p> },
+          ],
+        },
+      ],
+      { initialEntries: ["/"] },
+    );
+    render(<RouterProvider router={router} />);
+    return router;
+  }
+
+  const fireIntersection = (id: string, isIntersecting = true): void => {
+    expect(latestCallback).not.toBeNull();
+    act(() => {
+      latestCallback?.(
+        [{ target: { id }, isIntersecting }] as unknown as IntersectionObserverEntry[],
+        {} as IntersectionObserver,
+      );
+    });
+  };
+
+  it("highlights Work while the homepage projects section is in view", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    const work = screen.getByRole("link", { name: "Work" });
+    expect(work.getAttribute("aria-current")).toBeNull();
+
+    fireIntersection("projects");
+
+    await waitFor(() => {
+      expect(work.getAttribute("aria-current")).toBe("true");
+    });
+    expect(
+      screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+    ).toBeNull();
+  });
+
+  it("keeps Work lit on /projects and clears stale section highlights", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    fireIntersection("contact");
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("link", { name: "Contact" })
+          .getAttribute("aria-current"),
+      ).toBe("true");
+    });
+
+    fireEvent.click(screen.getByRole("link", { name: "Work" }));
+    await screen.findByText("Projects page");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "Work" }).getAttribute("aria-current"),
+      ).toBe("true");
+      expect(
+        screen
+          .getByRole("link", { name: "Contact" })
+          .getAttribute("aria-current"),
+      ).toBeNull();
     });
   });
 });

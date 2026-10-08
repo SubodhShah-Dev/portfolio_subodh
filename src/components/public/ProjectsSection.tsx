@@ -13,8 +13,8 @@ const PREVIEW_LIMIT = 6;
 
 /**
  * Homepage project preview (§13) — the featured project gets a full-width
- * spotlight above the remaining preview (featured first, capped at six),
- * with a link to the full listing.
+ * split spotlight above the remaining preview (featured first, capped at
+ * six), with a link to the full listing.
  */
 export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
   const featuredFirst = [...projects].sort(
@@ -31,7 +31,7 @@ export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
     <Section id="projects" title="Projects" index={index}>
       {spotlight !== null && (
         <div className="mb-5">
-          <ProjectCard project={spotlight} spotlight />
+          <ProjectCard project={spotlight} layout="split" />
         </div>
       )}
       {rest.length > 0 && (

@@ -125,16 +125,34 @@ export default function PublicLayout() {
     </Link>
   );
 
-  const visibleSections = SECTION_LINKS.filter((section) => flags[section.flag]);
+  // Nav order mirrors homepage scroll order (§7): About…Certifications,
+  // then Work (a route to /projects with a scrollspy id on the homepage's
+  // #projects section — harmless when that section is hidden), then Contact.
+  const visibleSections: ShellLink[] = SECTION_LINKS.filter(
+    (section) => flags[section.flag],
+  ).map((section) => ({
+    key: section.hash,
+    to: { pathname: "/", hash: section.hash },
+    label: section.label,
+    spyId: section.hash.slice(1),
+  }));
+  const workLink: ShellLink[] = [
+    { key: "work", to: "/projects", label: "Work", spyId: "projects" },
+  ];
+  const contactIndex = visibleSections.findIndex(
+    (section) => section.key === "#contact",
+  );
+  const orderedSections: ShellLink[] =
+    contactIndex === -1
+      ? [...visibleSections, ...workLink]
+      : [
+          ...visibleSections.slice(0, contactIndex),
+          ...workLink,
+          ...visibleSections.slice(contactIndex),
+        ];
   const links: ShellLink[] = [
     { key: "home", to: "/", label: "Home", end: true },
-    { key: "work", to: "/projects", label: "Work" },
-    ...visibleSections.map((section) => ({
-      key: section.hash,
-      to: { pathname: "/", hash: section.hash },
-      label: section.label,
-      spyId: section.hash.slice(1),
-    })),
+    ...orderedSections,
   ];
 
   const actions =

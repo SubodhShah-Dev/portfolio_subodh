@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Link, NavLink, useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { ArrowUp, Menu, Moon, Search, Sun, X } from "lucide-react";
 
@@ -140,7 +140,12 @@ export default function PublicShell({
   // --- Scrollspy: highlight the section link whose section currently owns
   // the upper part of the viewport. Disabled outside browsers without the API
   // (tests, very old engines) — the nav simply keeps route highlighting.
-  const [activeSpyId, setActiveSpyId] = useState("");
+  // The state records the pathname that produced it, so a route change
+  // DERIVES an empty highlight (no setState-in-effect): sections that don't
+  // exist on the new page can never stay aria-current.
+  const [spyState, setSpyState] = useState({ pathname: "", id: "" });
+  const activeSpyId =
+    spyState.pathname === location.pathname ? spyState.id : "";
   const spyKey = links.map((link) => link.spyId ?? "").join("|");
   useEffect(() => {
     if (spyKey === "" || typeof IntersectionObserver !== "function") return;
@@ -158,10 +163,12 @@ export default function PublicShell({
         const active = ids.find((id) => visible.get(id) === true) ?? "";
         if (active !== lastActive) {
           lastActive = active;
-          setActiveSpyId(active);
+          setSpyState({ pathname: location.pathname, id: active });
         }
       },
-      { rootMargin: "-84px 0px -55% 0px", threshold: 0 },
+      // Top edge aligns with scroll-mt-24 (96px) — the same offset the
+      // lenis anchor scroll uses, so highlight and landing always agree.
+      { rootMargin: "-96px 0px -55% 0px", threshold: 0 },
     );
 
     for (const id of ids) {
@@ -223,47 +230,35 @@ export default function PublicShell({
         />
       ) : null;
 
-    if (link.spyId !== undefined) {
-      const active = activeSpyId === link.spyId;
-      return (
-        <Link
-          key={link.key}
-          to={link.to}
-          aria-current={active ? "true" : undefined}
-          className={linkClass(active)}
-          onClick={() => setOpenedAtKey(null)}
-        >
-          {link.label}
-          {underline(active)}
-        </Link>
-      );
-    }
+    // Route matching (replaces NavLink's): exact for `end`, prefix otherwise
+    // so /projects/:id keeps Work lit. Hash sections ignore the route —
+    // their pathname is always "/" — and are governed by the scrollspy.
+    const isHashLink = typeof link.to === "object" && link.to.hash !== undefined;
+    const linkPathname = typeof link.to === "string" ? link.to : link.to.pathname;
+    const routeActive = link.end
+      ? location.pathname === linkPathname
+      : location.pathname === linkPathname ||
+        (linkPathname !== "/" &&
+          location.pathname.startsWith(`${linkPathname}/`));
+    const active =
+      link.spyId !== undefined
+        ? isHashLink
+          ? activeSpyId === link.spyId
+          : routeActive || activeSpyId === link.spyId
+        : routeActive && activeSpyId === "";
+
     return (
-      <NavLink
+      <Link
         key={link.key}
         to={link.to}
-        end={link.end}
-        viewTransition
+        viewTransition={!isHashLink}
+        aria-current={active ? "true" : undefined}
+        className={linkClass(active)}
         onClick={() => setOpenedAtKey(null)}
-        className={({ isActive }) => {
-          const active =
-            isActive &&
-            (!link.end || (location.hash === "" && activeSpyId === ""));
-          return linkClass(active);
-        }}
       >
-        {({ isActive }) => {
-          const active =
-            isActive &&
-            (!link.end || (location.hash === "" && activeSpyId === ""));
-          return (
-            <>
-              {link.label}
-              {underline(active)}
-            </>
-          );
-        }}
-      </NavLink>
+        {link.label}
+        {underline(active)}
+      </Link>
     );
   };
 
