@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 import { SocialLinksList } from "./SocialLinksList";
+import { scrollToTarget } from "../../utils/smoothScroll";
 import type { PortfolioProfile } from "../../types/profile";
 import type { SocialLink } from "../../types/socialLink";
 
@@ -20,9 +21,11 @@ interface HeroProps {
  * revealed word-by-word behind overflow masks, with an aria-label keeping
  * the accessible name exactly the display name. The role sits under the top
  * row as plain display text — impactful, but clearly below the name. Social
- * links repeat the footer's pills (inverted for paper) below the CTAs, and
- * the resume download lives only in the header actions so the composed page
- * keeps a single instance.
+ * links repeat the footer's pills (inverted for paper) at the right end of
+ * the CTA row on desktop — below the stacked full-width CTAs on small
+ * screens — and "Get in touch" follows the navbar's smooth anchor flight to
+ * #contact. The resume download lives only in the header actions so the
+ * composed page keeps a single instance.
  */
 export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
   const { name, role, headline, location } = profile.public;
@@ -149,35 +152,49 @@ export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
         )}
 
         <div
-          className="animate-rise mt-9 flex flex-wrap gap-4"
+          className="animate-rise mt-9 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between"
           style={{ animationDelay: "700ms" }}
         >
-          {contactVisible && (
-            <a className="cta-primary group" href="#contact">
-              Get in touch
-              <ArrowRight
+          <div className="flex flex-col gap-4 sm:flex-row">
+            {contactVisible && (
+              <Link
+                className="cta-primary group w-full sm:w-auto"
+                to={{ pathname: "/", hash: "#contact" }}
+                onClick={() => {
+                  // Same anchor flight as the navbar's hash links: rAF lets
+                  // the router commit first, then lenis takes over (the
+                  // layout's hash effect covers hash changes; this covers
+                  // re-clicks on the same hash).
+                  requestAnimationFrame(() => {
+                    const target = document.getElementById("contact");
+                    if (target !== null) scrollToTarget(target);
+                  });
+                }}
+              >
+                Get in touch
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                />
+              </Link>
+            )}
+            <Link
+              className="cta-ghost group w-full sm:w-auto"
+              to="/projects"
+              viewTransition
+            >
+              View my work
+              <ArrowUpRight
                 aria-hidden="true"
-                className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
               />
-            </a>
-          )}
-          <Link className="cta-ghost group" to="/projects" viewTransition>
-            View my work
-            <ArrowUpRight
-              aria-hidden="true"
-              className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            />
-          </Link>
-        </div>
-
-        {socialLinks.length > 0 && (
-          <div
-            className="animate-rise mt-7"
-            style={{ animationDelay: "850ms" }}
-          >
-            <SocialLinksList links={socialLinks} tone="paper" />
+            </Link>
           </div>
-        )}
+
+          {socialLinks.length > 0 && (
+            <SocialLinksList links={socialLinks} tone="paper" />
+          )}
+        </div>
       </div>
     </header>
   );
