@@ -13,12 +13,18 @@ honest empty states, and nothing is invented to make the site look fuller.
 
 Two coordinated visual systems in one stylesheet:
 
-- **Signal — the public portfolio.** Paper canvas (`#fafaf7`) with electric
-  ultramarine (`#3d34f5`), giant condensed Bricolage Grotesque display type,
-  IBM Plex Mono meta labels, hairline rules, sharp corners, and offset-shadow
-  press states, closing on an inverted ink footer band. A light/dark toggle
-  (localStorage → `prefers-color-scheme` → light) flips a full dark twin with
-  one class — admin pages are unaffected.
+- **Signal × Pop — the public portfolio.** Paper canvas (`#fafaf7`), electric
+  ultramarine (`#3d34f5`) cobalt hero/footer bands, lime (`#cfff3a`) pop
+  accents, giant condensed Bricolage Grotesque display type, IBM Plex Mono
+  meta labels, and hard offset shadows (`shadow-pop`) on chunky-radius
+  cards and press-down pill buttons. Sections ride tinted full-bleed bands
+  (lime Skills, pink-soft Certifications, sky Education) pinned to the
+  light palette in both themes, arrow-circle section badges, a cobalt
+  project-detail header, and a swipeable stacked photo deck in About. A
+  light/dark toggle (localStorage → `prefers-color-scheme` → light) flips
+  one class — bright fills keep fixed navy text via `--color-on-accent`,
+  and borders/shadows follow `--color-ink` so the neobrutalist frame turns
+  light on the dark canvas. Admin pages are unaffected.
 - **Ink Console — the admin CMS.** Always dark: near-black ink canvas, raised
   panels, the same ultramarine accent, Bricolage headings, mono nav, sharp
   primitives. (Tailwind's slate/emerald utility names are kept but their
@@ -27,7 +33,9 @@ Two coordinated visual systems in one stylesheet:
 Public-site touches: ⌘K command palette (lazy `cmdk`), Lenis smooth scrolling,
 route view transitions, a keyboard-navigable project gallery lightbox,
 confetti on contact send, copy-email toast, and a theme toggle in the header.
-The dashboard seeder is fill-missing: it only ever adds sample entries whose
+The About photo deck is edited as one-URL-per-line in Admin → Profile
+(`profileImageUrls`, legacy `profileImageUrl` mirrors the front card). The
+dashboard seeder is fill-missing: it only ever adds sample entries whose
 documents are absent and never overwrites owner content.
 
 ## Stack
