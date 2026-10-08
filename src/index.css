@@ -7,13 +7,17 @@
 /* ---------------------------------------------------------------------------
    Three visual systems in one stylesheet (§56):
 
-   1. Signal — the PUBLIC portfolio, light default + dark twin. Semantic
-      tokens (--color-canvas/ink/muted/signal/band/…) are declared once for
-      light in @theme and re-pointed under :root.dark, so every utility that
-      references them flips with one class. Bricolage Grotesque (width axis)
-      for display, Instrument Sans for body, IBM Plex Mono for meta.
-      Applied only under `.public-scope` (public shell root, paused screen,
-      error boundary) — the admin never carries that class.
+   1. Signal × Pop — the PUBLIC portfolio, light default + dark twin.
+       Semantic tokens (--color-canvas/ink/muted/signal/band/…) declared once
+       for light in @theme and re-pointed under :root.dark. Pop Poster (sample
+       reference) adds lime/pink/sky accents, hard offset shadows, chunky
+       radii, and a springy ease; interactive public surfaces become pills
+       with press-down states. Fixed --color-on-accent (never flips) keeps
+       text on bright fills dark in BOTH modes; borders/shadows follow
+       --color-ink so they flip light on the dark canvas (neobrutalist dark).
+       Bricolage Grotesque display, Instrument Sans body, IBM Plex Mono meta.
+       Applied only under `.public-scope` (public shell root, paused screen,
+       error boundary) — the admin never carries that class.
 
    2. Ink Console — the ADMIN. Always dark: slate/emerald/sky/red utility
       names are kept (they are used exclusively by admin surfaces) but their
@@ -50,13 +54,29 @@
   --color-signal-deep: #2a21d9; /* hover + focus ring — 8.66:1 on canvas */
   --color-signal-soft: #a9a4ff; /* accents on ink bands — 8.28:1 on band */
   --color-on-signal: #ffffff; /* text on signal fills — 6.98:1 */
-  --color-band: #141414; /* inverted section band */
-  --color-band-ink: #fafaf7;
-  --color-band-muted: #a1a1aa;
+  --color-band: #3d34f5; /* inverted section band = cobalt (Pop poster) */
+  --color-band-ink: #fafaf7; /* 6.98:1 on band */
+  --color-band-muted: #dfe0ff; /* muted copy on band — AA on cobalt */
   --color-ok: #157a4b;
   --color-ok-tint: #e7f4ec;
   --color-err: #c0271a;
   --color-err-tint: #fbebe9;
+
+  /* --- Pop Poster accents (sample reference, AA-verified) ------------------
+     Lime is the loud second accent: fills/stickers/badges only. on-accent
+     never flips — text on bright fills stays dark in light AND dark modes. */
+  --color-lime: #cfff3a; /* ink on lime 15:1 · lime on cobalt 6.1:1 */
+  --color-pink: #ff9bd2;
+  --color-pink-soft: #ffd6ec; /* section band */
+  --color-sky: #dce0ff; /* section band */
+  --color-on-accent: #141414;
+
+  /* Hard offset shadows + chunky radius + springy ease (pop motion). */
+  --shadow-pop-sm: 3px 3px 0 0 var(--color-ink);
+  --shadow-pop: 5px 5px 0 0 var(--color-ink);
+  --shadow-pop-lg: 9px 9px 0 0 var(--color-ink);
+  --radius-chunk: 1.25rem;
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Grid texture lines (fixed overlay in the public shell). */
   --grid-line: rgb(20 20 20 / 0.05);
@@ -249,20 +269,82 @@
     @apply font-meta text-[0.6875rem] font-medium tracking-[0.16em] text-signal-deep uppercase;
   }
 
-  /* Primary CTA: signal fill. On ink bands use .band .cta-* overrides. */
+  /* Primary CTA — Pop pill: lime fill, 2px ink frame, hard offset shadow,
+     press-down. Public-only (admin uses .btn-*). */
   .cta-primary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-signal px-6 py-3.5
-      text-base font-semibold text-on-signal transition-all duration-200
-      hover:-translate-y-0.5 hover:bg-signal-deep hover:shadow-[0_4px_0_0_var(--color-signal-deep)]
-      active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2
+      border-ink bg-lime px-6 py-3.5 text-base font-semibold text-on-accent transition-[transform,box-shadow] duration-150;
+    box-shadow: var(--shadow-pop);
   }
 
-  /* Secondary CTA: ink outline, inverts on hover (flips via tokens). */
+  .cta-primary:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop-lg);
+  }
+
+  .cta-primary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+    transition-duration: 80ms;
+  }
+
+  .cta-primary:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Secondary CTA — Pop pill: raised fill, ink frame; hover floods lime. */
   .cta-ghost {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 border-2 border-ink px-6 py-3
-      text-base font-semibold text-ink transition-all duration-200
-      hover:bg-ink hover:text-canvas active:translate-y-px disabled:cursor-not-allowed
-      disabled:opacity-50;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2
+      border-ink bg-raised px-6 py-3 text-base font-semibold text-ink transition-[transform,box-shadow] duration-150;
+    box-shadow: var(--shadow-pop);
+  }
+
+  .cta-ghost:hover:not(:disabled) {
+    background-color: var(--color-lime);
+    color: var(--color-on-accent);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop-lg);
+  }
+
+  .cta-ghost:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+    transition-duration: 80ms;
+  }
+
+  .cta-ghost:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Pop card — chunky-radius public content card with hard offset shadow. */
+  .pop-card {
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-chunk);
+    background-color: var(--color-raised);
+    box-shadow: var(--shadow-pop);
+  }
+
+  /* Add to any anchor/wrapper around a .pop-card for the press lift. */
+  .pop-card-link {
+    transition:
+      transform var(--dur-1) var(--ease-pop),
+      box-shadow var(--dur-1) var(--ease-pop);
+  }
+
+  .pop-card-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop-lg);
+  }
+
+  .pop-card-link:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+  }
+
+  /* Chip — mono pill badge (skills, tags, filters). */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-raised px-3
+      py-1.5 font-meta text-xs font-medium text-ink;
   }
 
   /* Fixed dot-grid texture behind the public page (aria-hidden overlay). */
@@ -291,7 +373,7 @@
   }
 
   .public-scope .band .eyebrow {
-    color: var(--color-signal-soft);
+    color: var(--color-lime);
   }
 
   .public-scope ::selection {
@@ -305,29 +387,56 @@
     border-radius: 0;
   }
 
+  /* Shared Button (public instances) — pop pills matching the cta pair. */
   .public-scope .btn-primary {
-    border-radius: 0;
-    background-color: var(--color-signal);
-    color: var(--color-on-signal);
-    transition-duration: var(--dur-1);
+    border-radius: 9999px;
+    border: 2px solid var(--color-ink);
+    background-color: var(--color-lime);
+    color: var(--color-on-accent);
+    box-shadow: var(--shadow-pop-sm);
+    transition:
+      transform var(--dur-1) var(--ease-pop),
+      box-shadow var(--dur-1) var(--ease-pop),
+      background-color var(--dur-1);
   }
 
   .public-scope .btn-primary:hover:not(:disabled) {
-    background-color: var(--color-signal-deep);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop);
+  }
+
+  .public-scope .btn-primary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+  }
+
+  .public-scope .btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 
   .public-scope .btn-secondary {
-    border-radius: 0;
-    border-color: var(--color-ink);
-    background-color: transparent;
+    border-radius: 9999px;
+    border: 2px solid var(--color-ink);
+    background-color: var(--color-raised);
     color: var(--color-ink);
-    transition-duration: var(--dur-1);
+    box-shadow: var(--shadow-pop-sm);
+    transition:
+      transform var(--dur-1) var(--ease-pop),
+      box-shadow var(--dur-1) var(--ease-pop),
+      background-color var(--dur-1);
   }
 
   .public-scope .btn-secondary:hover:not(:disabled) {
-    background-color: var(--color-ink);
-    border-color: var(--color-ink);
-    color: var(--color-canvas);
+    background-color: var(--color-lime);
+    color: var(--color-on-accent);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop);
+  }
+
+  .public-scope .btn-secondary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
   }
 
   .public-scope .input {
@@ -367,15 +476,18 @@
     color: var(--color-muted);
   }
 
-  /* CTAs on the inverted footer band — ghost outline follows band ink. */
+  /* CTAs on the cobalt footer band — ghost becomes a solid band-ink pill
+     (sample: white pill on cobalt), both hover-flood lime. */
   .public-scope .band .cta-ghost {
-    border-color: var(--color-band-ink);
-    color: var(--color-band-ink);
+    background-color: var(--color-band-ink);
+    border-color: var(--color-on-accent);
+    color: var(--color-on-accent);
   }
 
   .public-scope .band .cta-ghost:hover:not(:disabled) {
-    background-color: var(--color-band-ink);
-    color: var(--color-band);
+    background-color: var(--color-lime);
+    border-color: var(--color-on-accent);
+    color: var(--color-on-accent);
   }
 }
 
@@ -457,4 +569,30 @@
 
 .press:active {
   transform: translateY(2px);
+}
+
+/* Pop decor motion: bobbing hero stickers, slow sunburst spin.
+   Reduced-motion global rule freezes both on their first frame. */
+@keyframes pop-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+.animate-pop-bob {
+  animation: pop-bob 3.6s var(--ease-signal) infinite;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 26s linear infinite;
 }
