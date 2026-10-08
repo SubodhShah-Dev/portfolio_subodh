@@ -180,7 +180,7 @@ describe("PublicShell scrollspy", () => {
     for (const [id, top] of Object.entries(tops)) {
       const element = document.getElementById(id);
       expect(element).not.toBeNull();
-      vi.spyOn(element, "getBoundingClientRect").mockReturnValue({
+      vi.spyOn(element as HTMLElement, "getBoundingClientRect").mockReturnValue({
         top,
         bottom: top + 400,
         left: 0,
@@ -190,7 +190,7 @@ describe("PublicShell scrollspy", () => {
         x: 0,
         y: top,
         toJSON: () => ({}),
-      } as DOMRect);
+      });
     }
   }
 
