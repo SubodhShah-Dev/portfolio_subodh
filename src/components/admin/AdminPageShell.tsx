@@ -22,9 +22,11 @@ export default function AdminPageShell({
     <div>
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-100">{title}</h1>
+          <h1 className="font-display text-2xl font-bold tracking-[-0.02em] text-slate-100">
+            {title}
+          </h1>
           {description !== undefined && (
-            <p className="mt-1 text-sm text-slate-500">{description}</p>
+            <p className="mt-1 text-sm text-slate-400">{description}</p>
           )}
         </div>
         {actions !== undefined && <div className="flex flex-wrap gap-3">{actions}</div>}

@@ -37,19 +37,21 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
         {groups.map((group) => (
           <div key={group.category || "all"}>
             {group.category.trim() !== "" && (
-              <h3 className="font-meta text-xs tracking-widest text-ink/80 uppercase">
+              <h3 className="font-meta text-xs tracking-widest text-muted uppercase">
                 {group.category}
               </h3>
             )}
             <ul
-              className={`flex flex-wrap gap-2.5 ${
+              className={`flex flex-wrap gap-3 ${
                 group.category.trim() !== "" ? "mt-3.5" : ""
               }`}
             >
-              {group.items.map((skill) => (
+              {group.items.map((skill, position) => (
                 <li
                   key={skill.id}
-                  className="border border-ink/30 bg-paper-raised/60 px-3.5 py-1.5 text-sm text-ink transition-colors hover:border-accent/40 hover:text-ink"
+                  className={`chip cursor-default transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-pop-sm ${
+                    position % 2 === 0 ? "-rotate-1" : "rotate-1"
+                  }`}
                 >
                   {skill.name}
                 </li>

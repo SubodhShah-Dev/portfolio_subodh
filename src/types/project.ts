@@ -10,6 +10,8 @@ export interface Project extends OrderedContent {
   githubUrl?: string;
   liveDemoUrl?: string;
   thumbnailUrl?: string;
+  /** Gallery screenshot URLs shown as a lightbox strip on the detail page. */
+  images?: string[];
   date?: string;
   featured: boolean;
   features: string[];

@@ -33,7 +33,15 @@ service cloud.firestore {
         && data.order >= 0
         && data.updatedAt == request.time
         && (request.method == 'update' || data.createdAt == request.time)
-        && (!('publishedAt' in data) || data.publishedAt == request.time);
+        // publishedAt is server-generated on publish; ordinary edits may keep
+        // the stored value, refresh it to now, or remove it (unpublish) — but
+        // never mint or backdate it. The request.method guard short-circuits
+        // before resource.data is touched on create.
+        && (!('publishedAt' in data)
+            || data.publishedAt == request.time
+            || (request.method == 'update'
+                && 'publishedAt' in resource.data
+                && data.publishedAt == resource.data.publishedAt));
     }
 
     // --- Ordered collections: public sees published only, admins see all ----

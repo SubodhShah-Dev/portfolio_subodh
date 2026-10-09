@@ -193,7 +193,7 @@ export default function ManageSettings() {
             <legend className="mb-2 text-sm font-medium text-slate-300">
               Homepage sections
             </legend>
-            <div className="grid gap-3 rounded-lg border border-slate-800 p-4 sm:grid-cols-2">
+            <div className="grid gap-3 border border-slate-800 p-4 sm:grid-cols-2">
               {(Object.keys(SECTION_LABELS) as (keyof SectionVisibility)[]).map(
                 (section) => (
                   <CheckboxField

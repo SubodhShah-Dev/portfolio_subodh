@@ -42,3 +42,6 @@ npm-debug.log*
 
 # Misc
 *.tsbuildinfo
+
+# Wrangler local state (Cloudflare Worker deploys)
+.wrangler/

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { isValidHttpUrl, urlError } from "../../src/utils/urlValidation";
+import {
+  galleryUrlsError,
+  isValidHttpUrl,
+  parseImageLines,
+  urlError,
+} from "../../src/utils/urlValidation";
 
 describe("isValidHttpUrl", () => {
   it("accepts https and http URLs", () => {
@@ -36,6 +41,47 @@ describe("urlError", () => {
   it("returns a labeled message for invalid URLs", () => {
     expect(urlError("example.com", { required: true, label: "Live demo URL" })).toBe(
       "Live demo URL must be a valid http(s) URL.",
+    );
+  });
+});
+
+describe("parseImageLines", () => {
+  it("splits one URL per line, trimming and dropping blanks", () => {
+    expect(
+      parseImageLines("  https://example.com/a.png \n\nhttps://example.com/b.png\r\n   "),
+    ).toEqual(["https://example.com/a.png", "https://example.com/b.png"]);
+  });
+
+  it("returns an empty list for empty input", () => {
+    expect(parseImageLines("")).toEqual([]);
+    expect(parseImageLines("\n  \n")).toEqual([]);
+  });
+});
+
+describe("galleryUrlsError", () => {
+  it("accepts empty input and valid http(s) URLs", () => {
+    expect(galleryUrlsError("")).toBeNull();
+    expect(
+      galleryUrlsError("https://example.com/1.png\nhttps://example.com/2.png"),
+    ).toBeNull();
+    expect(galleryUrlsError("\n   \nhttps://example.com/3.png")).toBeNull();
+  });
+
+  it("names the first invalid line", () => {
+    expect(
+      galleryUrlsError("https://example.com/ok.png\nnot-a-url"),
+    ).toBe("Gallery image URL (line 2) must be a valid http(s) URL.");
+  });
+
+  it("rejects javascript: URLs", () => {
+    expect(galleryUrlsError("javascript:alert(1)")).toBe(
+      "Gallery image URL (line 1) must be a valid http(s) URL.",
+    );
+  });
+
+  it("accepts a custom label for the same line format", () => {
+    expect(galleryUrlsError("nope", "Profile image URL")).toBe(
+      "Profile image URL (line 1) must be a valid http(s) URL.",
     );
   });
 });

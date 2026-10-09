@@ -1,67 +1,170 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: `.dark` on <html>, set pre-paint by the bootstrap
+   script in index.html and toggled at runtime via utils/theme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ---------------------------------------------------------------------------
-   Two design systems in one stylesheet (§56):
+   Three visual systems in one stylesheet (§56):
 
-   1. Carbon Dark — the ADMIN. Canvas bg-slate-950 · cards bg-slate-900 +
-      border-slate-800 · accent text-emerald-400 · headings text-slate-100 ·
-      body text-slate-400 · system font stack (--font-sans / --font-mono).
+   1. Pop Mono — the PUBLIC portfolio, light default + dark twin. The base is
+      white/paper + near-black ink; ONE accent color (signal cobalt) carries
+      links, focus, hovers, and small highlights — "monochrome base, color on
+      top". Pop structure without the loud palette: hard offset shadows
+      (shadow-pop), chunky radii, press-down pills; borders/shadows follow
+      --color-ink so the frame flips light on the dark canvas. Fixed
+      --color-on-accent keeps text on white pills dark in BOTH modes.
+      Bricolage Grotesque display, Instrument Sans body, IBM Plex Mono meta.
+      Applied only under `.public-scope` (public shell root, paused screen,
+      error boundary) — the admin never carries that class.
 
-   2. Ink on Paper — the PUBLIC portfolio. Warm paper #F3EFE6 · ink #15120E ·
-      one vermilion accent · Instrument Serif / Instrument Sans / IBM Plex
-      Mono (--font-display / --font-body / --font-meta). Applied only inside
-      `.public-scope` (the public shell root); the admin never carries that
-      class, so both systems coexist without leaking.
+   2. Ink Console — the ADMIN. Always dark: slate/emerald/sky/red utility
+      names are kept (they are used exclusively by admin surfaces) but their
+      VALUES are re-pointed in @theme to the Signal ink system — near-black
+      canvas, raised panels, ultramarine accent, Bricolage headings. Shared
+      primitives below (.card, .btn-*, .input) are sharp-cornered Signal.
+
+   3. Admin never reads the Signal semantic tokens; public surfaces never
+      read slate utilities. Both systems coexist without leaking.
 --------------------------------------------------------------------------- */
 
 @theme {
-  /* Admin stacks — untouched. */
+  /* System stacks — fallbacks for the bare font-sans/font-mono utilities. */
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
   --font-mono:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
-  /* Public typography. Instrument Serif is 400-only — never font-semibold
-     on font-display (synthetic bold); the public heading rule below forces 400. */
-  --font-body:
-    "Instrument Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    sans-serif;
-  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  /* Signal typography. Bricolage Grotesque imports the wdth axis (75–100%)
+     at wght 200–800 — condensed mega-type is a first-class citizen. */
+  --font-display: "Bricolage Grotesque Variable", "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-body: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-meta: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Ink on Paper palette — contrast-checked against paper (§ plan):
-     ink 16.27 · muted 5.85 · accent-deep 5.54 · error 5.70 (small text OK);
-     accent 3.52 = graphics / ≥24px only, ink on accent fills 4.62. */
-  --color-paper: #f3efe6;
-  --color-paper-raised: #faf7f0;
-  --color-ink: #15120e;
-  --color-muted: #625b4f;
-  --color-faint: #8b8377;
-  --color-accent: #e8410e;
-  --color-accent-deep: #b22f06;
-  --color-error: #b3261e;
-  --color-error-tint: #fbeae8;
-  --color-success: #1f6f4a;
-  --color-success-tint: #e7f3ea;
+  /* Signal palette — LIGHT (all pairs WCAG-verified, see P0 commit). */
+  --color-canvas: #fafaf7;
+  --color-raised: #ffffff;
+  --color-ink: #141414;
+  --color-muted: #55555f;
+  --color-faint: #8a8a93; /* large text / decorative only — 3.27:1 */
+  --color-hairline: #1414141f;
+  --color-signal: #3d34f5; /* links, primary surfaces — 6.68:1 on canvas */
+  --color-signal-deep: #2a21d9; /* hover + focus ring — 8.66:1 on canvas */
+  --color-signal-soft: #a9a4ff; /* accents on ink bands — 8.28:1 on band */
+  --color-on-signal: #ffffff; /* text on signal fills — 6.98:1 */
+  --color-band: #141414; /* inverted footer band — near-black */
+  --color-band-ink: #fafaf7; /* 17.6:1 on band */
+  --color-band-muted: #a1a1aa; /* muted copy on band — 7.4:1 */
+  --color-ok: #157a4b;
+  --color-ok-tint: #e7f4ec;
+  --color-err: #c0271a;
+  --color-err-tint: #fbebe9;
 
-  /* One motion language: a single ease + three-step duration scale. */
-  --ease-print: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Fixed dark for text/borders on white pills — never flips, so white
+     buttons keep navy text in light AND dark modes. */
+  --color-on-accent: #141414;
+
+  /* Hard offset shadows + chunky radius + springy ease (pop motion). */
+  --shadow-pop-sm: 3px 3px 0 0 var(--color-ink);
+  --shadow-pop: 5px 5px 0 0 var(--color-ink);
+  --shadow-pop-lg: 9px 9px 0 0 var(--color-ink);
+  --radius-chunk: 1.25rem;
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Grid texture lines (fixed overlay in the public shell). */
+  --grid-line: rgb(20 20 20 / 0.05);
+
+  /* Shared light-variant primitives (public Alert/FormField) reuse the
+     same reds/greens under their own names. */
+  --color-error: #c0271a;
+  --color-error-tint: #fbebe9;
+  --color-success: #157a4b;
+  --color-success-tint: #e7f4ec;
+
+  /* --- ADMIN palette remap (Ink Console) ---------------------------------
+     slate/emerald/sky/red utility names appear ONLY on admin surfaces
+     (grep-verified: the only "slate" hits outside admin are the substring
+     in "translate-x"). Their values are re-pointed to the Signal ink
+     system so the whole CMS redesigns without touching 140+ call sites.
+     Admin is always dark, so accent values are the dark-mode signal. */
+  --color-slate-950: #0f0f13; /* canvas */
+  --color-slate-900: #17171d; /* cards, inputs, buttons */
+  --color-slate-800: #26262f; /* borders, skeleton-era fills */
+  --color-slate-700: #35353f; /* stronger borders */
+  --color-slate-600: #7e7e89; /* group labels — 4.7:1 on canvas */
+  --color-slate-500: #8a8a93; /* meta text — 5.4:1 */
+  --color-slate-400: #a5a4b0; /* nav/meta text — 8.0:1 */
+  --color-slate-300: #c9c8d2; /* labels */
+  --color-slate-200: #e6e5ec; /* hover text */
+  --color-slate-100: #f2f1ed; /* headings */
+  --color-emerald-500: #8b85ff; /* accent fill — signal on ink (6.3:1 w/ slate-950 text) */
+  --color-emerald-400: #a5a0ff; /* accent text/hover — 8.6:1 on canvas */
+  --color-emerald-300: #b9b5ff; /* accent hover text */
+  --color-sky-500: #8b85ff; /* info badges → signal family */
+  --color-sky-400: #a5a0ff;
+  --color-sky-300: #b9b5ff;
+  --color-red-500: #ff6f61; /* error */
+  --color-red-400: #ff8a80; /* error text — 7.4:1 on slate-900 */
+  --color-red-300: #ffaba4;
+
+  /* One motion language. */
+  --ease-signal: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-1: 160ms;
   --dur-2: 450ms;
   --dur-3: 750ms;
 }
 
+/* Signal palette — DARK. Same keys, new values; utilities flip via var(). */
+:root.dark {
+  --color-canvas: #0f0f13;
+  --color-raised: #17171d;
+  --color-ink: #f2f1ed;
+  --color-muted: #a5a4b0;
+  --color-faint: #71717c;
+  --color-hairline: #f2f1ed26;
+  --color-signal: #8b85ff;
+  --color-signal-deep: #a5a0ff;
+  --color-signal-soft: #8b85ff;
+  --color-on-signal: #0f0f13;
+  --color-band: #191920;
+  --color-band-ink: #f2f1ed;
+  --color-band-muted: #a5a4b0;
+  --color-ok: #4ade9e;
+  --color-ok-tint: #10241a;
+  --color-err: #ff8a80;
+  --color-err-tint: #2a1210;
+  --grid-line: rgb(242 241 237 / 0.05);
+
+  --color-error: #ff8a80;
+  --color-error-tint: #2a1210;
+  --color-success: #4ade9e;
+  --color-success-tint: #10241a;
+}
+
 @layer base {
-  html {
-    scroll-behavior: smooth;
+  /* No CSS scroll-behavior — lenis owns smooth scrolling when active; the
+     native fallback passes behavior explicitly to scrollIntoView. */
+
+  /* Lenis smooth-scroll integration (class added at runtime). */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-
     *,
     *::before,
     *::after {
@@ -71,18 +174,34 @@
       transition-duration: 0.01ms !important;
       transition-delay: 0ms !important;
     }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.01ms !important;
+    }
   }
 
-  /* Paper canvas: public pages paint it from the shell; every admin surface
-     sets its own bg-slate-950, so only a pre-hydration flash sees this. */
+  /* Native theme-switch wipe (utils/theme startViewTransition). */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 280ms;
+    animation-timing-function: var(--ease-signal);
+  }
+
+  /* Body: Signal canvas by default; admin surfaces self-paint bg-slate-950.
+     The remapped slate-400 default reads on the admin ink canvas; the public
+     shell sets explicit ink colors on its root. Body copy is Instrument Sans
+     everywhere (admin headings fall back to Bricolage via the h1–h6 rule). */
   body {
-    background-color: var(--color-paper);
+    background-color: var(--color-canvas);
     color: var(--color-slate-400);
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
+  /* Admin headings — Bricolage display face (the .public-scope rule below
+     re-typesets public headings to the same values). */
   h1,
   h2,
   h3,
@@ -90,8 +209,9 @@
   h5,
   h6 {
     color: var(--color-slate-100);
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 
   ::selection {
@@ -99,7 +219,6 @@
     color: var(--color-slate-100);
   }
 
-  /* Visible, consistent focus indicator for keyboard users (§54) */
   :focus-visible {
     outline: 2px solid var(--color-emerald-400);
     outline-offset: 2px;
@@ -108,119 +227,234 @@
 }
 
 @layer components {
-  /* --- Carbon Dark primitives (admin) — byte-stable ------------------------ */
+  /* --- Admin primitives (Ink Console) — sharp Signal corners --------------- */
 
   .card {
-    @apply rounded-xl border border-slate-800 bg-slate-900;
+    @apply border border-slate-800 bg-slate-900;
   }
 
   .btn-primary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-500 px-4 py-2
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-emerald-500 px-4 py-2
       text-sm font-medium text-slate-950 transition-all duration-300 hover:bg-emerald-400
       disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-secondary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-700
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-slate-700
       bg-slate-900 px-4 py-2 text-sm font-medium text-slate-300 transition-all duration-300
       hover:border-emerald-500/50 hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .btn-danger {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-red-500/30
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-red-500/30
       bg-slate-900 px-4 py-2 text-sm font-medium text-red-400 transition-all duration-300
       hover:border-red-500/60 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .input {
-    @apply w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100
+    @apply w-full border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100
       placeholder:text-slate-500 focus:border-emerald-500/50 focus:outline-none;
   }
 
-  /* --- Ink on Paper primitives (public only) ------------------------------ */
+  /* --- Signal primitives (public only) ------------------------------------ */
 
   /* Mono eyebrow — role, section numbers, meta labels. */
   .eyebrow {
-    @apply font-meta text-[0.6875rem] font-medium tracking-[0.16em] text-accent-deep uppercase;
+    @apply font-meta text-[0.6875rem] font-medium tracking-[0.16em] text-signal-deep uppercase;
   }
 
-  /* Large call-to-action pair for hero, footer, and detail pages. */
+  /* Primary CTA — black pill, white text, hard offset shadow, press-down.
+     Hover floods the one accent (cobalt). Public-only (admin uses .btn-*). */
   .cta-primary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 bg-ink px-6 py-3
-      text-base font-medium text-paper transition-colors duration-200
-      hover:bg-accent-deep disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2
+      border-ink bg-ink px-6 py-3.5 text-base font-semibold text-canvas transition-[transform,box-shadow,background-color,color] duration-150;
+    box-shadow: var(--shadow-pop);
   }
 
+  .cta-primary:hover:not(:disabled) {
+    background-color: var(--color-signal);
+    border-color: var(--color-signal);
+    color: var(--color-on-signal);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop-lg);
+  }
+
+  .cta-primary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+    transition-duration: 80ms;
+  }
+
+  .cta-primary:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Secondary CTA — white pill, ink frame; hover floods cobalt too. */
   .cta-ghost {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 border border-ink px-6 py-3
-      text-base font-medium text-ink transition-colors duration-200
-      hover:bg-ink hover:text-paper disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2
+      border-ink bg-raised px-6 py-3 text-base font-semibold text-ink transition-[transform,box-shadow,background-color,color] duration-150;
+    box-shadow: var(--shadow-pop);
   }
 
-  /* Fixed-viewport paper fiber (aria-hidden overlay in the public shell). */
-  .paper-grain {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
+  .cta-ghost:hover:not(:disabled) {
+    background-color: var(--color-signal);
+    border-color: var(--color-signal);
+    color: var(--color-on-signal);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop-lg);
   }
 
-  /* --- Ink on Paper, scoped to the public shell ---------------------------
+  .cta-ghost:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+    transition-duration: 80ms;
+  }
+
+  .cta-ghost:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Pop card — chunky-radius public content card with hard offset shadow. */
+  .pop-card {
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-chunk);
+    background-color: var(--color-raised);
+    box-shadow: var(--shadow-pop);
+  }
+
+  /* Add to any anchor/wrapper around a .pop-card for the press lift. */
+  .pop-card-link {
+    transition:
+      transform var(--dur-1) var(--ease-pop),
+      box-shadow var(--dur-1) var(--ease-pop);
+  }
+
+  .pop-card-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop-lg);
+  }
+
+  .pop-card-link:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+  }
+
+  /* Chip — mono pill badge (skills, tags, filters). */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-raised px-3
+      py-1.5 font-meta text-xs font-medium text-ink;
+  }
+
+  /* Fixed dot-grid texture behind the public page (aria-hidden overlay). */
+  .grid-overlay {
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
+  /* --- Signal, scoped to the public shell ---------------------------------
      Everything below requires a .public-scope ancestor (PublicShell root,
-     paused screen, route error boundary). Specificity wins over the Carbon
-     primitives above; the utilities layer still wins over all of it. */
+     paused screen, route error boundary). Utilities still win over all of
+     it; the admin never matches. */
 
-  /* Every public heading is typeset serif — beats the base slate-100 rule,
-     loses to explicit font-meta/size utilities where used. */
   .public-scope :where(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     color: var(--color-ink);
   }
 
+  /* Headings inside inverted bands follow the band palette. */
+  .public-scope .band :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--color-band-ink);
+  }
+
+  .public-scope .band .eyebrow {
+    color: var(--color-signal-soft);
+  }
+
   .public-scope ::selection {
-    background-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+    background-color: color-mix(in oklab, var(--color-signal) 35%, transparent);
     color: var(--color-ink);
   }
 
   .public-scope :focus-visible {
-    outline-color: var(--color-accent-deep);
+    outline: 2px solid var(--color-signal-deep);
+    outline-offset: 3px;
     border-radius: 0;
   }
 
+  /* Shared Button (public instances) — same monochrome-base/cobalt-hover
+     pill system as the .cta pair. */
   .public-scope .btn-primary {
-    border-radius: 0;
+    border-radius: 9999px;
+    border: 2px solid var(--color-ink);
     background-color: var(--color-ink);
-    color: var(--color-paper);
-    transition-duration: var(--dur-1);
+    color: var(--color-canvas);
+    box-shadow: var(--shadow-pop-sm);
+    transition:
+      transform var(--dur-1) var(--ease-pop),
+      box-shadow var(--dur-1) var(--ease-pop),
+      background-color var(--dur-1),
+      color var(--dur-1),
+      border-color var(--dur-1);
   }
 
   .public-scope .btn-primary:hover:not(:disabled) {
-    background-color: var(--color-accent-deep);
+    background-color: var(--color-signal);
+    border-color: var(--color-signal);
+    color: var(--color-on-signal);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop);
+  }
+
+  .public-scope .btn-primary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+  }
+
+  .public-scope .btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 
   .public-scope .btn-secondary {
-    border-radius: 0;
-    border-color: var(--color-ink);
-    background-color: transparent;
+    border-radius: 9999px;
+    border: 2px solid var(--color-ink);
+    background-color: var(--color-raised);
     color: var(--color-ink);
-    transition-duration: var(--dur-1);
+    box-shadow: var(--shadow-pop-sm);
+    transition:
+      transform var(--dur-1) var(--ease-pop),
+      box-shadow var(--dur-1) var(--ease-pop),
+      background-color var(--dur-1),
+      color var(--dur-1),
+      border-color var(--dur-1);
   }
 
   .public-scope .btn-secondary:hover:not(:disabled) {
-    background-color: var(--color-ink);
-    border-color: var(--color-ink);
-    color: var(--color-paper);
+    background-color: var(--color-signal);
+    border-color: var(--color-signal);
+    color: var(--color-on-signal);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-pop);
   }
 
-  /* Print-style fields: underline only, paper tint on focus. */
+  .public-scope .btn-secondary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-ink);
+  }
+
   .public-scope .input {
     border-radius: 0;
-    border-width: 0 0 2px 0;
-    border-color: color-mix(in oklab, var(--color-ink) 30%, transparent);
-    background-color: transparent;
-    padding-left: 0;
-    padding-right: 0;
-    font-size: 1.0625rem;
+    border-width: 1px;
+    border-color: var(--color-hairline);
+    background-color: var(--color-raised);
     color: var(--color-ink);
+    transition:
+      border-color var(--dur-1) var(--ease-signal),
+      background-color var(--dur-1) var(--ease-signal);
   }
 
   .public-scope .input::placeholder {
@@ -228,16 +462,17 @@
   }
 
   .public-scope .input:focus {
-    border-color: var(--color-accent-deep);
-    background-color: var(--color-paper-raised);
+    border-color: var(--color-signal);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-signal) 22%, transparent);
   }
 
-  /* Bridge so .card content (public EmptyState) reads on paper until its
-     public instances are replaced with inline markup. */
+  /* Bridge so shared .card content (public EmptyState on the projects
+     page) reads on Signal — admin instances never match this scope. */
   .public-scope .card {
     border-radius: 0;
-    border-color: color-mix(in oklab, var(--color-ink) 15%, transparent);
-    background-color: var(--color-paper-raised);
+    border-color: var(--color-hairline);
+    background-color: var(--color-raised);
   }
 
   .public-scope .card > p:first-child {
@@ -247,29 +482,81 @@
   .public-scope .card > p + p {
     color: var(--color-muted);
   }
+
+  /* CTAs on the black footer band — white/outlined pills with a cobalt
+     hard shadow (visible on black), flooding cobalt on hover. Cobalt fills
+     and shadows flip with --color-signal, so they read on both band values. */
+  .public-scope .band .cta-ghost {
+    background-color: transparent;
+    border-color: var(--color-band-ink);
+    color: var(--color-band-ink);
+    box-shadow: 4px 4px 0 0 var(--color-signal);
+  }
+
+  .public-scope .band .cta-ghost:hover:not(:disabled) {
+    background-color: var(--color-signal);
+    border-color: var(--color-signal);
+    color: var(--color-on-signal);
+    box-shadow: 9px 9px 0 0 var(--color-signal);
+  }
+
+  .public-scope .band .cta-primary {
+    background-color: var(--color-band-ink);
+    border-color: var(--color-on-accent);
+    color: var(--color-on-accent);
+    box-shadow: 4px 4px 0 0 var(--color-signal);
+  }
+
+  .public-scope .band .cta-primary:hover:not(:disabled) {
+    background-color: var(--color-signal);
+    border-color: var(--color-signal);
+    color: var(--color-on-signal);
+    box-shadow: 9px 9px 0 0 var(--color-signal);
+  }
+
+  .public-scope .band .cta-primary:active:not(:disabled),
+  .public-scope .band .cta-ghost:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--color-signal);
+    transition-duration: 80ms;
+  }
 }
 
-/* --- Public motion (JS adds .reveal only where IntersectionObserver works);
-   the global reduced-motion rule above zeroes these durations. ------------- */
+/* --- Public motion (JS adds .reveal only where IntersectionObserver works;
+   the global reduced-motion rule above zeroes durations and delays). ------ */
 .reveal {
   opacity: 0;
   transform: translateY(28px);
   transition:
-    opacity var(--dur-3) var(--ease-print),
-    transform var(--dur-3) var(--ease-print);
+    opacity var(--dur-3) var(--ease-signal),
+    transform var(--dur-3) var(--ease-signal);
 }
 
 .reveal.reveal-in {
   opacity: 1;
-  transform: translateY(0);
+  /* Interpolates from translateY(28px) exactly like translateY(0), but
+     computes to `none` — any other value would keep this wrapper a
+     containing block and mis-anchor position:fixed descendants (the
+     contact copy toast) to the section instead of the viewport. */
+  transform: none;
+}
+
+/* Scroll-driven enhancement: elements rise as they enter the viewport.
+   Chromium-only; .reveal / static content covers every other engine. */
+@supports (animation-timeline: view()) {
+  .reveal-view {
+    animation: fade-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 32%;
+  }
 }
 
 /* Hero choreography: word masks, drawn rule, staged rise. Delays are inline
-   per element; the reduced-motion rule above zeroes both duration and delay
-   so everything lands in its final state instantly. */
+   per element; reduced-motion zeroes duration AND delay, landing everything
+   in its final state instantly. */
 @keyframes word-rise {
   from {
-    transform: translateY(105%);
+    transform: translateY(108%);
   }
   to {
     transform: translateY(0);
@@ -297,13 +584,40 @@
 }
 
 .animate-word {
-  animation: word-rise var(--dur-3) var(--ease-print) both;
+  animation: word-rise var(--dur-3) var(--ease-signal) both;
 }
 
 .animate-rise {
-  animation: fade-rise var(--dur-3) var(--ease-print) both;
+  animation: fade-rise var(--dur-3) var(--ease-signal) both;
 }
 
 .animate-draw {
-  animation: rule-draw var(--dur-2) var(--ease-print) both;
+  animation: rule-draw var(--dur-2) var(--ease-signal) both;
+}
+
+/* Pressable micro-state for buttons/cards (used with lucide arrow nudges). */
+.press {
+  transition:
+    transform var(--dur-1) var(--ease-signal),
+    box-shadow var(--dur-1) var(--ease-signal);
+}
+
+.press:active {
+  transform: translateY(2px);
+}
+
+/* Pop decor motion: bobbing hero terminal card. Reduced-motion global rule
+   freezes it on its first frame. */
+@keyframes pop-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+.animate-pop-bob {
+  animation: pop-bob 3.6s var(--ease-signal) infinite;
 }

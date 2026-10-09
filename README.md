@@ -9,12 +9,53 @@ inbox.
 No content is fabricated anywhere: empty sections are hidden, empty lists show
 honest empty states, and nothing is invented to make the site look fuller.
 
+## Design
+
+Two coordinated visual systems in one stylesheet:
+
+- **Pop Mono — the public portfolio.** Monochrome base with one accent:
+  paper canvas (`#fafaf7`) and near-black ink (`#141414`) carry the page,
+  electric ultramarine (`#3d34f5`) cobalt carries links, focus rings, hover
+  floods, the reading-progress bar, and small highlights; giant condensed
+  Bricolage Grotesque display type, IBM Plex Mono meta labels, and hard
+  offset shadows (`shadow-pop`) on chunky-radius cards and press-down pill
+  buttons (black primary / white outlined, both flooding cobalt on hover).
+  Sections ride hairline dividers with arrow-circle badges; the hero is
+  paper-on-paper with a cobalt drawn rule, the name's first *o* rendered as
+  a circular `</>` icon, social pills beside the CTAs on desktop (stacked
+  below the full-width buttons on small screens), and a bobbing
+  terminal-card decor; the footer is a full-bleed black band with
+  `signal-soft` accents and a swipeable stacked photo deck in About. A light/dark toggle
+  (localStorage → `prefers-color-scheme` → light) flips one class — white
+  pills keep fixed navy text via `--color-on-accent`, and borders/shadows
+  follow `--color-ink` so the neobrutalist frame turns light on the dark
+  canvas. Admin pages are unaffected.
+- **Ink Console — the admin CMS.** Always dark: near-black ink canvas, raised
+  panels, the same ultramarine accent, Bricolage headings, mono nav, sharp
+  primitives. (Tailwind's slate/emerald utility names are kept but their
+  values are re-pointed in `@theme` — grep-verified admin-only usage.)
+
+Public-site touches: a scrollspy nav whose order mirrors the homepage scroll
+chain (Work lights up for both the `/projects` route and the homepage
+projects section, and the last section stays lit through the footer), an embla
+carousel showcase of featured projects below `lg` that turns into a static
+3-column card grid with no carousel chrome — at `lg`+ on the homepage,
+while `/projects` keeps
+its two-column grid, ⌘K command palette (lazy `cmdk`), Lenis smooth scrolling,
+route view transitions, a keyboard-navigable project gallery lightbox,
+confetti on contact send, copy-email toast, and a theme toggle in the header.
+The About photo deck is edited as one-URL-per-line in Admin → Profile
+(`profileImageUrls`, legacy `profileImageUrl` mirrors the front card). The
+dashboard seeder is fill-missing: it only ever adds sample entries whose
+documents are absent and never overwrites owner content.
+
 ## Stack
 
 | Layer | Choice |
 | --- | --- |
 | UI | React 19, TypeScript ~5.9, Vite 8 |
-| Styling | Tailwind CSS 4, hand-rolled design-system classes |
+| Styling | Tailwind CSS 4, hand-rolled design-system classes, Fontsource variable fonts (Bricolage Grotesque, Instrument Sans, IBM Plex Mono) |
+| Libraries | lenis (smooth scroll), motion, cmdk (⌘K palette), lucide-react, canvas-confetti |
 | Routing | React Router v8 (`createBrowserRouter`, data routers, lazy admin routes) |
 | Backend | Firebase — Auth (email/password), Firestore, Storage (optional) |
 | Testing | Vitest 5, Testing Library, jsdom; Security Rules tests on the Emulator Suite |
@@ -56,13 +97,13 @@ npm run emulators    # emulators only (auth :9099, firestore :8080, storage :919
 src/
   components/
     admin/        Admin page building blocks (forms, rows, shell)
-    layout/       SidebarShell shared by both layouts
+    layout/       PublicShell (site chrome) + SidebarShell (admin)
     public/       Public site sections (hero, skills, projects, …)
     ui/           Design system (Button, Alert, ConfirmDialog, …)
   config/         Firebase init, emulator wiring, App Check
   context/        AuthContext — admin session + admins/{uid} verification
   hooks/          useAsync, useMutation, useOrderedCollection
-  layouts/        PublicLayout (profile sidebar), AdminLayout
+  layouts/        PublicLayout (Signal chrome), AdminLayout (Ink Console)
   loaders/        Route loaders for the public site
   pages/          Route components (public/, admin/)
   routes/         Router table, PublicErrorBoundary

@@ -1,5 +1,27 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link, NavLink, useLocation } from "react-router";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { Link, useLocation } from "react-router";
+import { AnimatePresence, motion } from "motion/react";
+import { ArrowUp, Menu, Moon, Search, Sun, X } from "lucide-react";
+
+import {
+  initLenis,
+  isFlying,
+  NAV_ANCHOR_OFFSET,
+  NAV_ANCHOR_TOLERANCE,
+  onFlight,
+  scrollToId,
+  scrollToTop,
+} from "../../utils/smoothScroll";
+import { currentTheme, toggleTheme, type Theme } from "../../utils/theme";
+
+const CommandPalette = lazy(() => import("../public/CommandPalette"));
 
 export interface ShellLink {
   key: string;
@@ -28,30 +50,31 @@ const FOCUSABLE_SELECTOR =
 
 function routeLinkClass(active: boolean): string {
   return [
-    "px-3 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
-    active
-      ? "text-ink underline decoration-2 decoration-accent underline-offset-[6px]"
-      : "text-muted hover:text-ink",
+    "relative rounded-full px-3.5 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    // The pill behind the active link flips with ink (black in light, white
+    // in dark), so its label flips too — text-canvas on the ink pill.
+    active ? "text-canvas" : "text-muted hover:text-ink",
   ].join(" ");
 }
 
 function menuLinkClass(active: boolean): string {
   return [
-    "block px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    "block rounded-lg px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
     active
-      ? "bg-ink/8 text-accent-deep"
+      ? "bg-ink text-canvas"
       : "text-muted hover:bg-ink/5 hover:text-ink",
   ].join(" ");
 }
 
 /**
  * Public site shell — sticky top navigation with scrollspy, non-modal mobile
- * menu, and a full-width footer (§7, §54, §55).
+ * menu, theme toggle, ⌘K palette, reading progress, and an inverted footer
+ * band (§7, §54, §55).
  *
  * Structure only: every piece of content arrives as props from PublicLayout,
  * which owns all loader data. Accessibility: skip link, single labelled
  * navigation landmark, Esc-to-close with focus restore on the menu button,
- * and reduced-motion-safe scrolling handled by the layout.
+ * and lenis kept off under reduced motion and in tests.
  */
 export default function PublicShell({
   brand,
@@ -92,41 +115,153 @@ export default function PublicShell({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [menuOpen]);
 
-  // --- Scrollspy: highlight the section link whose section currently owns
-  // the upper part of the viewport. Disabled outside browsers without the API
-  // (tests, very old engines) — the nav simply keeps route highlighting.
-  const [activeSpyId, setActiveSpyId] = useState("");
+  // --- Smooth scrolling: mounted once for the public site, skipped in tests
+  // and whenever the visitor prefers reduced motion.
+  useEffect(() => {
+    if (import.meta.env.MODE === "test") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    return initLenis();
+  }, []);
+
+  // --- Command palette: ⌘K / Ctrl+K toggles the lazy-loaded palette.
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // --- Theme: the document state is the source of truth (bootstrap script +
+  // applyTheme); this mirror only feeds the toggle icon swap.
+  const [theme, setTheme] = useState<Theme>(currentTheme);
+  const handleToggleTheme = (): void => {
+    setTheme(toggleTheme());
+  };
+  const themeLabel =
+    theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+
+  // --- Scrollspy: the LAST spy section whose top has crossed the sticky
+  // header band (scroll-mt-24's 96px + the settle tolerance shared with
+  // scrollToTarget) owns the highlight, so reaching the footer keeps Contact lit instead of
+  // falling back to Home, and the top of the page always falls back to Home.
+  // rAF-throttled like the progress bar; state only updates inside the rAF
+  // callback (no setState-in-effect). The state records the pathname that
+  // produced it, so a route change DERIVES an empty highlight: sections that
+  // don't exist on the new page can never stay aria-current.
+  const [spyState, setSpyState] = useState({ pathname: "", id: "" });
+  const activeSpyId =
+    spyState.pathname === location.pathname ? spyState.id : "";
+
+  // --- Flight intent: smoothScroll announces the destination the moment a
+  // scroll starts (nav clicks, layout resets, palette actions). That intent
+  // is the highlight until the position spy catches up, so the pill jumps
+  // straight to the clicked link instead of lagging behind the flight
+  // through every section band it crosses (§7 round 8).
+  const [flightId, setFlightId] = useState<string | null>(null);
+  const flightRef = useRef<string | null>(null);
+  const idleFrames = useRef(0);
+  useEffect(
+    () =>
+      onFlight((id) => {
+        flightRef.current = id;
+        idleFrames.current = 0;
+        setFlightId(id);
+      }),
+    [],
+  );
+  // Hand back to the position spy when either (a) the visitor takes over —
+  // any wheel/touch/keydown drops the intent so their own scroll wins
+  // instantly — or (b) the flight has ended: three quiet spy frames with
+  // no lenis animation mean the page has landed, where position and
+  // intent agree anyway.
+  useEffect(() => {
+    const dropIntent = (): void => {
+      if (flightRef.current === null) return;
+      flightRef.current = null;
+      idleFrames.current = 0;
+      setFlightId(null);
+    };
+    const handleKeyDown = (): void => dropIntent();
+    window.addEventListener("wheel", dropIntent, { passive: true });
+    window.addEventListener("touchstart", dropIntent, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("wheel", dropIntent);
+      window.removeEventListener("touchstart", dropIntent);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+  const shownSpyId = flightId ?? activeSpyId;
+
   const spyKey = links.map((link) => link.spyId ?? "").join("|");
   useEffect(() => {
-    if (spyKey === "" || typeof IntersectionObserver !== "function") return;
+    if (spyKey === "") return;
 
     const ids = spyKey.split("|").filter((id) => id !== "");
-    const visible = new Map<string, boolean>();
-    let lastActive = "";
+    const SPY_OFFSET = NAV_ANCHOR_OFFSET + NAV_ANCHOR_TOLERANCE;
+    let frame = 0;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          visible.set(entry.target.id, entry.isIntersecting);
+    const update = (): void => {
+      frame = 0;
+      let active = "";
+      for (const id of ids) {
+        const element = document.getElementById(id);
+        if (
+          element !== null &&
+          element.getBoundingClientRect().top <= SPY_OFFSET
+        ) {
+          active = id;
         }
-        // Sections stack in DOM order — the first visible one owns the state.
-        const active = ids.find((id) => visible.get(id) === true) ?? "";
-        if (active !== lastActive) {
-          lastActive = active;
-          setActiveSpyId(active);
+      }
+      setSpyState((prev) =>
+        prev.pathname === location.pathname && prev.id === active
+          ? prev
+          : { pathname: location.pathname, id: active },
+      );
+      // Hold the announced intent while its flight runs; three consecutive
+      // quiet frames (no lenis animation) mean the page has landed, so drop
+      // the intent and let the position above take over seamlessly.
+      if (flightRef.current !== null) {
+        if (isFlying()) {
+          idleFrames.current = 0;
+        } else if (++idleFrames.current >= 3) {
+          flightRef.current = null;
+          idleFrames.current = 0;
+          setFlightId(null);
         }
-      },
-      { rootMargin: "-84px 0px -55% 0px", threshold: 0 },
-    );
-
-    for (const id of ids) {
-      const element = document.getElementById(id);
-      if (element !== null) observer.observe(element);
-    }
-    return () => observer.disconnect();
+      }
+    };
+    const requestUpdate = (): void => {
+      if (frame === 0) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    requestUpdate();
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (frame !== 0) cancelAnimationFrame(frame);
+    };
   }, [spyKey, location.pathname]);
 
-  // --- Reading progress: a 2px accent bar riding the header's bottom rule.
+  // --- Back-to-top: appears once the visitor is past the fold. Threshold
+  // state only flips twice, so scrolling stays cheap.
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  useEffect(() => {
+    const handleScroll = (): void => {
+      setShowBackToTop(window.scrollY > 640);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // --- Reading progress: a 2px signal bar riding the header's bottom rule.
   // Writes the transform directly from a rAF-throttled scroll listener — no
   // state, so scrolling never re-renders the shell (§54).
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -155,36 +290,65 @@ export default function PublicShell({
   }, []);
 
   const renderLink = (link: ShellLink, mobile: boolean): ReactNode => {
-    const className = mobile ? menuLinkClass : routeLinkClass;
-    if (link.spyId !== undefined) {
-      const active = activeSpyId === link.spyId;
-      return (
-        <Link
-          key={link.key}
-          to={link.to}
-          aria-current={active ? "true" : undefined}
-          className={className(active)}
-          onClick={() => setOpenedAtKey(null)}
-        >
-          {link.label}
-        </Link>
-      );
-    }
+    const linkClass = mobile ? menuLinkClass : routeLinkClass;
+    const underline = (active: boolean): ReactNode =>
+      !mobile && active ? (
+        <motion.span
+          layoutId="nav-pill"
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 rounded-full bg-ink"
+          transition={{ type: "spring", stiffness: 460, damping: 36 }}
+        />
+      ) : null;
+
+    // Route matching (replaces NavLink's): exact for `end`, prefix otherwise
+    // so /projects/:id keeps Work lit. Hash sections ignore the route —
+    // their pathname is always "/" — and follow shownSpyId: the announced
+    // flight target while a scroll is in flight, the spy's position after.
+    const isHashLink = typeof link.to === "object" && link.to.hash !== undefined;
+    const linkPathname = typeof link.to === "string" ? link.to : link.to.pathname;
+    const routeActive = link.end
+      ? location.pathname === linkPathname
+      : location.pathname === linkPathname ||
+        (linkPathname !== "/" &&
+          location.pathname.startsWith(`${linkPathname}/`));
+    const active =
+      link.spyId !== undefined
+        ? isHashLink
+          ? shownSpyId === link.spyId
+          : routeActive || shownSpyId === link.spyId
+        : routeActive && shownSpyId === "";
+
     return (
-      <NavLink
+      <Link
         key={link.key}
         to={link.to}
-        end={link.end}
-        className={({ isActive }) => {
-          const active =
-            isActive &&
-            (!link.end || (location.hash === "" && activeSpyId === ""));
-          return className(active);
+        viewTransition={!isHashLink}
+        aria-current={active ? "true" : undefined}
+        className={linkClass(active)}
+        onClick={() => {
+          setOpenedAtKey(null);
+          if (
+            typeof link.to === "object" &&
+            link.to.hash !== undefined &&
+            link.to.hash.length > 1
+          ) {
+            // Waits for the anchor to mount on cross-route arrivals, then
+            // flies; same-hash re-clicks find it on the first frame.
+            scrollToId(link.to.hash.slice(1));
+          } else {
+            // Route links: navigating to the SAME location leaves the
+            // layout's reset effect without a dep change (Home at /, Work
+            // at /projects), so the click would do nothing while scrolled.
+            // Scroll here too — the effect covers cross-route clicks with
+            // the same harmless double call.
+            requestAnimationFrame(() => scrollToTop());
+          }
         }}
-        onClick={() => setOpenedAtKey(null)}
       >
         {link.label}
-      </NavLink>
+        {underline(active)}
+      </Link>
     );
   };
 
@@ -193,23 +357,24 @@ export default function PublicShell({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-paper font-body text-ink/80 antialiased">
+    <div className="public-scope flex min-h-screen flex-col bg-canvas font-body text-ink antialiased">
       <a
         href="#main-content"
-        className="sr-only z-100 bg-ink px-4 py-2 text-sm font-medium text-paper focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
+        className="sr-only z-100 bg-ink px-4 py-2 text-sm font-medium text-canvas focus:not-sr-only focus:absolute focus:top-3 focus:left-3"
       >
         Skip to content
       </a>
 
-      {/* Fixed paper fiber over the whole viewport (§56). */}
+      {/* Fixed dot-grid texture — sits UNDER page content (z-0), so opaque
+          bands and cards hide it while the open canvas shows it. */}
       <div
         aria-hidden="true"
-        className="paper-grain pointer-events-none fixed inset-0 z-50 opacity-[0.045] mix-blend-multiply"
+        className="grid-overlay pointer-events-none fixed inset-0 z-0"
       />
 
-      <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-16 lg:px-10">
-          <div className="min-w-0">{brand}</div>
+      <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/85 backdrop-blur-md">
+        <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-16 lg:px-10">
+          <div className="min-w-0 shrink">{brand}</div>
 
           <nav
             aria-label="Site navigation"
@@ -218,72 +383,157 @@ export default function PublicShell({
             {links.map((link) => renderLink(link, false))}
           </nav>
 
-          <div className="hidden lg:block">{actions}</div>
+          <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 lg:flex">
+              {actions}
+              <button
+                type="button"
+                onClick={() => setPaletteOpen(true)}
+                aria-label="Open command palette"
+                className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-ink transition-colors hover:bg-ink hover:text-canvas"
+              >
+                <Search aria-hidden="true" className="size-3.5" />
+                <span className="font-meta text-[10px] tracking-[0.1em] uppercase">
+                  Search
+                </span>
+                <kbd className="rounded border border-current px-1 font-meta text-[10px]">
+                  ⌘K
+                </kbd>
+              </button>
+            </div>
 
-          <button
-            ref={menuButtonRef}
-            type="button"
-            className="border border-ink/30 p-2 text-ink transition-colors hover:border-accent hover:text-ink lg:hidden"
-            aria-expanded={menuOpen}
-            aria-controls="public-menu"
-            onClick={toggleMenu}
-          >
-            <span className="sr-only">
-              {menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            </span>
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
+            <button
+              type="button"
+              onClick={handleToggleTheme}
+              aria-label={themeLabel}
+              title={themeLabel}
+              className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-canvas"
             >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={theme}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-center justify-center"
+                >
+                  {theme === "dark" ? (
+                    <Sun aria-hidden="true" className="size-[18px]" />
+                  ) : (
+                    <Moon aria-hidden="true" className="size-[18px]" />
+                  )}
+                </motion.span>
+              </AnimatePresence>
+            </button>
+
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-canvas lg:hidden"
+              aria-expanded={menuOpen}
+              aria-controls="public-menu"
+              onClick={toggleMenu}
+            >
+              <span className="sr-only">
+                {menuOpen ? "Close navigation menu" : "Open navigation menu"}
+              </span>
               {menuOpen ? (
-                <path d="M6 6l12 12M18 6L6 18" />
+                <X aria-hidden="true" className="size-[18px]" />
               ) : (
-                <path d="M4 7h16M4 12h16M4 17h16" />
+                <Menu aria-hidden="true" className="size-[18px]" />
               )}
-            </svg>
-          </button>
+            </button>
+          </div>
         </div>
 
         <div
           aria-hidden="true"
           ref={progressRef}
-          className="pointer-events-none absolute -bottom-0.5 left-0 h-0.5 w-full origin-left bg-accent"
+          className="pointer-events-none absolute -bottom-px left-0 h-0.5 w-full origin-left bg-signal"
           style={{ transform: "scaleX(0)" }}
         />
 
-        {menuOpen && (
-          <div
-            ref={panelRef}
-            id="public-menu"
-            className="border-t-2 border-ink bg-paper lg:hidden"
-          >
-            <nav
-              aria-label="Site navigation"
-              className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6"
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              ref={panelRef}
+              id="public-menu"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden border-t border-hairline bg-canvas lg:hidden"
             >
-              {links.map((link) => renderLink(link, true))}
-              {actions !== undefined && (
-                <div className="mt-3 border-t border-ink/12 pt-3">
-                  {actions}
-                </div>
-              )}
-            </nav>
-          </div>
-        )}
+              <nav
+                aria-label="Site navigation"
+                className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6"
+              >
+                {links.map((link, index) => (
+                  <motion.div
+                    key={link.key}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.03 * index,
+                      duration: 0.18,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                  >
+                    {renderLink(link, true)}
+                  </motion.div>
+                ))}
+                {actions !== undefined && (
+                  <div className="mt-3 border-t border-hairline pt-3">
+                    {actions}
+                  </div>
+                )}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
-        <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="relative z-10 flex-1 outline-none"
+      >
+        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
           {children}
         </div>
       </main>
 
-      <footer className="border-t-2 border-ink">{footer}</footer>
+      <footer className="band relative z-10 bg-band text-band-ink">{footer}</footer>
+
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            key="back-to-top"
+            type="button"
+            aria-label="Back to top"
+            onClick={scrollToTop}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 14 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal shadow-pop transition-transform hover:-translate-y-0.5"
+          >
+            <ArrowUp aria-hidden="true" className="size-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {paletteOpen && (
+        <Suspense fallback={null}>
+          <CommandPalette
+            links={links}
+            theme={theme}
+            onToggleTheme={handleToggleTheme}
+            onClose={() => setPaletteOpen(false)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

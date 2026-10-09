@@ -1,16 +1,23 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { Timestamp } from "firebase/firestore";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import PublicLayout from "../../src/layouts/PublicLayout";
+import * as smoothScroll from "../../src/utils/smoothScroll";
+import type * as SmoothScrollModule from "../../src/utils/smoothScroll";
 import {
   HIDDEN_FLAGS,
   makeLayoutData,
   makeProfile,
   makeSocialLink,
 } from "../fixtures/publicContent";
+
+vi.mock("../../src/utils/smoothScroll", async (importOriginal) => {
+  const actual = await importOriginal<typeof SmoothScrollModule>();
+  return { ...actual, scrollToTop: vi.fn() };
+});
 
 function renderLayout(data: ReturnType<typeof makeLayoutData>) {
   const router = createMemoryRouter(
@@ -78,6 +85,31 @@ describe("PublicLayout", () => {
     expect(
       screen.getByText(new RegExp(`© \\d{4} Ada Lovelace`)),
     ).toBeInTheDocument();
+  });
+
+  it("keeps the raw email address out of the footer", async () => {
+    renderLayout(
+      makeLayoutData({
+        profile: makeProfile({
+          contact: { id: "contact", email: "ada@example.com" },
+        }),
+        flags: { ...HIDDEN_FLAGS, contact: true },
+      }),
+    );
+
+    const sayHello = await screen.findByRole("link", { name: "Say hello" });
+    expect(sayHello).toHaveAttribute("href", "mailto:ada@example.com");
+    expect(screen.queryByText("ada@example.com")).not.toBeInTheDocument();
+  });
+
+  it("routes the hash-less scroll reset through smooth scrollToTop", async () => {
+    vi.mocked(smoothScroll.scrollToTop).mockClear();
+    renderLayout(makeLayoutData());
+
+    await screen.findByRole("navigation", { name: "Site navigation" });
+    await waitFor(() =>
+      expect(smoothScroll.scrollToTop).toHaveBeenCalledTimes(1),
+    );
   });
 
   it("shows a paused notice instead of the site when disabled", async () => {

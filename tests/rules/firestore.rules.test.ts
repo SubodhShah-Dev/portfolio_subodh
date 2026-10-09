@@ -10,6 +10,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -17,8 +18,10 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
   updateDoc,
   where,
+  writeBatch,
   type Firestore,
 } from "firebase/firestore";
 import { afterAll, beforeAll, beforeEach, describe, it } from "vitest";
@@ -82,6 +85,11 @@ function contentDoc(
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
+}
+
+/** A published fixture whose publishedAt is already stored (stale vs request.time). */
+function publishedContentDoc(order = 0): Record<string, unknown> {
+  return { ...contentDoc("published", order), publishedAt: serverTimestamp() };
 }
 
 const VALID_MESSAGE: Record<string, unknown> = {
@@ -192,6 +200,70 @@ describe("ordered content writes", () => {
       updateDoc(doc(db, "projects", "published-1"), {
         status: "published",
         updatedAt: new Date(),
+      }),
+    );
+  });
+
+  it("lets admins reorder published documents that carry a stale publishedAt", async () => {
+    await seed("projects/published-1", publishedContentDoc(0));
+    await seed("projects/published-2", publishedContentDoc(1));
+    const db = adminDb();
+
+    // Shape of serviceUtils.reorderDocs: one atomic batch of {order, updatedAt}.
+    const batch = writeBatch(db);
+    batch.update(doc(db, "projects", "published-1"), {
+      order: 1,
+      updatedAt: serverTimestamp(),
+    });
+    batch.update(doc(db, "projects", "published-2"), {
+      order: 0,
+      updatedAt: serverTimestamp(),
+    });
+    await assertSucceeds(batch.commit());
+  });
+
+  it("lets admins toggle featured on a published document", async () => {
+    await seed("projects/published-1", publishedContentDoc(0));
+
+    await assertSucceeds(
+      updateDoc(doc(adminDb(), "projects", "published-1"), {
+        featured: true,
+        updatedAt: serverTimestamp(),
+      }),
+    );
+  });
+
+  it("lets admins unpublish by removing publishedAt", async () => {
+    await seed("projects/published-1", publishedContentDoc(0));
+
+    await assertSucceeds(
+      updateDoc(doc(adminDb(), "projects", "published-1"), {
+        status: "draft",
+        publishedAt: deleteField(),
+        updatedAt: serverTimestamp(),
+      }),
+    );
+  });
+
+  it("rejects forging or backdating publishedAt on update", async () => {
+    await seed("projects/published-1", publishedContentDoc(0));
+    await seed("projects/draft-1", contentDoc("draft"));
+    const db = adminDb();
+    const backdated = Timestamp.fromMillis(1_000_000_000_000);
+
+    // Moving an existing publish date to the past is still forbidden.
+    await assertFails(
+      updateDoc(doc(db, "projects", "published-1"), {
+        featured: true,
+        publishedAt: backdated,
+        updatedAt: serverTimestamp(),
+      }),
+    );
+    // Minting a publish date on a document that has none is still forbidden.
+    await assertFails(
+      updateDoc(doc(db, "projects", "draft-1"), {
+        publishedAt: backdated,
+        updatedAt: serverTimestamp(),
       }),
     );
   });

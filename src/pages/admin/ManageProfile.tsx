@@ -16,15 +16,16 @@ import {
   updateContactProfile,
   updateProfile,
 } from "../../services/profileService";
-import { emailError, fieldErrors, requiredError } from "../../utils/validation";
-import { urlError } from "../../utils/urlValidation";
+import { emailError, fieldErrors, maxLengthError, requiredError } from "../../utils/validation";
+import { galleryUrlsError, parseImageLines } from "../../utils/urlValidation";
 
 interface FormValues {
   name: string;
   role: string;
   headline: string;
   bio: string;
-  profileImageUrl: string;
+  /** Profile photo URLs — one per line (textarea content). */
+  profileImageUrls: string;
   location: string;
   email: string;
   phone: string;
@@ -35,7 +36,7 @@ const EMPTY_VALUES: FormValues = {
   role: "",
   headline: "",
   bio: "",
-  profileImageUrl: "",
+  profileImageUrls: "",
   location: "",
   email: "",
   phone: "",
@@ -43,12 +44,14 @@ const EMPTY_VALUES: FormValues = {
 
 function toValues(profile: PortfolioProfile | null): FormValues {
   if (profile === null) return EMPTY_VALUES;
+  const urls = profile.public.profileImageUrls ?? [];
   return {
     name: profile.public.name,
     role: profile.public.role,
     headline: profile.public.headline,
     bio: profile.public.bio,
-    profileImageUrl: profile.public.profileImageUrl ?? "",
+    profileImageUrls:
+      urls.length > 0 ? urls.join("\n") : (profile.public.profileImageUrl ?? ""),
     location: profile.public.location ?? "",
     email: profile.contact.email ?? "",
     phone: profile.contact.phone ?? "",
@@ -61,7 +64,8 @@ function validate(values: FormValues): Record<string, string> {
     role: requiredError("Role", values.role),
     headline: requiredError("Headline", values.headline),
     bio: requiredError("Bio", values.bio),
-    profileImageUrl: urlError(values.profileImageUrl, { label: "Image URL" }),
+    profileImageUrls: galleryUrlsError(values.profileImageUrls, "Profile image URL"),
+    location: maxLengthError("Location", values.location, 80),
     email: emailError("Email", values.email),
   });
 }
@@ -69,14 +73,16 @@ function validate(values: FormValues): Record<string, string> {
 export default function ManageProfile() {
   const profile = useAsync<PortfolioProfile | null>(getProfile, []);
   const save = useMutation<FormValues, void>(async (values) => {
+    const imageUrls = parseImageLines(values.profileImageUrls);
     const publicInput = {
       name: values.name.trim(),
       role: values.role.trim(),
       headline: values.headline.trim(),
       bio: values.bio.trim(),
-      ...(values.profileImageUrl.trim() !== ""
-        ? { profileImageUrl: values.profileImageUrl.trim() }
-        : {}),
+      // The deck is the source of truth; the legacy single URL always mirrors
+      // its front card so older readers stay correct.
+      profileImageUrls: imageUrls,
+      profileImageUrl: imageUrls[0] ?? "",
       ...(values.location.trim() !== "" ? { location: values.location.trim() } : {}),
     };
     const contactInput = {
@@ -169,20 +175,24 @@ export default function ManageProfile() {
               onChange={(bio) => setValues((current) => ({ ...current, bio }))}
             />
           </div>
-          <TextField
-            label="Profile image URL"
-            id="profile-image"
-            type="url"
-            value={values.profileImageUrl}
-            error={errors.profileImageUrl}
-            onChange={(profileImageUrl) =>
-              setValues((current) => ({ ...current, profileImageUrl }))
-            }
-          />
+          <div className="sm:col-span-2">
+            <TextAreaField
+              label="Profile image URLs"
+              id="profile-images"
+              rows={3}
+              value={values.profileImageUrls}
+              error={errors.profileImageUrls}
+              hint="One URL per line. The first photo fronts the About stack."
+              onChange={(profileImageUrls) =>
+                setValues((current) => ({ ...current, profileImageUrls }))
+              }
+            />
+          </div>
           <TextField
             label="Location"
             id="profile-location"
             value={values.location}
+            maxLength={80}
             onChange={(location) =>
               setValues((current) => ({ ...current, location }))
             }
@@ -240,7 +250,12 @@ export default function ManageProfile() {
             <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
               {[
                 ["Location", data.public.location],
-                ["Image URL", data.public.profileImageUrl],
+                [
+                  "Images",
+                  (data.public.profileImageUrls ?? []).length > 0
+                    ? data.public.profileImageUrls?.join(", ")
+                    : data.public.profileImageUrl,
+                ],
                 ["Email", data.contact.email],
                 ["Phone", data.contact.phone],
               ].map(([label, value]) => (

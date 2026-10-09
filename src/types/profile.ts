@@ -8,7 +8,10 @@ export interface PublicProfile {
   role: string;
   headline: string;
   bio: string;
+  /** Legacy single portrait — kept in sync with the first deck photo. */
   profileImageUrl?: string;
+  /** Stacked About photo deck — first entry fronts the stack. */
+  profileImageUrls?: string[];
   location?: string;
 }
 

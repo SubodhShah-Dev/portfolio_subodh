@@ -43,6 +43,7 @@ export default function Home() {
         <Hero
           profile={profile}
           contactVisible={flags.contact}
+          socialLinks={data.socialLinks}
         />
       ) : (
         <h1 className="sr-only">

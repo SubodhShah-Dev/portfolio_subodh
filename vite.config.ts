@@ -23,6 +23,12 @@ export default defineConfig({
               test: /node_modules[\\/](firebase|@firebase)[\\/]/,
             },
             {
+              // Lazy-only deps: keep them out of the eager vendor chunk so
+              // their consumers (⌘K palette, success confetti) pull them in.
+              name: "vendor-lazy",
+              test: /node_modules[\\/](cmdk|canvas-confetti)[\\/]/,
+            },
+            {
               name: "vendor",
               test: /node_modules[\\/]/,
             },

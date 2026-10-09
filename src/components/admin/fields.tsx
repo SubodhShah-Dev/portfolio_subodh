@@ -37,10 +37,12 @@ export function TextField({
   type = "text",
   autoComplete,
   inputMode,
+  maxLength,
 }: FieldBase & {
   type?: string;
   autoComplete?: string;
   inputMode?: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search";
+  maxLength?: number;
 }) {
   return (
     <FormField label={label} htmlFor={id} error={error} hint={hint} required={required}>
@@ -52,6 +54,7 @@ export function TextField({
         placeholder={placeholder}
         autoComplete={autoComplete}
         inputMode={inputMode}
+        maxLength={maxLength}
         onChange={(event) => onChange(event.target.value)}
       />
     </FormField>

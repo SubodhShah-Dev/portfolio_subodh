@@ -1,9 +1,12 @@
 import { useEffect } from "react";
 import { Link, Outlet, useLocation, useRouteLoaderData } from "react-router";
+import { Download } from "lucide-react";
 
 import PublicShell, { type ShellLink } from "../components/layout/PublicShell";
 import { SocialLinksList } from "../components/public/SocialLinksList";
 import type { PublicLayoutData } from "../loaders/publicLoaders";
+import { scrollToId, scrollToTop } from "../utils/smoothScroll";
+import { currentTheme } from "../utils/theme";
 
 /**
  * Public site layout — top-navigation shell around every public route (§7).
@@ -40,36 +43,26 @@ export default function PublicLayout() {
   const location = useLocation();
   const { profile, flags } = data;
 
-  const reducedMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // Scroll to the section target when arriving with a hash (incl. from other routes).
+  // Scroll to the section target when arriving with a hash (incl. from other
+  // routes). scrollToId waits for the anchor to mount — on cross-route
+  // arrivals the URL commits before the destination DOM swaps in.
   useEffect(() => {
     if (location.hash === "") return;
-    const target = document.getElementById(location.hash.slice(1));
-    target?.scrollIntoView({
-      behavior: reducedMotion ? "auto" : "smooth",
-      block: "start",
-    });
-  }, [location.hash, location.pathname, reducedMotion]);
+    scrollToId(location.hash.slice(1));
+  }, [location.hash, location.pathname]);
 
-  // Reset scroll on plain route changes (no hash involved).
+  // Reset scroll on plain route changes (no hash involved) — through lenis
+  // when it is active, so returning Home glides like every other nav jump.
   useEffect(() => {
     if (location.hash === "") {
-      window.scrollTo(0, 0);
+      scrollToTop();
     }
   }, [location.pathname, location.hash]);
 
-  // Paper is a light surface — lock the browser UI (scrollbars, form
-  // controls) to light while the public layout is mounted. Cleanup on
-  // unmount returns admin routes to their dark scheme.
+  // The no-FOUC bootstrap owns colorScheme on first paint; re-sync on mount
+  // so returning from admin (which may pin dark) matches the chosen theme.
   useEffect(() => {
-    const root = document.documentElement;
-    root.style.colorScheme = "light";
-    return () => {
-      root.style.colorScheme = "";
-    };
+    document.documentElement.style.colorScheme = currentTheme();
   }, []);
 
   // Document metadata from site settings, with honest fallbacks (§47).
@@ -99,12 +92,12 @@ export default function PublicLayout() {
 
   if (!data.siteEnabled) {
     return (
-      <div className="public-scope flex min-h-screen items-center justify-center bg-paper px-4">
+      <div className="public-scope flex min-h-screen items-center justify-center bg-canvas px-4">
         <div className="text-center">
-          <h1 className="font-display text-3xl text-ink">
+          <h1 className="font-display text-4xl font-extrabold tracking-[-0.02em] text-ink">
             Temporarily unavailable
           </h1>
-          <p className="mt-2 text-sm text-ink/80">
+          <p className="mt-3 text-sm text-muted">
             This site is currently paused. Please check back later.
           </p>
         </div>
@@ -116,31 +109,60 @@ export default function PublicLayout() {
   const role = profile?.public.role ?? "";
 
   const brand = (
-    <Link to="/" className="group block min-w-0">
+    <Link
+      to="/"
+      viewTransition
+      className="group flex min-w-0 items-center gap-2.5"
+      onClick={() => {
+        // Same-location clicks (logo while already on /) skip the layout's
+        // reset effect — scroll explicitly, as the nav links do.
+        requestAnimationFrame(() => scrollToTop());
+      }}
+    >
       {data.logoUrl !== null && (
-        <img src={data.logoUrl} alt="" className="mb-2 h-7 w-auto" />
+        <img src={data.logoUrl} alt="" className="h-6 w-auto shrink-0" />
       )}
-      <span className="block truncate font-display text-xl text-ink transition-colors group-hover:text-accent-deep">
-        {name.trim() !== "" ? name : "Portfolio"}
-      </span>
-      {role.trim() !== "" && (
-        <span className="mt-0.5 block truncate font-meta text-[10px] tracking-[0.14em] text-muted uppercase">
-          {role}
+      <span className="min-w-0">
+        <span className="block truncate font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal">
+          {name.trim() !== "" ? name : "Portfolio"}
         </span>
-      )}
+        {role.trim() !== "" && (
+          <span className="mt-0.5 block truncate font-meta text-[10px] tracking-[0.14em] text-muted uppercase">
+            {role}
+          </span>
+        )}
+      </span>
     </Link>
   );
 
-  const visibleSections = SECTION_LINKS.filter((section) => flags[section.flag]);
+  // Nav order mirrors homepage scroll order (§7): About…Certifications,
+  // then Work (a route to /projects with a scrollspy id on the homepage's
+  // #projects section — harmless when that section is hidden), then Contact.
+  const visibleSections: ShellLink[] = SECTION_LINKS.filter(
+    (section) => flags[section.flag],
+  ).map((section) => ({
+    key: section.hash,
+    to: { pathname: "/", hash: section.hash },
+    label: section.label,
+    spyId: section.hash.slice(1),
+  }));
+  const workLink: ShellLink[] = [
+    { key: "work", to: "/projects", label: "Work", spyId: "projects" },
+  ];
+  const contactIndex = visibleSections.findIndex(
+    (section) => section.key === "#contact",
+  );
+  const orderedSections: ShellLink[] =
+    contactIndex === -1
+      ? [...visibleSections, ...workLink]
+      : [
+          ...visibleSections.slice(0, contactIndex),
+          ...workLink,
+          ...visibleSections.slice(contactIndex),
+        ];
   const links: ShellLink[] = [
     { key: "home", to: "/", label: "Home", end: true },
-    { key: "work", to: "/projects", label: "Work" },
-    ...visibleSections.map((section) => ({
-      key: section.hash,
-      to: { pathname: "/", hash: section.hash },
-      label: section.label,
-      spyId: section.hash.slice(1),
-    })),
+    ...orderedSections,
   ];
 
   const actions =
@@ -151,6 +173,7 @@ export default function PublicLayout() {
         rel="noopener noreferrer"
         className="btn-primary w-full justify-center lg:w-auto"
       >
+        <Download aria-hidden="true" className="size-4" />
         Download resume
       </a>
     ) : undefined;
@@ -162,39 +185,53 @@ export default function PublicLayout() {
   const ownerName = profile?.public.name ?? "";
 
   const footer = (
-    <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
-      <div className="max-w-3xl">
-        <p className="eyebrow">Get in touch</p>
-        <h2 className="mt-5 max-w-[16ch] font-display text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance text-ink italic">
-          Let&apos;s build something together.
-        </h2>
-        {contactEmail !== null && (
-          <a
-            href={`mailto:${contactEmail}`}
-            className="mt-6 inline-block font-display text-[clamp(1.25rem,2vw,1.5rem)] break-all text-accent-deep underline decoration-accent decoration-1 underline-offset-4 hover:decoration-2"
-          >
-            {contactEmail}
-          </a>
-        )}
-        <div className="mt-8 flex flex-wrap gap-4">
-          {contactEmail !== null && (
-            <a className="cta-primary" href={`mailto:${contactEmail}`}>
-              Say hello
-            </a>
-          )}
-          <Link className="cta-ghost" to="/projects">
-            See my work
-          </Link>
+    <div className="relative mx-auto w-full max-w-7xl overflow-hidden px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="max-w-3xl">
+          <p className="eyebrow">Get in touch</p>
+          <h2 className="mt-5 max-w-[16ch] font-display text-[clamp(2.25rem,5vw,4rem)] font-extrabold leading-[0.95] tracking-[-0.03em] text-balance">
+            Let&apos;s build something together.
+          </h2>
+          <div className="mt-8 flex flex-wrap gap-4">
+            {contactEmail !== null && (
+              <a className="cta-primary" href={`mailto:${contactEmail}`}>
+                Say hello
+              </a>
+            )}
+            <Link
+              className="cta-ghost"
+              to="/projects"
+              viewTransition
+              onClick={() => {
+                // Same-location clicks (footer while already on /projects)
+                // skip the layout's reset effect — scroll explicitly.
+                requestAnimationFrame(() => scrollToTop());
+              }}
+            >
+              See my work
+            </Link>
+          </div>
         </div>
+
+        {data.socialLinks.length > 0 && (
+          <div className="flex flex-col gap-4 lg:items-end">
+            <p className="font-meta text-[11px] tracking-[0.14em] text-signal-soft uppercase">
+              Find me on
+            </p>
+            <SocialLinksList links={data.socialLinks} />
+          </div>
+        )}
       </div>
 
-      <div className="mt-14 flex flex-col gap-4 border-t border-ink/30 pt-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mt-16 flex flex-col gap-5 border-t border-band-muted/30 pt-6 sm:flex-row sm:items-start sm:justify-between">
         <div>
           {data.footerText !== null && (
-            <p className="font-meta text-xs text-muted">{data.footerText}</p>
+            <p className="font-meta text-xs text-band-muted">
+              {data.footerText}
+            </p>
           )}
           <p
-            className={`font-meta text-[11px] tracking-[0.08em] text-muted uppercase ${
+            className={`font-meta text-[11px] tracking-[0.08em] text-band-muted uppercase ${
               data.footerText !== null ? "mt-1.5" : ""
             }`}
           >
@@ -202,7 +239,6 @@ export default function PublicLayout() {
             {ownerName.trim() !== "" ? ` ${ownerName}` : ""}
           </p>
         </div>
-        <SocialLinksList links={data.socialLinks} />
       </div>
     </div>
   );

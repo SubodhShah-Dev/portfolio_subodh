@@ -1,5 +1,7 @@
 import type { PortfolioProfile } from "../../types/profile";
+import { resolveProfileImages } from "../../utils/profileImages";
 
+import { ProfileStack } from "./ProfileStack";
 import { Section } from "./Section";
 
 interface AboutSectionProps {
@@ -9,7 +11,8 @@ interface AboutSectionProps {
 
 /** About section — bio plus only the contact details actually supplied (§8). */
 export function AboutSection({ profile, index }: AboutSectionProps) {
-  const { bio, profileImageUrl, location } = profile.public;
+  const { bio, location } = profile.public;
+  const imageUrls = resolveProfileImages(profile.public);
   const paragraphs = bio.split(/\n{2,}/).map((entry) => entry.trim()).filter((entry) => entry !== "");
   const email = profile.contact.email;
   const phone = profile.contact.phone;
@@ -33,10 +36,10 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
             <ul className="flex flex-wrap gap-x-8 gap-y-3 pt-3 font-meta text-sm">
               {hasEmail && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-ink/80">Email</span>
+                  <span className="text-muted">Email</span>
                   <a
                     href={`mailto:${email}`}
-                    className="text-accent-deep underline-offset-4 hover:underline"
+                    className="text-signal-deep underline-offset-4 hover:underline"
                   >
                     {email}
                   </a>
@@ -44,10 +47,10 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
               )}
               {hasPhone && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-ink/80">Phone</span>
+                  <span className="text-muted">Phone</span>
                   <a
                     href={`tel:${phone.replace(/\s+/g, "")}`}
-                    className="text-accent-deep underline-offset-4 hover:underline"
+                    className="text-signal-deep underline-offset-4 hover:underline"
                   >
                     {phone}
                   </a>
@@ -55,20 +58,17 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
               )}
               {hasLocation && (
                 <li className="flex items-baseline gap-2">
-                  <span className="text-ink/80">Based in</span>
-                  <span className="text-ink">{location}</span>
+                  <span className="text-muted">Based in</span>
+                  <span className="text-ink break-words">{location}</span>
                 </li>
               )}
             </ul>
           )}
         </div>
-        {profileImageUrl !== undefined && profileImageUrl.trim() !== "" && (
-          <img
-            src={profileImageUrl}
-            alt={`${profile.public.name} — profile`}
-            loading="lazy"
-            className="mx-auto size-44 border border-ink/15 object-cover shadow-[0_24px_60px_-30px_rgba(21,18,14,0.35)] sm:mx-0"
-          />
+        {imageUrls.length > 0 && (
+          <div className="mx-auto sm:mx-0">
+            <ProfileStack images={imageUrls} name={profile.public.name} />
+          </div>
         )}
       </div>
     </Section>

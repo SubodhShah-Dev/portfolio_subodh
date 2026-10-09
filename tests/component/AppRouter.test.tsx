@@ -120,7 +120,8 @@ describe("AppRouter", () => {
     const downloads = screen.getAllByRole("link", { name: "Download resume" });
     expect(downloads).toHaveLength(1);
     expect(downloads[0]).toHaveAttribute("href", "https://example.com/resume.pdf");
-    expect(screen.getByRole("link", { name: "Get in touch" })).toBeInTheDocument();
+    const getInTouch = screen.getByRole("link", { name: "Get in touch" });
+    expect(getInTouch).toHaveAttribute("href", "/#contact");
   });
 
   it("renders NotFound for unknown routes", async () => {

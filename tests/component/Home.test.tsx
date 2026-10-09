@@ -1,10 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import Home from "../../src/pages/public/Home";
 import {
+  HIDDEN_FLAGS,
   makeCertification,
   makeEducation,
   makeExperience,
@@ -12,6 +13,7 @@ import {
   makeProfile,
   makeProject,
   makeSkill,
+  makeSocialLink,
 } from "../fixtures/publicContent";
 
 function renderHome(data: ReturnType<typeof makeLayoutData>) {
@@ -76,6 +78,101 @@ describe("Home", () => {
     expect(screen.queryByRole("heading", { name: "Skills" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/^Name/)).not.toBeInTheDocument();
     expect(screen.queryByText("Download resume")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /GitHub/ })).not.toBeInTheDocument();
+  });
+
+  it("shows the social links in the hero when configured", async () => {
+    renderHome(
+      makeLayoutData({
+        profile: makeProfile(),
+        flags: { ...HIDDEN_FLAGS, hero: true },
+        socialLinks: [makeSocialLink()],
+      }),
+    );
+
+    const github = await screen.findByRole("link", { name: /GitHub/ });
+    expect(github).toHaveAttribute("target", "_blank");
+    expect(github).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("presents homepage projects as a carousel showcase", async () => {
+    renderHome(
+      makeLayoutData({
+        profile: makeProfile(),
+        flags: { ...HIDDEN_FLAGS, projects: true },
+        projects: [
+          makeProject({ title: "Alpha app" }),
+          makeProject({ id: "project-2", title: "Beta service" }),
+        ],
+      }),
+    );
+
+    const region = await screen.findByRole("region", {
+      name: "Projects showcase",
+    });
+    expect(region).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Previous slide" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Next slide" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Go to slide 1" }),
+    ).toHaveAttribute("aria-current", "true");
+    expect(screen.getByRole("link", { name: /Alpha app/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Beta service/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "View all projects" }),
+    ).toBeInTheDocument();
+  });
+
+  it("switches the desktop showcase to a static card grid", async () => {
+    // Desktop breakpoint true, everything else (reduced motion, color
+    // scheme) keeps the setup stub's false.
+    vi.stubGlobal(
+      "matchMedia",
+      (query: string): MediaQueryList => ({
+        matches: query.includes("min-width: 1024px"),
+        media: query,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }),
+    );
+    try {
+      renderHome(
+        makeLayoutData({
+          profile: makeProfile(),
+          flags: { ...HIDDEN_FLAGS, projects: true },
+          projects: [
+            makeProject({ title: "Alpha app", featured: true }),
+            makeProject({ id: "project-2", title: "Beta service" }),
+          ],
+        }),
+      );
+
+      expect(
+        await screen.findByRole("link", { name: /Alpha app/ }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("region", { name: "Projects showcase" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Next slide" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: /Beta service/ }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "View all projects" }),
+      ).toBeInTheDocument();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("respects disabled sections even when content exists", async () => {

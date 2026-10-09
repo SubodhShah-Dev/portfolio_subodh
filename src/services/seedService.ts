@@ -6,7 +6,6 @@ import {
   query,
   serverTimestamp,
   writeBatch,
-  type DocumentReference,
 } from "firebase/firestore";
 
 import { db } from "../config/firebase";
@@ -18,12 +17,20 @@ import { invalidateCache } from "./contentCache";
  * One-shot sample-content seeder (admin-triggered from the dashboard).
  *
  * Writes go through the caller's signed-in admin session, so every
- * Security Rule is enforced exactly as with normal admin edits. Fixed
- * document ids make the operation idempotent, and a strict empty-site
- * guard refuses to overwrite anything the owner has already created —
- * seeded entries are regular Firestore documents, fully editable and
+ * Security Rule is enforced exactly as normal admin edits. Fixed
+ * document ids make the operation idempotent, and the fill-missing
+ * contract never overwrites anything the owner has already created:
+ * existing documents are skipped untouched, missing ones are added.
+ * Seeded entries are regular Firestore documents, fully editable and
  * deletable from the admin UI like any other content.
  */
+
+export interface SeedResult {
+  /** Seed entities that were written this run (human-readable labels). */
+  filled: string[];
+  /** Seed entities that already existed and were left untouched. */
+  skipped: string[];
+}
 
 const PROFILE_PATH = "profile";
 const PROFILE_PUBLIC_ID = "public";
@@ -37,11 +44,16 @@ const PROJECTS_PATH = "projects";
 /** Placeholder contact identity — replace it from Admin → Profile. */
 export const SEED_CONTACT_EMAIL = "hello@subodhshah.dev";
 
+/** Seed portrait — the owner's GitHub avatar; paste real URLs from Admin. */
+const SEED_AVATAR_URL = "https://avatars.githubusercontent.com/u/182909163?v=4";
+
 const PROFILE_PUBLIC = {
   name: "Subodh Shah",
   role: "Full Stack Developer",
   headline: "I build fast, reliable products from database to deployment.",
   bio: "I'm a full stack developer who enjoys turning complex problems into clean, approachable products — from database schema to the last pixel of the interface.\n\nOutside of work you'll find me exploring new frameworks, contributing to open source, and shaving seconds off my workflow with one small automation at a time.",
+  profileImageUrl: SEED_AVATAR_URL,
+  profileImageUrls: [SEED_AVATAR_URL],
 };
 
 interface SeedSkill {
@@ -179,97 +191,191 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-async function isSiteEmpty(): Promise<boolean> {
-  const [profile, settings, contact, skills, projects] = await Promise.all([
+/** Fixed document ids (exported so tests can simulate a fully seeded site). */
+export const SEED_SKILL_IDS: readonly string[] = SKILLS.map((skill) => slugify(skill.name));
+export const SEED_PROJECT_IDS: readonly string[] = PROJECTS.map((project) => project.id);
+
+interface SiteState {
+  profile: { exists(): boolean };
+  profileContact: { exists(): boolean };
+  settings: { exists(): boolean };
+  contact: { exists(): boolean };
+  skills: { size: number; docs: { id: string }[] };
+  projects: { size: number; docs: { id: string }[] };
+}
+
+async function readSiteState(): Promise<SiteState> {
+  const [profile, profileContact, settings, contact, skills, projects] = await Promise.all([
     getDoc(doc(db, PROFILE_PATH, PROFILE_PUBLIC_ID)),
+    getDoc(doc(db, PROFILE_PATH, PROFILE_CONTACT_ID)),
     getDoc(doc(db, SETTINGS_PATH, SINGLETON_ID)),
     getDoc(doc(db, CONTACT_PATH, SINGLETON_ID)),
     getDocs(query(collection(db, SKILLS_PATH))),
     getDocs(query(collection(db, PROJECTS_PATH))),
   ]);
-  return (
-    !profile.exists() &&
-    !settings.exists() &&
-    !contact.exists() &&
-    skills.empty &&
-    projects.empty
-  );
+  return { profile, profileContact, settings, contact, skills, projects };
 }
 
 /**
- * Creates the full sample portfolio in one batched write.
+ * Fills in the missing pieces of the sample portfolio in one batched write.
  *
- * Refuses with an AppError when the site is not completely empty, so
- * nothing an owner created can ever be overwritten or duplicated.
+ * Existing documents are never overwritten or duplicated — each seed entity
+ * is written only when its document is absent, and the returned SeedResult
+ * reports what was filled versus skipped. Throws an AppError without any
+ * writes when every sample entry is already in place.
  */
-export async function seedDemoData(): Promise<void> {
+export async function seedDemoData(): Promise<SeedResult> {
   try {
-    if (!(await isSiteEmpty())) {
+    const state = await readSiteState();
+    const existingSkillIds = new Set(state.skills.docs.map((entry) => entry.id));
+    const existingProjectIds = new Set(state.projects.docs.map((entry) => entry.id));
+
+    const missingSkills = SKILLS.filter((skill) => !existingSkillIds.has(slugify(skill.name)));
+    const missingProjects = PROJECTS.filter((project) => !existingProjectIds.has(project.id));
+    const needsProfile = !state.profile.exists();
+    const needsProfileContact = !state.profileContact.exists();
+    const needsSettings = !state.settings.exists();
+    const needsContact = !state.contact.exists();
+
+    const nothingToDo =
+      !needsProfile &&
+      !needsProfileContact &&
+      !needsSettings &&
+      !needsContact &&
+      missingSkills.length === 0 &&
+      missingProjects.length === 0;
+    if (nothingToDo) {
       throw createAppError(
         "invalid-input",
-        "Sample content can only be loaded into a completely empty site — some content already exists.",
+        "Nothing to add — every sample entry is already in this site.",
       );
     }
 
+    const filled: string[] = [];
+    const skipped: string[] = [];
+    const writtenPaths = new Set<string>();
+
     const batch = writeBatch(db);
-    const set = (reference: DocumentReference, data: Record<string, unknown>): void => {
-      batch.set(reference, {
+    const set = (
+      path: string,
+      id: string,
+      data: Record<string, unknown>,
+      label: string,
+    ): void => {
+      batch.set(doc(db, path, id), {
         ...data,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      filled.push(label);
+      writtenPaths.add(path);
+    };
+    const skip = (label: string): void => {
+      skipped.push(label);
     };
 
-    set(doc(db, PROFILE_PATH, PROFILE_PUBLIC_ID), PROFILE_PUBLIC);
-    set(doc(db, PROFILE_PATH, PROFILE_CONTACT_ID), { email: SEED_CONTACT_EMAIL });
+    if (needsProfile) {
+      set(PROFILE_PATH, PROFILE_PUBLIC_ID, PROFILE_PUBLIC, "profile");
+    } else {
+      skip("profile");
+    }
+    if (needsProfileContact) {
+      set(PROFILE_PATH, PROFILE_CONTACT_ID, { email: SEED_CONTACT_EMAIL }, "profile contact");
+    } else {
+      skip("profile contact");
+    }
 
-    SKILLS.forEach((skill, index) => {
-      set(doc(db, SKILLS_PATH, slugify(skill.name)), {
-        category: skill.category,
-        name: skill.name,
-        status: "published",
-        order: index,
-        publishedAt: serverTimestamp(),
-      });
+    missingSkills.forEach((skill, index) => {
+      set(
+        SKILLS_PATH,
+        slugify(skill.name),
+        {
+          category: skill.category,
+          name: skill.name,
+          status: "published",
+          order: state.skills.size + index,
+          publishedAt: serverTimestamp(),
+        },
+        `skill: ${skill.name}`,
+      );
     });
+    if (missingSkills.length < SKILLS.length) {
+      SKILLS.filter((skill) => existingSkillIds.has(slugify(skill.name))).forEach((skill) =>
+        skip(`skill: ${skill.name}`),
+      );
+    }
 
-    PROJECTS.forEach((project, index) => {
-      set(doc(db, PROJECTS_PATH, project.id), {
-        title: project.title,
-        subtitle: project.subtitle,
-        description: project.description,
-        techStack: project.techStack,
-        features: project.features,
-        date: project.date,
-        featured: project.featured,
-        thumbnailUrl: project.thumbnailUrl,
-        status: "published",
-        order: index,
-        publishedAt: serverTimestamp(),
-      });
+    missingProjects.forEach((project, index) => {
+      set(
+        PROJECTS_PATH,
+        project.id,
+        {
+          title: project.title,
+          subtitle: project.subtitle,
+          description: project.description,
+          techStack: project.techStack,
+          features: project.features,
+          date: project.date,
+          featured: project.featured,
+          thumbnailUrl: project.thumbnailUrl,
+          // Gallery strip: three deterministic placeholders per project.
+          images: [1, 2, 3].map(
+            (slot) => `https://picsum.photos/seed/${project.id}-g${slot}/1200/750`,
+          ),
+          status: "published",
+          order: state.projects.size + index,
+          publishedAt: serverTimestamp(),
+        },
+        `project: ${project.title}`,
+      );
     });
+    if (missingProjects.length < PROJECTS.length) {
+      PROJECTS.filter((project) => existingProjectIds.has(project.id)).forEach((project) =>
+        skip(`project: ${project.title}`),
+      );
+    }
 
-    set(doc(db, SETTINGS_PATH, SINGLETON_ID), {
-      siteTitle: `${PROFILE_PUBLIC.name} — ${PROFILE_PUBLIC.role}`,
-      siteDescription: `Portfolio of ${PROFILE_PUBLIC.name}, ${PROFILE_PUBLIC.role} — projects, skills, and ways to get in touch.`,
-      footerText: "Built with React, Vite & Firebase",
-      sections: { ...DEFAULT_SECTION_VISIBILITY },
-      enabled: true,
-    });
+    if (needsSettings) {
+      set(
+        SETTINGS_PATH,
+        SINGLETON_ID,
+        {
+          siteTitle: `${PROFILE_PUBLIC.name} — ${PROFILE_PUBLIC.role}`,
+          siteDescription: `Portfolio of ${PROFILE_PUBLIC.name}, ${PROFILE_PUBLIC.role} — projects, skills, and ways to get in touch.`,
+          footerText: "Built with React, Vite & Firebase",
+          sections: { ...DEFAULT_SECTION_VISIBILITY },
+          enabled: true,
+        },
+        "settings",
+      );
+    } else {
+      skip("settings");
+    }
 
-    set(doc(db, CONTACT_PATH, SINGLETON_ID), {
-      title: "Get in touch",
-      description:
-        "Have a project in mind, or just want to say hello — my inbox is always open.",
-      email: SEED_CONTACT_EMAIL,
-      enabled: true,
-    });
+    if (needsContact) {
+      set(
+        CONTACT_PATH,
+        SINGLETON_ID,
+        {
+          title: "Get in touch",
+          description:
+            "Have a project in mind, or just want to say hello — my inbox is always open.",
+          email: SEED_CONTACT_EMAIL,
+          enabled: true,
+        },
+        "contact",
+      );
+    } else {
+      skip("contact");
+    }
 
     await batch.commit();
 
-    for (const path of [PROFILE_PATH, SKILLS_PATH, PROJECTS_PATH, SETTINGS_PATH, CONTACT_PATH]) {
+    for (const path of writtenPaths) {
       invalidateCache(path);
     }
+
+    return { filled, skipped };
   } catch (error) {
     throw toAppError(error);
   }
