@@ -12,8 +12,10 @@ import { ArrowUp, Menu, Moon, Search, Sun, X } from "lucide-react";
 
 import {
   initLenis,
+  isFlying,
   NAV_ANCHOR_OFFSET,
   NAV_ANCHOR_TOLERANCE,
+  onFlight,
   scrollToId,
   scrollToTop,
 } from "../../utils/smoothScroll";
@@ -154,6 +156,48 @@ export default function PublicShell({
   const [spyState, setSpyState] = useState({ pathname: "", id: "" });
   const activeSpyId =
     spyState.pathname === location.pathname ? spyState.id : "";
+
+  // --- Flight intent: smoothScroll announces the destination the moment a
+  // scroll starts (nav clicks, layout resets, palette actions). That intent
+  // is the highlight until the position spy catches up, so the pill jumps
+  // straight to the clicked link instead of lagging behind the flight
+  // through every section band it crosses (§7 round 8).
+  const [flightId, setFlightId] = useState<string | null>(null);
+  const flightRef = useRef<string | null>(null);
+  const idleFrames = useRef(0);
+  useEffect(
+    () =>
+      onFlight((id) => {
+        flightRef.current = id;
+        idleFrames.current = 0;
+        setFlightId(id);
+      }),
+    [],
+  );
+  // Hand back to the position spy when either (a) the visitor takes over —
+  // any wheel/touch/keydown drops the intent so their own scroll wins
+  // instantly — or (b) the flight has ended: three quiet spy frames with
+  // no lenis animation mean the page has landed, where position and
+  // intent agree anyway.
+  useEffect(() => {
+    const dropIntent = (): void => {
+      if (flightRef.current === null) return;
+      flightRef.current = null;
+      idleFrames.current = 0;
+      setFlightId(null);
+    };
+    const handleKeyDown = (): void => dropIntent();
+    window.addEventListener("wheel", dropIntent, { passive: true });
+    window.addEventListener("touchstart", dropIntent, { passive: true });
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("wheel", dropIntent);
+      window.removeEventListener("touchstart", dropIntent);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+  const shownSpyId = flightId ?? activeSpyId;
+
   const spyKey = links.map((link) => link.spyId ?? "").join("|");
   useEffect(() => {
     if (spyKey === "") return;
@@ -179,6 +223,18 @@ export default function PublicShell({
           ? prev
           : { pathname: location.pathname, id: active },
       );
+      // Hold the announced intent while its flight runs; three consecutive
+      // quiet frames (no lenis animation) mean the page has landed, so drop
+      // the intent and let the position above take over seamlessly.
+      if (flightRef.current !== null) {
+        if (isFlying()) {
+          idleFrames.current = 0;
+        } else if (++idleFrames.current >= 3) {
+          flightRef.current = null;
+          idleFrames.current = 0;
+          setFlightId(null);
+        }
+      }
     };
     const requestUpdate = (): void => {
       if (frame === 0) frame = requestAnimationFrame(update);
@@ -247,7 +303,8 @@ export default function PublicShell({
 
     // Route matching (replaces NavLink's): exact for `end`, prefix otherwise
     // so /projects/:id keeps Work lit. Hash sections ignore the route —
-    // their pathname is always "/" — and are governed by the scrollspy.
+    // their pathname is always "/" — and follow shownSpyId: the announced
+    // flight target while a scroll is in flight, the spy's position after.
     const isHashLink = typeof link.to === "object" && link.to.hash !== undefined;
     const linkPathname = typeof link.to === "string" ? link.to : link.to.pathname;
     const routeActive = link.end
@@ -258,9 +315,9 @@ export default function PublicShell({
     const active =
       link.spyId !== undefined
         ? isHashLink
-          ? activeSpyId === link.spyId
-          : routeActive || activeSpyId === link.spyId
-        : routeActive && activeSpyId === "";
+          ? shownSpyId === link.spyId
+          : routeActive || shownSpyId === link.spyId
+        : routeActive && shownSpyId === "";
 
     return (
       <Link

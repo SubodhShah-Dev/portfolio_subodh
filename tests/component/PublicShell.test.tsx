@@ -11,7 +11,9 @@ import { HIDDEN_FLAGS, makeLayoutData, makeProfile } from "../fixtures/publicCon
 
 vi.mock("../../src/utils/smoothScroll", async (importOriginal) => {
   const actual = await importOriginal<typeof SmoothScrollModule>();
-  return { ...actual, scrollToId: vi.fn() };
+  // Call-through: the real scrollToId announces the flight (which is what
+  // the optimistic pill tests observe) while still being assertable.
+  return { ...actual, scrollToId: vi.fn(actual.scrollToId) };
 });
 
 function renderShell() {
@@ -324,6 +326,112 @@ describe("PublicShell scrollspy", () => {
     fireEvent.click(screen.getByRole("link", { name: "Contact" }));
     await waitFor(() => {
       expect(smoothScroll.scrollToId).toHaveBeenCalledWith("contact");
+    });
+  });
+
+  /** Wait for one spy rAF tick (the update scheduled by the last scroll). */
+  function nextSpyFrame(): Promise<void> {
+    return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+  }
+
+  it("lights the clicked section before the flight scrolls anywhere", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    setSectionTops({ about: -400, projects: 900, contact: 1500 });
+    fireEvent.scroll(window);
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+      ).toBe("true");
+    });
+
+    // No scroll event follows — the announced flight target must win over
+    // the spy's mid-page position on the very next render.
+    fireEvent.click(screen.getByRole("link", { name: "Contact" }));
+
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("link", { name: "Contact" })
+          .getAttribute("aria-current"),
+      ).toBe("true");
+    });
+    expect(
+      screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+    ).toBeNull();
+    expect(smoothScroll.scrollToId).toHaveBeenCalledWith("contact");
+  });
+
+  it("hands the highlight back to the scrollspy after the flight lands", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    setSectionTops({ about: -400, projects: 900, contact: 1500 });
+    fireEvent.scroll(window);
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+      ).toBe("true");
+    });
+
+    fireEvent.click(screen.getByRole("link", { name: "Contact" }));
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("link", { name: "Contact" })
+          .getAttribute("aria-current"),
+      ).toBe("true");
+    });
+
+    // Land: contact now crosses the band. Three quiet spy frames with no
+    // lenis flight drop the intent, so the position spy owns the pill again.
+    setSectionTops({ about: -1400, projects: -900, contact: 96 });
+    for (let tick = 0; tick < 3; tick++) {
+      fireEvent.scroll(window);
+      await nextSpyFrame();
+    }
+
+    // Scrolled back up: without the hand-back this would still show Contact.
+    setSectionTops({ about: -400, projects: 900, contact: 1500 });
+    fireEvent.scroll(window);
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+      ).toBe("true");
+    });
+  });
+
+  it("drops the announced intent the moment the visitor scrolls by hand", async () => {
+    renderSpyShell();
+    await screen.findByRole("navigation", { name: "Site navigation" });
+
+    setSectionTops({ about: -400, projects: 900, contact: 1500 });
+    fireEvent.scroll(window);
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+      ).toBe("true");
+    });
+
+    fireEvent.click(screen.getByRole("link", { name: "Contact" }));
+    await waitFor(() => {
+      expect(
+        screen
+          .getByRole("link", { name: "Contact" })
+          .getAttribute("aria-current"),
+      ).toBe("true");
+    });
+
+    fireEvent.wheel(window);
+
+    // One scroll event is enough — the wheel dropped the intent, so the
+    // position spy answers immediately (no hand-back grace in the way).
+    fireEvent.scroll(window);
+    await waitFor(() => {
+      expect(
+        screen.getByRole("link", { name: "About" }).getAttribute("aria-current"),
+      ).toBe("true");
     });
   });
 });

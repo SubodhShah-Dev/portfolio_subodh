@@ -16,6 +16,38 @@ export const NAV_ANCHOR_TOLERANCE = 6;
 /** Frames to wait for an anchor to mount before giving up (~1s at 60fps). */
 const TARGET_WAIT_FRAMES = 60;
 
+// --- Flight announcements: every scroll initiation broadcasts its
+// destination ("") before moving, so the nav scrollspy can light the
+// clicked link instantly instead of chasing the scroll position through
+// every section band the flight passes (§7 round 8: the pill used to
+// show Home → About first on cross-route arrivals).
+type FlightListener = (id: string) => void;
+
+const flightListeners = new Set<FlightListener>();
+
+/** Subscribe to flight announcements; returns the unsubscribe function. */
+export function onFlight(listener: FlightListener): () => void {
+  flightListeners.add(listener);
+  return () => {
+    flightListeners.delete(listener);
+  };
+}
+
+function announce(id: string): void {
+  for (const listener of flightListeners) listener(id);
+}
+
+/**
+ * True while a programmatic lenis flight runs. lenis marks it "smooth"
+ * from the animation's first frame until `reset()` flips it back on
+ * completion; native gestures (scrollbar drag, unsmoothed touch) are
+ * "native" or false, so a visitor scrolling by hand is never counted
+ * as a flight in progress.
+ */
+export function isFlying(): boolean {
+  return instance !== null && instance.isScrolling === "smooth";
+}
+
 /** Start inertial scrolling for the public shell; returns its teardown. */
 export function initLenis(): () => void {
   destroyLenis();
@@ -75,6 +107,11 @@ export function scrollToTarget(target: HTMLElement, attempt = 0): void {
 
 /** Return to the top of the page — lenis when active, native otherwise. */
 export function scrollToTop(): void {
+  // Already at the top, the intent adds nothing the spy doesn't know —
+  // and announcing it would hold an empty intent over the position spy
+  // until the hand-back grace expires (breaks position-owned highlights
+  // in tests and on a freshly loaded page).
+  if (window.scrollY > 0) announce("");
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -96,6 +133,10 @@ export function scrollToTop(): void {
  * the normal flight; give up after the cap so a dead hash can't loop.
  */
 export function scrollToId(id: string, attempt = 0): void {
+  // Announce on every attempt: the wait for a cross-route anchor to mount
+  // runs with no animation active, so re-stating the intent keeps it alive
+  // (and resets the scrollspy's hand-back grace) until the flight starts.
+  announce(id);
   const target = document.getElementById(id);
   if (target !== null) {
     scrollToTarget(target);
