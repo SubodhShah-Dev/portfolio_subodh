@@ -57,7 +57,7 @@ export function ProfileStack({ images, name }: ProfileStackProps) {
 
   if (count === 1) {
     return (
-      <div className="relative size-44 sm:size-52">
+      <div className="relative size-44 sm:size-52 lg:size-72">
         <span aria-hidden="true" className={plate} />
         <div className={frame}>
           <img
@@ -80,68 +80,68 @@ export function ProfileStack({ images, name }: ProfileStackProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <motion.button
-        type="button"
-        aria-label="Show next profile photo"
-        onClick={handleClick}
-        drag={reduce === true ? false : "x"}
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.35}
-        dragSnapToOrigin
-        onDragStart={() => {
-          dragged.current = true;
-        }}
-        onDragEnd={(_, info) => {
-          if (info.offset.x < -SWIPE_THRESHOLD || info.velocity.x < -SWIPE_VELOCITY) {
-            advance(1);
-          } else if (
-            info.offset.x > SWIPE_THRESHOLD ||
-            info.velocity.x > SWIPE_VELOCITY
-          ) {
-            advance(-1);
-          }
-        }}
-        className="relative block size-44 cursor-pointer touch-pan-y sm:size-52"
-      >
-        <span aria-hidden="true" className={plate} />
-        {images.map((src, position) => {
-          const depth = ((position - index) % count + count) % count;
-          const slot: DepthSlot = depth < DEPTHS.length ? DEPTHS[depth] : HIDDEN_DEPTH;
-          return (
-            <motion.div
-              key={src}
-              className={frame}
-              style={{ zIndex: count - depth }}
-              initial={false}
-              animate={{
-                x: slot.x,
-                y: slot.y,
-                rotate: reduce === true ? 0 : slot.rotate,
-                opacity: slot.opacity ?? 1,
-              }}
-              transition={
-                reduce === true
-                  ? { duration: 0 }
-                  : { type: "spring", stiffness: 300, damping: 26, mass: 0.9 }
-              }
-            >
-              <img
-                src={src}
-                alt={`${name} — profile photo ${position + 1} of ${count}`}
-                className="h-full w-full object-cover"
-                draggable={false}
-              />
-            </motion.div>
-          );
-        })}
-      </motion.button>
+    <motion.button
+      type="button"
+      aria-label="Show next profile photo"
+      onClick={handleClick}
+      drag={reduce === true ? false : "x"}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.35}
+      dragSnapToOrigin
+      onDragStart={() => {
+        dragged.current = true;
+      }}
+      onDragEnd={(_, info) => {
+        if (info.offset.x < -SWIPE_THRESHOLD || info.velocity.x < -SWIPE_VELOCITY) {
+          advance(1);
+        } else if (
+          info.offset.x > SWIPE_THRESHOLD ||
+          info.velocity.x > SWIPE_VELOCITY
+        ) {
+          advance(-1);
+        }
+      }}
+      className="relative block size-44 cursor-pointer touch-pan-y sm:size-52 lg:size-72"
+    >
+      <span aria-hidden="true" className={plate} />
+      {images.map((src, position) => {
+        const depth = ((position - index) % count + count) % count;
+        const slot: DepthSlot = depth < DEPTHS.length ? DEPTHS[depth] : HIDDEN_DEPTH;
+        return (
+          <motion.div
+            key={src}
+            className={frame}
+            style={{ zIndex: count - depth }}
+            initial={false}
+            animate={{
+              x: slot.x,
+              y: slot.y,
+              rotate: reduce === true ? 0 : slot.rotate,
+              opacity: slot.opacity ?? 1,
+            }}
+            transition={
+              reduce === true
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 300, damping: 26, mass: 0.9 }
+            }
+          >
+            <img
+              src={src}
+              alt={`${name} — profile photo ${position + 1} of ${count}`}
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          </motion.div>
+        );
+      })}
+      {/* Position chip rides on the front card's corner so it stays glued
+          to the deck at every breakpoint instead of floating below it. */}
       <span
         aria-hidden="true"
-        className="font-meta text-[11px] tracking-[0.14em] text-muted tabular-nums"
+        className="pointer-events-none absolute bottom-2 left-2 z-10 rounded-full border-2 border-ink bg-canvas px-2.5 py-0.5 font-meta text-xs font-medium tracking-[0.14em] text-ink tabular-nums shadow-pop-sm"
       >
         {pad(index + 1)} / {pad(count)}
       </span>
-    </div>
+    </motion.button>
   );
 }
