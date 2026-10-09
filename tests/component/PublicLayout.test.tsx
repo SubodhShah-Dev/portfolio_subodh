@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { Timestamp } from "firebase/firestore";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
@@ -107,7 +107,9 @@ describe("PublicLayout", () => {
     renderLayout(makeLayoutData());
 
     await screen.findByRole("navigation", { name: "Site navigation" });
-    expect(smoothScroll.scrollToTop).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(smoothScroll.scrollToTop).toHaveBeenCalledTimes(1),
+    );
   });
 
   it("shows a paused notice instead of the site when disabled", async () => {
