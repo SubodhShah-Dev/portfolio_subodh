@@ -55,10 +55,12 @@ export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
     <header className="relative -mt-12 flex scroll-mt-24 flex-col justify-end overflow-hidden pt-14 pb-14 lg:-mt-16 lg:min-h-[78svh] lg:pt-24 lg:pb-20">
       {/* Developer decor — bobbing terminal card, desktop only. Pure
           decoration: aria-hidden, pointer-events-none, z-0 (content sits
-          above at z-10). */}
+          above at z-10). 16.5rem (was 19.5) keeps the card's left edge right
+          of the masthead's ink at xl; top at 5% keeps it above the tallest
+          ascenders at short viewports. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-[9%] right-[5%] z-0 hidden w-[19.5rem] xl:block"
+        className="pointer-events-none absolute top-[5%] right-[5%] z-0 hidden w-[16.5rem] xl:block"
       >
         <div className="animate-pop-bob">
           <div className="pop-card rotate-[2deg] p-4">
@@ -87,7 +89,10 @@ export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-4 sm:px-6 lg:px-10">
         {hasTopRow && (
           <div
-            className="animate-rise flex flex-wrap items-center justify-between gap-x-6 gap-y-2 font-meta text-[11px] tracking-[0.14em] uppercase"
+            // xl: right-pad past the terminal card's band (w-[16.5rem] at
+            // right-[5%] of the 1200px content box → occupies row-x 832-1102
+            // of the 1120px row; 22rem lands "Based in" ~64px clear of it).
+            className="animate-rise flex flex-wrap items-center justify-between gap-x-6 gap-y-2 font-meta text-[11px] tracking-[0.14em] uppercase xl:pr-[22rem]"
             style={{ animationDelay: "0ms" }}
           >
             {role.trim() !== "" && (

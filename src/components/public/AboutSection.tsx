@@ -59,7 +59,7 @@ export function AboutSection({ profile, index }: AboutSectionProps) {
               {hasLocation && (
                 <li className="flex items-baseline gap-2">
                   <span className="text-muted">Based in</span>
-                  <span className="text-ink">{location}</span>
+                  <span className="text-ink break-words">{location}</span>
                 </li>
               )}
             </ul>

@@ -16,7 +16,7 @@ import {
   updateContactProfile,
   updateProfile,
 } from "../../services/profileService";
-import { emailError, fieldErrors, requiredError } from "../../utils/validation";
+import { emailError, fieldErrors, maxLengthError, requiredError } from "../../utils/validation";
 import { galleryUrlsError, parseImageLines } from "../../utils/urlValidation";
 
 interface FormValues {
@@ -65,6 +65,7 @@ function validate(values: FormValues): Record<string, string> {
     headline: requiredError("Headline", values.headline),
     bio: requiredError("Bio", values.bio),
     profileImageUrls: galleryUrlsError(values.profileImageUrls, "Profile image URL"),
+    location: maxLengthError("Location", values.location, 80),
     email: emailError("Email", values.email),
   });
 }
@@ -191,6 +192,7 @@ export default function ManageProfile() {
             label="Location"
             id="profile-location"
             value={values.location}
+            maxLength={80}
             onChange={(location) =>
               setValues((current) => ({ ...current, location }))
             }

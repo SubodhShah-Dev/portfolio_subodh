@@ -44,7 +44,7 @@ export function EducationSection({ education, index }: EducationSectionProps) {
                 </p>
               )}
             </div>
-            <p className="font-meta text-xs whitespace-nowrap text-muted tabular-nums md:text-right">
+            <p className="font-meta text-xs text-muted tabular-nums md:whitespace-nowrap md:text-right">
               {entry.startDate} – {entry.endDate ?? "Present"}
             </p>
           </li>

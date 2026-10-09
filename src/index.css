@@ -534,7 +534,11 @@
 
 .reveal.reveal-in {
   opacity: 1;
-  transform: translateY(0);
+  /* Interpolates from translateY(28px) exactly like translateY(0), but
+     computes to `none` — any other value would keep this wrapper a
+     containing block and mis-anchor position:fixed descendants (the
+     contact copy toast) to the section instead of the viewport. */
+  transform: none;
 }
 
 /* Scroll-driven enhancement: elements rise as they enter the viewport.

@@ -15,7 +15,7 @@ import {
   getContactSettings,
   updateContactSettings,
 } from "../../services/contactService";
-import { emailError, fieldErrors } from "../../utils/validation";
+import { emailError, fieldErrors, maxLengthError } from "../../utils/validation";
 
 interface FormValues {
   enabled: boolean;
@@ -50,6 +50,7 @@ function toValues(settings: ContactSettings | null): FormValues {
 function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
     email: emailError("Email", values.email),
+    location: maxLengthError("Location", values.location, 80),
   });
 }
 
@@ -155,6 +156,7 @@ export default function ManageContact() {
               id="contact-location"
               value={values.location}
               hint="Shown publicly — e.g. a city or region."
+              maxLength={80}
               onChange={(location) =>
                 setValues((current) => ({ ...current, location }))
               }
