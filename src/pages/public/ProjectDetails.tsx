@@ -74,7 +74,7 @@ export default function ProjectDetails() {
           <div className="flex flex-wrap gap-4 pt-1">
             {hasLiveDemo && (
               <a
-                className="cta-link"
+                className="cta-primary"
                 href={project.liveDemoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -85,7 +85,7 @@ export default function ProjectDetails() {
             )}
             {hasGithub && (
               <a
-                className="cta-link"
+                className="cta-ghost"
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -227,7 +227,7 @@ export default function ProjectDetails() {
                   type="button"
                   onClick={() => setLightboxIndex(position)}
                   aria-label={`Open gallery image ${position + 1}`}
-                  className="group block aspect-video w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-surface-hover transition-transform duration-150 hover:-translate-y-0.5"
+                  className="group block aspect-video w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-surface-hover transition-transform duration-200 hover:-translate-y-0.5"
                 >
                   <img
                     src={url}

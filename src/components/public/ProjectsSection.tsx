@@ -59,10 +59,7 @@ export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
       title="Projects"
       index={index}
       action={
-        <Link
-          to="/projects"
-          className="cta-link font-meta text-xs font-medium text-muted"
-        >
+        <Link to="/projects" className="cta-ghost cta-sm">
           View all
           <ArrowUpRight aria-hidden="true" className="size-3.5" />
         </Link>

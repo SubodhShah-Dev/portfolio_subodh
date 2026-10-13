@@ -50,7 +50,7 @@ const FOCUSABLE_SELECTOR =
 
 function routeLinkClass(active: boolean): string {
   return [
-    "relative px-3.5 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    "relative px-3.5 py-2 font-meta text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors duration-200",
     active
       ? "text-ink underline decoration-2 underline-offset-8"
       : "text-muted hover:text-ink",
@@ -59,7 +59,7 @@ function routeLinkClass(active: boolean): string {
 
 function menuLinkClass(active: boolean): string {
   return [
-    "block px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    "block px-3 py-2.5 font-meta text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors duration-200",
     active
       ? "text-ink underline decoration-2 underline-offset-4"
       : "text-muted hover:text-ink",
@@ -316,6 +316,7 @@ export default function PublicShell({
       <Link
         key={link.key}
         to={link.to}
+        viewTransition={!isHashLink}
         aria-current={active ? "true" : undefined}
         className={linkClass(active)}
         onClick={() => {
@@ -381,7 +382,7 @@ export default function PublicShell({
                 type="button"
                 onClick={() => setPaletteOpen(true)}
                 aria-label="Open command palette"
-                className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-ink transition-colors hover:bg-ink hover:text-canvas"
+                className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-ink transition-colors duration-200 hover:bg-ink hover:text-canvas"
               >
                 <Search aria-hidden="true" className="size-3.5" />
                 <span className="font-meta text-[10px] tracking-[0.1em] uppercase">
@@ -398,7 +399,7 @@ export default function PublicShell({
               onClick={handleToggleTheme}
               aria-label={themeLabel}
               title={themeLabel}
-              className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-canvas"
+              className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors duration-200 hover:bg-ink hover:text-canvas"
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
@@ -508,7 +509,7 @@ export default function PublicShell({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 14 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal transition-transform hover:-translate-y-0.5"
+            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal transition-transform duration-200 hover:-translate-y-0.5"
           >
             <ArrowUp aria-hidden="true" className="size-5" />
           </motion.button>

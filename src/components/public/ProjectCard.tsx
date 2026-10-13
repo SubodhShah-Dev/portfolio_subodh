@@ -15,9 +15,8 @@ interface ProjectCardProps {
 /**
  * Reusable project card (§13) — pop frame with an inset media frame (image
  * or hover-play video preview), title/date/status row, clamped description,
- * filled tech chips, and Source / Live demo underline links above a stretched
- * title link so the whole card reads as one target while the links stay
- * usable.
+ * filled tech chips, and Source / Live demo buttons above a stretched title
+ * link so the whole card reads as one target while the buttons stay usable.
  */
 export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) {
   const hasGithub =
@@ -75,13 +74,13 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
           </ul>
         )}
         {(hasGithub || hasDemo) && (
-          <div className="relative z-10 mt-auto flex flex-wrap gap-4 pt-5">
+          <div className="relative z-10 mt-auto flex flex-wrap gap-2 pt-5">
             {hasGithub && (
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cta-link font-meta text-[11px] font-medium tracking-[0.1em] uppercase"
+                className="cta-primary cta-sm"
               >
                 Source
                 <GitBranch aria-hidden="true" className="size-3.5" />
@@ -92,7 +91,7 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
                 href={project.liveDemoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cta-link font-meta text-[11px] font-medium tracking-[0.1em] uppercase"
+                className="cta-ghost cta-sm"
               >
                 Live demo
                 <ArrowUpRight aria-hidden="true" className="size-3.5" />

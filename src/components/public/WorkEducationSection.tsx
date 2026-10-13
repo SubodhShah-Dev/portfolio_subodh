@@ -97,7 +97,7 @@ export function WorkEducationSection({
 
   const tabClass = (isSelected: boolean): string =>
     [
-      "flex-1 rounded-full border-2 px-4 py-2 font-meta text-[11px] uppercase tracking-[0.12em] transition-colors",
+      "flex-1 rounded-full border-2 px-4 py-2 font-meta text-[11px] uppercase tracking-[0.12em] transition-colors duration-200",
       isSelected
         ? "border-ink bg-ink text-canvas"
         : "border-hairline text-muted hover:border-ink hover:text-ink",

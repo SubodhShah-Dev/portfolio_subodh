@@ -57,7 +57,7 @@ export function Lightbox({
         type="button"
         aria-label="Close image viewer"
         onClick={onClose}
-        className="absolute top-4 right-4 flex size-10 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors hover:border-white hover:bg-white/10"
+        className="absolute top-4 right-4 flex size-10 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
       >
         <X aria-hidden="true" className="size-5" />
       </button>
@@ -71,7 +71,7 @@ export function Lightbox({
             type="button"
             aria-label="Previous image"
             onClick={() => onIndexChange((index - 1 + images.length) % images.length)}
-            className="flex size-10 shrink-0 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors hover:border-white hover:bg-white/10"
+            className="flex size-10 shrink-0 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
           >
             <ChevronLeft aria-hidden="true" className="size-5" />
           </button>
@@ -93,7 +93,7 @@ export function Lightbox({
             type="button"
             aria-label="Next image"
             onClick={() => onIndexChange((index + 1) % images.length)}
-            className="flex size-10 shrink-0 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors hover:border-white hover:bg-white/10"
+            className="flex size-10 shrink-0 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
           >
             <ChevronRight aria-hidden="true" className="size-5" />
           </button>

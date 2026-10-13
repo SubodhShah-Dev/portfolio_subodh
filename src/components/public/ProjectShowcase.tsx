@@ -71,7 +71,10 @@ export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
       onKeyDown={handleKeyDown}
       onFocusCapture={handleFocusCapture}
     >
-      <div ref={emblaRef} className="touch-pan-y overflow-hidden">
+      <div
+        ref={emblaRef}
+        className="cursor-grab touch-pan-y overflow-hidden active:cursor-grabbing"
+      >
         <ul className="flex gap-4">
           {projects.map((project) => (
             <li
@@ -116,7 +119,7 @@ export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
             type="button"
             aria-label="Previous slide"
             onClick={() => emblaApi?.scrollPrev()}
-            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-surface text-ink transition-all duration-150 hover:-translate-y-0.5 hover:border-signal hover:bg-signal hover:text-on-signal"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-surface text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-signal hover:bg-signal hover:text-on-signal"
           >
             <ArrowLeft aria-hidden="true" className="size-5" />
           </button>
@@ -124,7 +127,7 @@ export function ProjectShowcase({ projects }: ProjectShowcaseProps) {
             type="button"
             aria-label="Next slide"
             onClick={() => emblaApi?.scrollNext()}
-            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-surface text-ink transition-all duration-150 hover:-translate-y-0.5 hover:border-signal hover:bg-signal hover:text-on-signal"
+            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-surface text-ink transition-all duration-200 hover:-translate-y-0.5 hover:border-signal hover:bg-signal hover:text-on-signal"
           >
             <ArrowRight aria-hidden="true" className="size-5" />
           </button>

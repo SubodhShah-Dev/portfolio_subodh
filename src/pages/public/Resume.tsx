@@ -39,7 +39,7 @@ export default function Resume() {
           <p className="mt-2 font-meta text-xs text-muted">{fileName}</p>
         </div>
         <a
-          className="cta-link"
+          className="cta-primary"
           href={activeResume.downloadUrl}
           target="_blank"
           rel="noopener noreferrer"

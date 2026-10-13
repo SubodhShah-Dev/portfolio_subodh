@@ -195,13 +195,13 @@ export default function PublicLayout() {
           </h2>
           <div className="mt-8 flex flex-wrap gap-4">
             {contactEmail !== null && (
-              <a className="cta-link" href={`mailto:${contactEmail}`}>
+              <a className="cta-primary" href={`mailto:${contactEmail}`}>
                 Say hello
                 <Mail aria-hidden="true" className="size-4" />
               </a>
             )}
             <Link
-              className="cta-link"
+              className="cta-ghost"
               to="/projects"
               onClick={() => {
                 // Same-location clicks (footer while already on /projects)
