@@ -8,6 +8,8 @@ interface SectionProps {
   description?: string;
   /** Position among rendered sections — renders as an arrow-circle badge. */
   index?: number;
+  /** Right-aligned action beside the heading (e.g. a "View all" link). */
+  action?: ReactNode;
   children: ReactNode;
 }
 
@@ -22,6 +24,7 @@ export function Section({
   title,
   description,
   index,
+  action,
   children,
 }: SectionProps) {
   const headingId = `${id}-heading`;
@@ -47,6 +50,7 @@ export function Section({
         >
           {title}
         </h2>
+        {action !== undefined && <div className="ml-auto">{action}</div>}
       </div>
       {description !== undefined && (
         <p className="mt-4 max-w-2xl text-base text-pretty leading-relaxed text-muted">

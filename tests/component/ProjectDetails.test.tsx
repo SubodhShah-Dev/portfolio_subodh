@@ -26,22 +26,37 @@ describe("ProjectDetails", () => {
       makeProject({
         title: "Deep project",
         subtitle: "Everything at once",
-        description: "Long-form overview.",
+        description: "First paragraph.\n\nSecond paragraph.",
         features: ["Search", "Export"],
         techStack: ["React"],
         liveDemoUrl: "https://example.com",
         githubUrl: "https://github.com/example/repo",
-        architecture: "Monolith with workers.",
+        architecture: "Ingest\nProcess\nServe",
+        lifecycle: "in-progress",
+        previewVideoUrl: "/videos/preview.mp4",
+        thumbnailUrl: "/projects/thumb.png",
         featured: true,
       }),
     );
 
     expect(await screen.findByRole("heading", { name: "Deep project" })).toBeInTheDocument();
     expect(screen.getByText("Everything at once")).toBeInTheDocument();
+    expect(screen.getByText("In progress")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Overview" })).toBeInTheDocument();
+    expect(screen.getByText("First paragraph.")).toBeInTheDocument();
+    expect(screen.getByText("Second paragraph.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Tech stack" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Features" })).toBeInTheDocument();
     expect(screen.getByText("Search")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Architecture" })).toBeInTheDocument();
+    expect(screen.getByText("Ingest")).toBeInTheDocument();
+    expect(screen.getByText("Process")).toBeInTheDocument();
+    expect(screen.getByText("Serve")).toBeInTheDocument();
+
+    const hero = document.querySelector("video");
+    expect(hero).not.toBeNull();
+    expect(hero).toHaveAttribute("src", "/videos/preview.mp4");
+    expect(hero).toHaveAttribute("poster", "/projects/thumb.png");
 
     const demo = screen.getByRole("link", { name: "Live demo" });
     expect(demo).toHaveAttribute("target", "_blank");

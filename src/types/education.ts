@@ -5,6 +5,8 @@ import type { Clearable } from "./write";
 export interface Education extends OrderedContent {
   id: string;
   institution: string;
+  /** Optional institution logo shown in the timeline circle (§16). */
+  institutionLogo?: string;
   degree: string;
   field?: string;
   description?: string;

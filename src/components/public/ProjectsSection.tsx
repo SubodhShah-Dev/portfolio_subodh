@@ -47,9 +47,21 @@ export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
   const desktop = useDesktopLayout();
 
   return (
-    <Section id="projects" title="Projects" index={index}>
+    <Section
+      id="projects"
+      title="Projects"
+      index={index}
+      action={
+        <Link
+          to="/projects"
+          className="font-meta text-xs text-muted transition-colors hover:text-signal"
+        >
+          View all →
+        </Link>
+      }
+    >
       {desktop ? (
-        <ul className="grid grid-cols-3 gap-4">
+        <ul className="grid grid-cols-2 gap-5 sm:gap-6">
           {preview.map((project) => (
             <li key={project.id}>
               <ProjectCard project={project} />
@@ -59,11 +71,6 @@ export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
       ) : (
         <ProjectShowcase projects={preview} />
       )}
-      <div className="mt-6">
-        <Link to="/projects" className="btn-secondary">
-          View all projects
-        </Link>
-      </div>
     </Section>
   );
 }

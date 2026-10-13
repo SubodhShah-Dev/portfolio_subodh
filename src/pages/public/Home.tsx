@@ -3,12 +3,11 @@ import { useRouteLoaderData } from "react-router";
 import { AboutSection } from "../../components/public/AboutSection";
 import { CertificationsSection } from "../../components/public/CertificationsSection";
 import { ContactSection } from "../../components/public/ContactSection";
-import { EducationSection } from "../../components/public/EducationSection";
-import { ExperienceSection } from "../../components/public/ExperienceSection";
 import { Hero } from "../../components/public/Hero";
 import { ProjectsSection } from "../../components/public/ProjectsSection";
 import { Reveal } from "../../components/public/Reveal";
 import { SkillsSection } from "../../components/public/SkillsSection";
+import { WorkEducationSection } from "../../components/public/WorkEducationSection";
 import type { PublicLayoutData } from "../../loaders/publicLoaders";
 import type { SectionVisibility } from "../../types/settings";
 
@@ -17,7 +16,6 @@ const SECTION_ORDER = [
   "about",
   "skills",
   "experience",
-  "education",
   "certifications",
   "projects",
   "contact",
@@ -34,7 +32,13 @@ export default function Home() {
   const data = useRouteLoaderData("public") as PublicLayoutData;
   const { flags, profile } = data;
 
-  const rendered = SECTION_ORDER.filter((key) => flags[key]);
+  // The combined Work & Education section shows when either list has content
+  // or its own flag is on — the tablist inside hides the empty side.
+  const sectionVisible = (key: SectionKey): boolean =>
+    key === "experience"
+      ? flags.experience || flags.education
+      : flags[key];
+  const rendered = SECTION_ORDER.filter(sectionVisible);
   const numberOf = (key: SectionKey): number => rendered.indexOf(key) + 1;
 
   return (
@@ -63,19 +67,12 @@ export default function Home() {
           <SkillsSection skills={data.skills} index={numberOf("skills")} />
         </Reveal>
       )}
-      {flags.experience && (
+      {(flags.experience || flags.education) && (
         <Reveal>
-          <ExperienceSection
+          <WorkEducationSection
             experience={data.experience}
-            index={numberOf("experience")}
-          />
-        </Reveal>
-      )}
-      {flags.education && (
-        <Reveal>
-          <EducationSection
             education={data.education}
-            index={numberOf("education")}
+            index={numberOf("experience")}
           />
         </Reveal>
       )}

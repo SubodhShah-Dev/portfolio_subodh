@@ -43,6 +43,7 @@ const adapter: CollectionAdapter<Experience, ExperienceInput> = {
 
 interface FormValues {
   company: string;
+  companyLogo: string;
   role: string;
   description: string;
   startDate: string;
@@ -55,6 +56,7 @@ interface FormValues {
 
 const EMPTY_VALUES: FormValues = {
   company: "",
+  companyLogo: "",
   role: "",
   description: "",
   startDate: "",
@@ -69,6 +71,7 @@ function toValues(item: Experience | null): FormValues {
   if (item === null) return EMPTY_VALUES;
   return {
     company: item.company,
+    companyLogo: item.companyLogo ?? "",
     role: item.role,
     description: item.description,
     startDate: item.startDate,
@@ -87,6 +90,10 @@ function validate(values: FormValues): Record<string, string> {
     description: requiredError("Description", values.description),
     startDate: requiredError("Start date", values.startDate),
     companyUrl: urlError(values.companyUrl, { label: "Company URL" }),
+    companyLogo: urlError(values.companyLogo, {
+      label: "Company logo",
+      allowLocal: true,
+    }),
   });
 }
 
@@ -123,6 +130,7 @@ export default function ManageExperience() {
       status: values.status,
       order: editing?.order ?? collection.list.data?.length ?? 0,
       company: values.company.trim(),
+      companyLogo: textOrClear(values.companyLogo),
       role: values.role.trim(),
       description: values.description.trim(),
       startDate: values.startDate.trim(),
@@ -197,6 +205,17 @@ export default function ManageExperience() {
             error={errors.companyUrl}
             onChange={(companyUrl) =>
               setValues((current) => ({ ...current, companyUrl }))
+            }
+          />
+          <TextField
+            label="Company logo"
+            id="exp-logo"
+            type="url"
+            hint="External URL or a path under /public (e.g. /companies/acme.svg)."
+            value={values.companyLogo}
+            error={errors.companyLogo}
+            onChange={(companyLogo) =>
+              setValues((current) => ({ ...current, companyLogo }))
             }
           />
           <div className="sm:col-span-2">

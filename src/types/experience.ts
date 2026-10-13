@@ -5,6 +5,8 @@ import type { Clearable } from "./write";
 export interface Experience extends OrderedContent {
   id: string;
   company: string;
+  /** Optional company logo shown in the timeline circle (§15). */
+  companyLogo?: string;
   role: string;
   description: string;
   startDate: string;

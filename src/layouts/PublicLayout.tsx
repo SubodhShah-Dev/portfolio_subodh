@@ -20,14 +20,14 @@ import { currentTheme } from "../utils/theme";
 const SECTION_LINKS: ReadonlyArray<{
   hash: string;
   label: string;
-  flag: keyof PublicLayoutData["flags"];
+  /** The section shows when any of its flags is on and content exists. */
+  flags: readonly (keyof PublicLayoutData["flags"])[];
 }> = [
-  { hash: "#about", label: "About", flag: "about" },
-  { hash: "#skills", label: "Skills", flag: "skills" },
-  { hash: "#experience", label: "Experience", flag: "experience" },
-  { hash: "#education", label: "Education", flag: "education" },
-  { hash: "#certifications", label: "Certifications", flag: "certifications" },
-  { hash: "#contact", label: "Contact", flag: "contact" },
+  { hash: "#about", label: "About", flags: ["about"] },
+  { hash: "#skills", label: "Skills", flags: ["skills"] },
+  { hash: "#experience", label: "Experience", flags: ["experience", "education"] },
+  { hash: "#certifications", label: "Certifications", flags: ["certifications"] },
+  { hash: "#contact", label: "Contact", flags: ["contact"] },
 ];
 
 /** First non-blank candidate — footer email falls back across sources. */
@@ -110,7 +110,7 @@ export default function PublicLayout() {
   // With a dark twin configured, each theme shows exactly one <img>; the
   // hidden one leaves the accessibility tree, so both carry the same alt.
   const logoClasses =
-    "block h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm";
+    "block h-11 w-auto ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm";
 
   const brand = (
     <Link
@@ -138,7 +138,7 @@ export default function PublicLayout() {
             <img
               src={data.logoUrlDark}
               alt={brandName}
-              className="hidden h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm dark:block"
+              className="hidden h-11 w-auto ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm dark:block"
             />
           )}
         </>
@@ -153,8 +153,8 @@ export default function PublicLayout() {
   // Nav order mirrors homepage scroll order (§7): About…Certifications,
   // then Work (a route to /projects with a scrollspy id on the homepage's
   // #projects section — harmless when that section is hidden), then Contact.
-  const visibleSections: ShellLink[] = SECTION_LINKS.filter(
-    (section) => flags[section.flag],
+  const visibleSections: ShellLink[] = SECTION_LINKS.filter((section) =>
+    section.flags.some((flag) => flags[flag]),
   ).map((section) => ({
     key: section.hash,
     to: { pathname: "/", hash: section.hash },

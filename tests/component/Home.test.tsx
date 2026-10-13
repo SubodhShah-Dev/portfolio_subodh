@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createMemoryRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { describe, expect, it, vi } from "vitest";
@@ -58,8 +58,19 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { name: "About" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Skills" })).toBeInTheDocument();
     expect(screen.getAllByText("TypeScript").length).toBeGreaterThan(0);
-    expect(screen.getByRole("heading", { name: "Experience" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Education" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Work & Education" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Work" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByRole("tab", { name: "Education" })).toHaveAttribute(
+      "aria-selected",
+      "false",
+    );
+    expect(screen.getByText("Analytical Engines Ltd")).toBeInTheDocument();
+    expect(screen.queryByText("University of London")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Certifications" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Projects" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Contact" })).toBeInTheDocument();
@@ -123,7 +134,7 @@ describe("Home", () => {
       screen.getByRole("link", { name: /Beta service/ }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "View all projects" }),
+        screen.getByRole("link", { name: "View all →" }),
     ).toBeInTheDocument();
   });
 
@@ -168,11 +179,53 @@ describe("Home", () => {
         screen.getByRole("link", { name: /Beta service/ }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("link", { name: "View all projects" }),
+      screen.getByRole("link", { name: "View all →" }),
       ).toBeInTheDocument();
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+
+  it("switches to the education panel when its tab is selected", async () => {
+    renderHome(richData);
+
+    fireEvent.click(await screen.findByRole("tab", { name: "Education" }));
+
+    expect(screen.getByText("University of London")).toBeInTheDocument();
+    expect(screen.queryByText("Analytical Engines Ltd")).not.toBeInTheDocument();
+  });
+
+  it("hides the tablist and shows only education when work is empty", async () => {
+    renderHome(
+      makeLayoutData({
+        profile: makeProfile(),
+        flags: { ...HIDDEN_FLAGS, education: true },
+        education: [makeEducation()],
+      }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Work & Education" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.getByText("University of London")).toBeInTheDocument();
+  });
+
+  it("shows a logo badge when set and initials otherwise", async () => {
+    renderHome(
+      makeLayoutData({
+        profile: makeProfile(),
+        flags: { ...HIDDEN_FLAGS, experience: true, education: true },
+        experience: [makeExperience({ companyLogo: "/companies/ae.svg" })],
+        education: [makeEducation()],
+      }),
+    );
+
+    expect(
+      await screen.findByRole("presentation", { hidden: true }),
+    ).toHaveAttribute("src", "/companies/ae.svg");
+    fireEvent.click(screen.getByRole("tab", { name: "Education" }));
+    expect(screen.getByText("UL")).toBeInTheDocument();
   });
 
   it("respects disabled sections even when content exists", async () => {

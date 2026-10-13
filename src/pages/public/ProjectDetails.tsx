@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useLoaderData } from "react-router";
+import { ArrowDown } from "lucide-react";
 
 import NotFound from "./NotFound";
 import { Lightbox } from "../../components/public/Lightbox";
+import { LifecycleChip } from "../../components/public/LifecycleChip";
 import { Tag } from "../../components/public/Tag";
 import type { Project } from "../../types/project";
 
@@ -21,11 +23,25 @@ export default function ProjectDetails() {
 
   const hasLiveDemo = project.liveDemoUrl !== undefined && project.liveDemoUrl.trim() !== "";
   const hasGithub = project.githubUrl !== undefined && project.githubUrl.trim() !== "";
-  const hasArchitecture =
-    project.architecture !== undefined && project.architecture.trim() !== "";
   const hasThumb =
     project.thumbnailUrl !== undefined && project.thumbnailUrl.trim() !== "";
+  const hasPreviewVideo =
+    project.previewVideoUrl !== undefined && project.previewVideoUrl.trim() !== "";
   const gallery = (project.images ?? []).filter((url) => url.trim() !== "");
+  const paragraphs =
+    project.description.trim() !== ""
+      ? project.description
+          .split(/\n\s*\n/)
+          .map((paragraph) => paragraph.trim())
+          .filter((paragraph) => paragraph !== "")
+      : [];
+  const architectureSteps =
+    project.architecture !== undefined
+      ? project.architecture
+          .split(/\n+/)
+          .map((step) => step.trim())
+          .filter((step) => step !== "")
+      : [];
 
   return (
     <article className="space-y-10">
@@ -41,6 +57,7 @@ export default function ProjectDetails() {
           <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-extrabold leading-[1.02] tracking-[-0.03em] text-ink">
             {project.title}
           </h1>
+          <LifecycleChip lifecycle={project.lifecycle} />
           {project.featured && <Tag accent>Featured</Tag>}
           {project.date !== undefined && project.date.trim() !== "" && (
             <span className="font-meta text-sm text-muted tabular-nums">
@@ -53,55 +70,80 @@ export default function ProjectDetails() {
             {project.subtitle}
           </p>
         )}
-        {project.techStack.length > 0 && (
-          <ul className="flex flex-wrap gap-2">
-            {project.techStack.map((technology) => (
-              <li key={technology} className="chip">
-                {technology}
-              </li>
-            ))}
-          </ul>
+        {(hasLiveDemo || hasGithub) && (
+          <div className="flex flex-wrap gap-3 pt-1">
+            {hasLiveDemo && (
+              <a
+                className="cta-primary"
+                href={project.liveDemoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Live demo
+              </a>
+            )}
+            {hasGithub && (
+              <a
+                className="cta-ghost"
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Source code
+              </a>
+            )}
+          </div>
         )}
       </header>
 
-      {hasThumb && (
-        <div className="aspect-[16/9] w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
-          <img
-            src={project.thumbnailUrl}
-            alt={`Screenshot of ${project.title}`}
-            loading="lazy"
-            decoding="async"
+      {hasPreviewVideo ? (
+        <div className="aspect-video w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
+          <video
+            src={project.previewVideoUrl}
+            poster={hasThumb ? project.thumbnailUrl : undefined}
+            controls
+            playsInline
             className="h-full w-full object-cover"
-          />
+          >
+            <track kind="captions" />
+          </video>
         </div>
+      ) : (
+        hasThumb && (
+          <div className="aspect-video w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
+            <img
+              src={project.thumbnailUrl}
+              alt={`Screenshot of ${project.title}`}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )
       )}
 
-      {gallery.length > 0 && (
-        <section aria-label="Gallery">
-          <ul className="grid gap-4 sm:grid-cols-2">
-            {gallery.map((url, position) => (
-              <li key={`${url}-${position}`}>
-                <button
-                  type="button"
-                  onClick={() => setLightboxIndex(position)}
-                  aria-label={`Open gallery image ${position + 1}`}
-                  className="group block aspect-[16/9] w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop-sm transition-transform duration-150 hover:-translate-y-0.5"
-                >
-                  <img
-                    src={url}
-                    alt={`${project.title} screenshot ${position + 1}`}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                  />
-                </button>
+      {project.techStack.length > 0 && (
+        <section aria-labelledby="tech-heading">
+          <h2
+            id="tech-heading"
+            className="text-2xl font-extrabold tracking-[-0.02em] text-ink"
+          >
+            Tech stack
+          </h2>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {project.techStack.map((technology) => (
+              <li
+                key={technology}
+                className="rounded-md border border-hairline bg-raised px-2.5 py-1 font-meta text-xs text-muted"
+              >
+                {technology}
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      {project.description.trim() !== "" && (
+      {paragraphs.length > 0 && (
         <section aria-labelledby="overview-heading">
           <h2
             id="overview-heading"
@@ -109,9 +151,11 @@ export default function ProjectDetails() {
           >
             Overview
           </h2>
-          <p className="mt-4 max-w-3xl whitespace-pre-wrap text-pretty text-base leading-8 text-ink">
-            {project.description}
-          </p>
+          <div className="mt-4 max-w-3xl space-y-4 text-pretty text-base leading-8 text-ink">
+            {paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
         </section>
       )}
 
@@ -139,7 +183,7 @@ export default function ProjectDetails() {
         </section>
       )}
 
-      {hasArchitecture && (
+      {architectureSteps.length > 0 && (
         <section aria-labelledby="architecture-heading">
           <h2
             id="architecture-heading"
@@ -147,37 +191,53 @@ export default function ProjectDetails() {
           >
             Architecture
           </h2>
-          <div className="mt-4 border border-hairline bg-raised p-5">
-            <p className="whitespace-pre-wrap font-meta text-xs leading-6 text-muted">
-              {project.architecture}
-            </p>
-          </div>
+          <ol className="mx-auto mt-4 flex max-w-sm flex-col items-center">
+            {architectureSteps.map((step, position) => (
+              <li
+                key={`${position}-${step}`}
+                className="flex w-full flex-col items-center"
+              >
+                <span className="w-full border-2 border-ink bg-raised px-4 py-2 text-center font-meta text-xs text-ink shadow-pop-sm">
+                  {step}
+                </span>
+                {position < architectureSteps.length - 1 && (
+                  <ArrowDown
+                    aria-hidden="true"
+                    className="my-1.5 size-4 text-muted"
+                  />
+                )}
+              </li>
+            ))}
+          </ol>
         </section>
       )}
 
-      {(hasLiveDemo || hasGithub) && (
-        <div className="flex flex-wrap gap-4 pt-2">
-          {hasLiveDemo && (
-            <a
-              className="cta-primary"
-              href={project.liveDemoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Live demo
-            </a>
-          )}
-          {hasGithub && (
-            <a
-              className="cta-ghost"
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Source code
-            </a>
-          )}
-        </div>
+      {gallery.length > 0 && (
+        <section aria-label="Gallery">
+          <h2 className="text-2xl font-extrabold tracking-[-0.02em] text-ink">
+            Screenshots
+          </h2>
+          <ul className="mt-4 grid gap-4 sm:grid-cols-2">
+            {gallery.map((url, position) => (
+              <li key={`${url}-${position}`}>
+                <button
+                  type="button"
+                  onClick={() => setLightboxIndex(position)}
+                  aria-label={`Open gallery image ${position + 1}`}
+                  className="group block aspect-video w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop-sm transition-transform duration-150 hover:-translate-y-0.5"
+                >
+                  <img
+                    src={url}
+                    alt={`${project.title} screenshot ${position + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {lightboxIndex !== null && gallery.length > 0 && (

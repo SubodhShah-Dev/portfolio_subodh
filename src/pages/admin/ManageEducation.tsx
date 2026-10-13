@@ -38,6 +38,7 @@ const adapter: CollectionAdapter<Education, EducationInput> = {
 
 interface FormValues {
   institution: string;
+  institutionLogo: string;
   degree: string;
   field: string;
   startDate: string;
@@ -49,6 +50,7 @@ interface FormValues {
 
 const EMPTY_VALUES: FormValues = {
   institution: "",
+  institutionLogo: "",
   degree: "",
   field: "",
   startDate: "",
@@ -62,6 +64,7 @@ function toValues(item: Education | null): FormValues {
   if (item === null) return EMPTY_VALUES;
   return {
     institution: item.institution,
+    institutionLogo: item.institutionLogo ?? "",
     degree: item.degree,
     field: item.field ?? "",
     startDate: item.startDate,
@@ -78,6 +81,10 @@ function validate(values: FormValues): Record<string, string> {
     degree: requiredError("Degree", values.degree),
     startDate: requiredError("Start date", values.startDate),
     institutionUrl: urlError(values.institutionUrl, { label: "Institution URL" }),
+    institutionLogo: urlError(values.institutionLogo, {
+      label: "Institution logo",
+      allowLocal: true,
+    }),
   });
 }
 
@@ -114,6 +121,7 @@ export default function ManageEducation() {
       status: values.status,
       order: editing?.order ?? collection.list.data?.length ?? 0,
       institution: values.institution.trim(),
+      institutionLogo: textOrClear(values.institutionLogo),
       degree: values.degree.trim(),
       startDate: values.startDate.trim(),
       field: textOrClear(values.field),
@@ -172,6 +180,17 @@ export default function ManageEducation() {
             error={errors.institutionUrl}
             onChange={(institutionUrl) =>
               setValues((current) => ({ ...current, institutionUrl }))
+            }
+          />
+          <TextField
+            label="Institution logo"
+            id="edu-logo"
+            type="url"
+            hint="External URL or a path under /public (e.g. /companies/mit.svg)."
+            value={values.institutionLogo}
+            error={errors.institutionLogo}
+            onChange={(institutionLogo) =>
+              setValues((current) => ({ ...current, institutionLogo }))
             }
           />
           <TextField

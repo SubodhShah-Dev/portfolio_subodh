@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { deleteField } from "firebase/firestore";
 
 import AdminPageShell from "../../components/admin/AdminPageShell";
 import { ContentRow } from "../../components/admin/ContentRow";
@@ -60,6 +61,8 @@ interface FormValues {
   githubUrl: string;
   liveDemoUrl: string;
   thumbnailUrl: string;
+  previewVideoUrl: string;
+  lifecycle: string;
   images: string;
   date: string;
   architecture: string;
@@ -76,6 +79,8 @@ const EMPTY_VALUES: FormValues = {
   githubUrl: "",
   liveDemoUrl: "",
   thumbnailUrl: "",
+  previewVideoUrl: "",
+  lifecycle: "",
   images: "",
   date: "",
   architecture: "",
@@ -94,6 +99,8 @@ function toValues(item: Project | null): FormValues {
     githubUrl: item.githubUrl ?? "",
     liveDemoUrl: item.liveDemoUrl ?? "",
     thumbnailUrl: item.thumbnailUrl ?? "",
+    previewVideoUrl: item.previewVideoUrl ?? "",
+    lifecycle: item.lifecycle ?? "",
     images: (item.images ?? []).join("\n"),
     date: item.date ?? "",
     architecture: item.architecture ?? "",
@@ -110,6 +117,10 @@ function validate(values: FormValues): Record<string, string> {
     liveDemoUrl: urlError(values.liveDemoUrl, { label: "Live demo URL" }),
     thumbnailUrl: urlError(values.thumbnailUrl, {
       label: "Thumbnail URL",
+      allowLocal: true,
+    }),
+    previewVideoUrl: urlError(values.previewVideoUrl, {
+      label: "Preview video URL",
       allowLocal: true,
     }),
     images: galleryUrlsError(values.images, "Gallery image URL", {
@@ -159,6 +170,13 @@ export default function ManageProjects() {
       githubUrl: textOrClear(values.githubUrl),
       liveDemoUrl: textOrClear(values.liveDemoUrl),
       thumbnailUrl: textOrClear(values.thumbnailUrl),
+      previewVideoUrl: textOrClear(values.previewVideoUrl),
+      lifecycle:
+        values.lifecycle === "shipped" ||
+        values.lifecycle === "in-progress" ||
+        values.lifecycle === "planned"
+          ? values.lifecycle
+          : deleteField(),
       images: parseImageLines(values.images),
       date: textOrClear(values.date),
       architecture: textOrClear(values.architecture),
@@ -261,6 +279,32 @@ export default function ManageProjects() {
               setValues((current) => ({ ...current, thumbnailUrl }))
             }
           />
+          <TextField
+            label="Preview video URL"
+            id="project-preview-video"
+            type="url"
+            hint="Optional short muted clip played on card hover (e.g. /videos/demo.mp4)."
+            value={values.previewVideoUrl}
+            error={errors.previewVideoUrl}
+            onChange={(previewVideoUrl) =>
+              setValues((current) => ({ ...current, previewVideoUrl }))
+            }
+          />
+          <SelectField
+            label="Public status"
+            id="project-lifecycle"
+            hint="Shown as a chip on cards and the project page."
+            value={values.lifecycle}
+            options={[
+              { value: "", label: "None" },
+              { value: "shipped", label: "Shipped" },
+              { value: "in-progress", label: "In progress" },
+              { value: "planned", label: "Planned" },
+            ]}
+            onChange={(lifecycle) =>
+              setValues((current) => ({ ...current, lifecycle }))
+            }
+          />
           <div className="sm:col-span-2">
             <TextAreaField
               label="Gallery image URLs (one per line)"
@@ -287,7 +331,7 @@ export default function ManageProjects() {
               id="project-architecture"
               rows={3}
               value={values.architecture}
-              hint="Optional — how the project is put together."
+              hint="Optional — one step per line; rendered as a vertical flow diagram."
               onChange={(architecture) =>
                 setValues((current) => ({ ...current, architecture }))
               }

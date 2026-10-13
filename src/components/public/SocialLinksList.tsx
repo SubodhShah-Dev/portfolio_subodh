@@ -32,6 +32,14 @@ export function SocialLinksList({ links, tone = "band" }: SocialLinksListProps) 
                 tone === "paper" ? "border-ink text-ink" : "border-band-ink text-band-ink",
               ].join(" ")}
             >
+              {link.iconUrl !== undefined && link.iconUrl.trim() !== "" && (
+                <img
+                  src={link.iconUrl}
+                  alt=""
+                  aria-hidden="true"
+                  className="size-3.5 dark:invert"
+                />
+              )}
               {label}
               <ArrowUpRight
                 aria-hidden="true"
