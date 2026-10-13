@@ -68,7 +68,7 @@ function validate(values: FormValues): Record<string, string> {
     platform: requiredError("Platform", values.platform),
     label: requiredError("Label", values.label),
     url: urlError(values.url, { label: "URL", required: true }),
-    iconUrl: urlError(values.iconUrl, { label: "Icon URL" }),
+    iconUrl: urlError(values.iconUrl, { label: "Icon URL", allowLocal: true }),
   });
 }
 
@@ -160,6 +160,7 @@ export default function ManageSocialLinks() {
             label="Icon URL"
             id="link-icon"
             type="url"
+            hint="External URL or a path under /public (e.g. /icons/github.svg)."
             value={values.iconUrl}
             error={errors.iconUrl}
             onChange={(iconUrl) =>
