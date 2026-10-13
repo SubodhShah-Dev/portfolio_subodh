@@ -42,19 +42,10 @@ export function applyTheme(theme: Theme, persist = true): void {
 }
 
 /**
- * Flip the theme behind a native View Transitions wipe when supported and
- * motion is allowed; otherwise swap instantly.
+ * Flip the theme instantly (no transition — flat motion policy).
  */
 export function toggleTheme(): Theme {
   const next: Theme = currentTheme() === "dark" ? "light" : "dark";
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const withTransition = document as Document & {
-    startViewTransition?: (update: () => void) => { finished: Promise<void> };
-  };
-  if (!reduced && typeof withTransition.startViewTransition === "function") {
-    withTransition.startViewTransition(() => applyTheme(next));
-  } else {
-    applyTheme(next);
-  }
+  applyTheme(next);
   return next;
 }

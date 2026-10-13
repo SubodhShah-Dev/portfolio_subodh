@@ -51,7 +51,7 @@ export function ProfileStack({ images, name }: ProfileStackProps) {
   };
 
   const frame =
-    "absolute inset-0 overflow-hidden rounded-chunk border-2 border-ink bg-raised shadow-pop";
+    "absolute inset-0 overflow-hidden rounded-chunk border-2 border-ink bg-raised";
   const plate =
     "absolute inset-0 translate-x-2 translate-y-2 rotate-3 rounded-chunk border-2 border-ink bg-signal";
 
@@ -142,7 +142,7 @@ export function ProfileStack({ images, name }: ProfileStackProps) {
           to the deck at every breakpoint instead of floating below it. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-2 left-2 z-10 rounded-full border-2 border-ink bg-canvas px-2.5 py-0.5 font-meta text-xs font-medium tracking-[0.14em] text-ink tabular-nums shadow-pop-sm"
+        className="pointer-events-none absolute bottom-2 left-2 z-10 rounded-full border-2 border-ink bg-canvas px-2.5 py-0.5 font-meta text-xs font-medium tracking-[0.14em] text-ink tabular-nums"
       >
         {pad(index + 1)} / {pad(count)}
       </span>

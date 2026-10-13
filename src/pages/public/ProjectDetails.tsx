@@ -97,7 +97,7 @@ export default function ProjectDetails() {
       </header>
 
       {hasPreviewVideo ? (
-        <div className="aspect-video w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
+        <div className="aspect-video w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas">
           <video
             src={project.previewVideoUrl}
             poster={hasThumb ? project.thumbnailUrl : undefined}
@@ -110,7 +110,7 @@ export default function ProjectDetails() {
         </div>
       ) : (
         hasThumb && (
-          <div className="aspect-video w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
+          <div className="aspect-video w-full overflow-hidden rounded-chunk border-2 border-ink bg-canvas">
             <img
               src={project.thumbnailUrl}
               alt={`Screenshot of ${project.title}`}
@@ -198,7 +198,7 @@ export default function ProjectDetails() {
                 key={`${position}-${step}`}
                 className="flex w-full flex-col items-center"
               >
-                <span className="w-full border-2 border-ink bg-raised px-4 py-2 text-center font-meta text-xs text-ink shadow-pop-sm">
+                <span className="w-full border-2 border-ink bg-raised px-4 py-2 text-center font-meta text-xs text-ink">
                   {step}
                 </span>
                 {position < architectureSteps.length - 1 && (
@@ -225,7 +225,7 @@ export default function ProjectDetails() {
                   type="button"
                   onClick={() => setLightboxIndex(position)}
                   aria-label={`Open gallery image ${position + 1}`}
-                  className="group block aspect-video w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop-sm transition-transform duration-150 hover:-translate-y-0.5"
+                  className="group block aspect-video w-full cursor-pointer overflow-hidden rounded-chunk border-2 border-ink bg-canvas transition-transform duration-150 hover:-translate-y-0.5"
                 >
                   <img
                     src={url}

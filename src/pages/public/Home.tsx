@@ -5,7 +5,6 @@ import { CertificationsSection } from "../../components/public/CertificationsSec
 import { ContactSection } from "../../components/public/ContactSection";
 import { Hero } from "../../components/public/Hero";
 import { ProjectsSection } from "../../components/public/ProjectsSection";
-import { Reveal } from "../../components/public/Reveal";
 import { SkillsSection } from "../../components/public/SkillsSection";
 import { WorkEducationSection } from "../../components/public/WorkEducationSection";
 import type { PublicLayoutData } from "../../loaders/publicLoaders";
@@ -59,48 +58,33 @@ export default function Home() {
       )}
 
       {flags.about && profile !== null && (
-        <Reveal>
-          <AboutSection profile={profile} index={numberOf("about")} />
-        </Reveal>
+        <AboutSection profile={profile} index={numberOf("about")} />
       )}
       {flags.skills && (
-        <Reveal>
-          <SkillsSection skills={data.skills} index={numberOf("skills")} />
-        </Reveal>
+        <SkillsSection skills={data.skills} index={numberOf("skills")} />
       )}
       {(flags.experience || flags.education) && (
-        <Reveal>
-          <WorkEducationSection
-            experience={data.experience}
-            education={data.education}
-            index={numberOf("experience")}
-          />
-        </Reveal>
+        <WorkEducationSection
+          experience={data.experience}
+          education={data.education}
+          index={numberOf("experience")}
+        />
       )}
       {flags.certifications && (
-        <Reveal>
-          <CertificationsSection
-            certifications={data.certifications}
-            index={numberOf("certifications")}
-          />
-        </Reveal>
+        <CertificationsSection
+          certifications={data.certifications}
+          index={numberOf("certifications")}
+        />
       )}
       {flags.projects && (
-        <Reveal>
-          <ProjectsSection
-            projects={data.projects}
-            index={numberOf("projects")}
-          />
-        </Reveal>
+        <ProjectsSection projects={data.projects} index={numberOf("projects")} />
       )}
       {flags.contact && (
-        <Reveal>
-          <ContactSection
-            contactSettings={data.contactSettings}
-            profile={profile}
-            index={numberOf("contact")}
-          />
-        </Reveal>
+        <ContactSection
+          contactSettings={data.contactSettings}
+          profile={profile}
+          index={numberOf("contact")}
+        />
       )}
     </article>
   );

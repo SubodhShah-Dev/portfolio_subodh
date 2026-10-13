@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 /**
  * 404 page — always available, no data dependency. Pop Mono treatment:
- * paper canvas, black "404" numeral with a cobalt misprint offset, and the
+ * paper canvas, black "404" numeral with an ink misprint offset, and the
  * pop ghost pill.
  */
 export default function NotFound() {
@@ -20,7 +20,7 @@ export default function NotFound() {
       <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-muted">
         The page you are looking for does not exist or is no longer available.
       </p>
-      <Link to="/" viewTransition className="cta-ghost mt-9">
+      <Link to="/" className="cta-ghost mt-9">
         Back to home
       </Link>
     </div>

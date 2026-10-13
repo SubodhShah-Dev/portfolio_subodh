@@ -49,7 +49,7 @@ export function Lightbox({
       role="dialog"
       aria-modal="true"
       aria-label="Image viewer"
-      className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 p-4"
       onClick={onClose}
     >
       <button

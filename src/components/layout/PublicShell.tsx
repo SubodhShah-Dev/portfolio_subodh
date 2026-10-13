@@ -325,7 +325,6 @@ export default function PublicShell({
       <Link
         key={link.key}
         to={link.to}
-        viewTransition={!isHashLink}
         aria-current={active ? "true" : undefined}
         className={linkClass(active)}
         onClick={() => {
@@ -367,14 +366,7 @@ export default function PublicShell({
         Skip to content
       </a>
 
-      {/* Fixed dot-grid texture — sits UNDER page content (z-0), so opaque
-          bands and cards hide it while the open canvas shows it. */}
-      <div
-        aria-hidden="true"
-        className="grid-overlay pointer-events-none fixed inset-0 z-0"
-      />
-
-      <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/85 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-hairline bg-canvas">
         <div className="shell-container flex h-14 items-center justify-between gap-6 lg:h-16">
           <div className="min-w-0 shrink">{brand}</div>
 
@@ -519,7 +511,7 @@ export default function PublicShell({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 14 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal shadow-pop transition-transform hover:-translate-y-0.5"
+            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal transition-transform hover:-translate-y-0.5"
           >
             <ArrowUp aria-hidden="true" className="size-5" />
           </motion.button>

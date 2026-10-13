@@ -46,13 +46,8 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
                 group.category.trim() !== "" ? "mt-3.5" : ""
               }`}
             >
-              {group.items.map((skill, position) => (
-                <li
-                  key={skill.id}
-                  className={`chip cursor-default transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-pop-sm ${
-                    position % 2 === 0 ? "-rotate-1" : "rotate-1"
-                  }`}
-                >
+              {group.items.map((skill) => (
+                <li key={skill.id} className="chip cursor-default">
                   {skill.iconUrl !== undefined && skill.iconUrl.trim() !== "" && (
                     <img
                       src={skill.iconUrl}

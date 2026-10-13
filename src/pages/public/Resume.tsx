@@ -49,7 +49,7 @@ export default function Resume() {
         </a>
       </header>
 
-      <div className="overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
+      <div className="overflow-hidden rounded-chunk border-2 border-ink bg-canvas">
         <iframe
           src={activeResume.downloadUrl}
           title="Resume preview"

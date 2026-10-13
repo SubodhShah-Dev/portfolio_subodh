@@ -106,13 +106,11 @@ export default function PublicLayout() {
   const brandName = name.trim() !== "" ? name : "Portfolio";
   // With a dark twin configured, each theme shows exactly one <img>; the
   // hidden one leaves the accessibility tree, so both carry the same alt.
-  const logoClasses =
-    "block h-12 w-auto transition-shadow group-hover:shadow-pop-sm lg:h-14";
+  const logoClasses = "block h-12 w-auto lg:h-14";
 
   const brand = (
     <Link
       to="/"
-      viewTransition
       className="group flex min-w-0 items-center gap-2.5"
       onClick={() => {
         // Same-location clicks (logo while already on /) skip the layout's
@@ -138,7 +136,7 @@ export default function PublicLayout() {
               src={data.logoUrlDark}
               alt={brandName}
               decoding="async"
-              className="hidden h-12 w-auto transition-shadow group-hover:shadow-pop-sm dark:block lg:h-14"
+              className="hidden h-12 w-auto dark:block lg:h-14"
             />
           )}
         </>
@@ -203,7 +201,6 @@ export default function PublicLayout() {
             <Link
               className="cta-ghost"
               to="/projects"
-              viewTransition
               onClick={() => {
                 // Same-location clicks (footer while already on /projects)
                 // skip the layout's reset effect — scroll explicitly.

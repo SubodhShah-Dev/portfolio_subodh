@@ -101,7 +101,7 @@ export default function SidebarShell({ brand, nav, footer, children }: SidebarSh
       </a>
 
       {/* Mobile top bar */}
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-800 bg-slate-950/90 px-4 py-3 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-slate-800 bg-slate-950/90 px-4 py-3 lg:hidden">
         <div className="min-w-0">{brand}</div>
         <button
           ref={menuButtonRef}
@@ -132,7 +132,7 @@ export default function SidebarShell({ brand, nav, footer, children }: SidebarSh
             type="button"
             aria-label="Close navigation menu"
             tabIndex={-1}
-            className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-950/70"
             onClick={() => setOpenedAtKey(null)}
           />
           <aside

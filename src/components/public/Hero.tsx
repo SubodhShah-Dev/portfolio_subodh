@@ -17,14 +17,14 @@ interface HeroProps {
 
 /**
  * Identity hero — Pop Mono (§7): paper on paper with ink type — no color
- * band. Cobalt appears as the drawn rule and as the `</>` circle icon that
- * replaces the first "o" of the display name; decor is a bobbing terminal
- * pop-card (desktop only). The name lands in giant condensed Bricolage
- * revealed word-by-word behind overflow masks, with an aria-label keeping
- * the accessible name exactly the display name. The role sits under the top
- * row as plain display text — impactful, but clearly below the name. Social
- * links repeat the footer's icon-only anchors at the right end of the CTA
- * row on desktop — below the stacked full-width CTAs on small screens.
+ * band. The drawn rule and the `</>` circle icon that replaces the first
+ * "o" of the display name; decor is a static terminal pop-card (desktop
+ * only). The name lands in giant condensed Bricolage with an aria-label
+ * keeping the accessible name exactly the display name. The role sits
+ * under the top row as plain display text — impactful, but clearly below
+ * the name. Social links repeat the footer's icon-only anchors at the
+ * right end of the CTA row on desktop — below the stacked full-width CTAs
+ * on small screens.
  * The primary CTA is "Resume" (routes to the inline /resume viewer) when a
  * resume exists, falling back to the #contact anchor flight otherwise.
  * CTAs slim down on small screens and keep the full pop size at sm+.
@@ -60,16 +60,15 @@ export function Hero({
 
   return (
     <header className="relative -mt-12 flex scroll-mt-24 flex-col justify-end overflow-hidden pt-14 pb-14 lg:-mt-16 lg:min-h-[78svh] lg:pt-24 lg:pb-20">
-      {/* Developer decor — bobbing terminal card, desktop only. Pure
+      {/* Developer decor — static terminal card, desktop only. Pure
           decoration: aria-hidden, pointer-events-none, z-0 (content sits
           above at z-10). 16.5rem (was 19.5) keeps the card's left edge right
           of the masthead's ink at xl; top at 5% keeps it above the tallest
           ascenders at short viewports. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-[5%] right-[5%] z-0 hidden w-[16.5rem] xl:block"
-      >
-        <div className="animate-pop-bob">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[5%] right-[5%] z-0 hidden w-[16.5rem] xl:block"
+        >
           <div className="pop-card rotate-[2deg] p-4">
             <div className="flex items-center gap-1.5 border-b-2 border-ink pb-2.5">
               <span className="size-2.5 rounded-full bg-signal" />
@@ -91,17 +90,10 @@ export function Hero({
             </div>
           </div>
         </div>
-      </div>
 
       <div className="shell-container relative z-10 flex flex-1 flex-col justify-end">
         {hasTopRow && (
-          <div
-            // xl: right-pad past the terminal card's band (w-[16.5rem] at
-            // right-[5%] of the 1200px content box → occupies row-x 832-1102
-            // of the 1120px row; 22rem lands "Based in" ~64px clear of it).
-            className="animate-rise flex flex-wrap items-center justify-between gap-x-6 gap-y-2 font-meta text-[11px] tracking-[0.14em] uppercase xl:pr-[22rem]"
-            style={{ animationDelay: "0ms" }}
-          >
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 font-meta text-[11px] tracking-[0.14em] uppercase xl:pr-[22rem]">
             {role.trim() !== "" && (
               <span className="font-display text-[clamp(1.05rem,1.5vw,1.35rem)] font-semibold normal-case tracking-[-0.01em] text-ink">
                 {role}
@@ -125,15 +117,12 @@ export function Hero({
               <Fragment key={`${word}-${index}`}>
                 {index > 0 && " "}
                 <span className="inline-block overflow-hidden align-bottom">
-                  <span
-                    className="animate-word inline-block leading-[1.1]"
-                    style={{ animationDelay: `${120 + index * 70}ms` }}
-                  >
+                  <span className="inline-block leading-[1.1]">
                     {before}
                     {hasGlyph && (
                       <span
                         aria-hidden="true"
-                        className="mx-[0.03em] inline-flex size-[0.53em] items-center justify-center rounded-full bg-ink font-meta align-middle text-canvas shadow-[0.035em_0.035em_0_0_var(--color-signal)]"
+                        className="mx-[0.03em] inline-flex size-[0.53em] items-center justify-center rounded-full bg-ink font-meta align-middle text-canvas"
                       >
                         <span className="text-[0.21em] leading-none font-bold">
                           {"</>"}
@@ -150,29 +139,21 @@ export function Hero({
 
         <div
           aria-hidden="true"
-          className="animate-draw mt-9 h-1 w-full origin-left bg-signal"
-          style={{ animationDelay: "400ms" }}
+          className="mt-9 h-1 w-full origin-left bg-signal"
         />
 
         {headline.trim() !== "" && (
-          <p
-            className="animate-rise mt-7 max-w-[46ch] font-body text-[clamp(1.125rem,2vw,1.5rem)] leading-relaxed text-muted"
-            style={{ animationDelay: "550ms" }}
-          >
+          <p className="mt-7 max-w-[46ch] font-body text-[clamp(1.125rem,2vw,1.5rem)] leading-relaxed text-muted">
             {headline}
           </p>
         )}
 
-        <div
-          className="animate-rise mt-9 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between"
-          style={{ animationDelay: "700ms" }}
-        >
+        <div className="mt-9 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-4 sm:flex-row">
             {resumeDownloadUrl !== null ? (
               <Link
                 className="cta-primary group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
                 to="/resume"
-                viewTransition
               >
                 Resume
                 <FileText
@@ -204,7 +185,6 @@ export function Hero({
             <Link
               className="cta-ghost group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
               to="/projects"
-              viewTransition
             >
               View my work
               <ArrowUpRight
