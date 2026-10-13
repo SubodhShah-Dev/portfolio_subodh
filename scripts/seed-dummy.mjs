@@ -148,7 +148,8 @@ for (const [position, project] of projects.entries()) {
     updatedAt: serverTimestamp(),
   };
   // Empty optional URLs are stored as-is; the public loader treats "" as absent.
-  const reference = await setDoc(doc(collection(db, "projects")), payload);
+  const reference = doc(collection(db, "projects"));
+  await setDoc(reference, payload);
   console.log(`Seeded project ${reference.id}: ${project.title}`);
 }
 
