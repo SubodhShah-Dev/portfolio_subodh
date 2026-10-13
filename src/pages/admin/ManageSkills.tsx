@@ -69,7 +69,7 @@ function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
     name: requiredError("Name", values.name),
     category: requiredError("Category", values.category),
-    iconUrl: urlError(values.iconUrl, { label: "Icon URL" }),
+    iconUrl: urlError(values.iconUrl, { label: "Icon URL", allowLocal: true }),
     proficiency:
       proficiency === "" || /^[1-5]$/.test(proficiency)
         ? null
@@ -162,6 +162,7 @@ export default function ManageSkills() {
             label="Icon URL"
             id="skill-icon"
             type="url"
+            hint="External URL or a path under /public (e.g. /icons/typescript.svg)."
             value={values.iconUrl}
             error={errors.iconUrl}
             onChange={(iconUrl) => setValues((current) => ({ ...current, iconUrl }))}

@@ -17,7 +17,8 @@
     "test:watch": "vitest",
     "test:rules": "firebase emulators:exec --only auth,firestore,storage --project demo-portfolio-cms \"vitest run --config vitest.rules.config.ts\"",
     "test:integration": "firebase emulators:exec --only auth,firestore,storage --project demo-portfolio-cms \"vitest run --config vitest.integration.config.ts\"",
-    "emulators": "firebase emulators:start --project demo-portfolio-cms"
+    "emulators": "firebase emulators:start --project demo-portfolio-cms",
+    "seed:dummy": "node scripts/seed-dummy.mjs"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",

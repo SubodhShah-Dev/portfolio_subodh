@@ -104,11 +104,11 @@ export function WorkEducationSection({
     ].join(" ");
 
   return (
-    <Section id="experience" title="Work &amp; Education" index={index}>
+    <Section id="experience" title="Experience &amp; Education" index={index}>
       {showTabs && (
         <div
           role="tablist"
-          aria-label="Work and education"
+          aria-label="Experience and education"
           onKeyDown={onTabKeyDown}
           className="mb-8 flex max-w-md gap-1.5 rounded-full border-2 border-ink bg-raised p-1.5"
         >
@@ -123,7 +123,7 @@ export function WorkEducationSection({
             onClick={() => select("work")}
             className={tabClass(active === "work")}
           >
-            Work
+            Experience
           </button>
           <button
             type="button"

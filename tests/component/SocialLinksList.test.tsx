@@ -12,23 +12,39 @@ function makeLink(overrides: Partial<SocialLink> = {}): SocialLink {
     platform: "GitHub",
     label: "GitHub",
     url: "https://github.com/example",
+    iconUrl: "/icons/github.svg",
     ...overrides,
   } as SocialLink;
 }
 
 describe("SocialLinksList", () => {
-  it("renders the icon image when iconUrl is set", () => {
-    render(<SocialLinksList links={[makeLink({ iconUrl: "/icons/github.svg" })]} />);
+  it("renders an icon-only anchor labelled with the link name", () => {
+    render(<SocialLinksList links={[makeLink()]} />);
+
+    const anchor = screen.getByRole("link", { name: "GitHub" });
+    expect(anchor).toHaveAttribute("href", "https://github.com/example");
+    expect(anchor).toHaveAttribute("target", "_blank");
 
     const icon = screen.getByRole("presentation", { hidden: true });
     expect(icon).toHaveAttribute("src", "/icons/github.svg");
-    expect(icon.className).toContain("dark:invert");
+    expect(icon.className).toContain("size-6");
   });
 
-  it("falls back to the text-only pill when no icon is set", () => {
-    render(<SocialLinksList links={[makeLink()]} />);
+  it("inverts icons on the dark band and not on paper", () => {
+    const { rerender } = render(<SocialLinksList links={[makeLink()]} />);
+    expect(
+      screen.getByRole("presentation", { hidden: true }).className,
+    ).toContain("invert");
 
-    expect(screen.getByText("GitHub")).toBeInTheDocument();
-    expect(screen.queryByRole("presentation", { hidden: true })).not.toBeInTheDocument();
+    rerender(<SocialLinksList links={[makeLink()]} tone="paper" />);
+    expect(
+      screen.getByRole("presentation", { hidden: true }).className,
+    ).toContain("dark:invert");
+  });
+
+  it("renders nothing when a link has no icon asset", () => {
+    render(<SocialLinksList links={[makeLink({ iconUrl: "" })]} />);
+
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 });

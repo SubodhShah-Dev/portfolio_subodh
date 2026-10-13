@@ -9,6 +9,7 @@ import Home from "../pages/public/Home";
 import NotFound from "../pages/public/NotFound";
 import ProjectDetails from "../pages/public/ProjectDetails";
 import Projects from "../pages/public/Projects";
+import Resume from "../pages/public/Resume";
 import { PageSkeleton } from "../components/common/Skeleton";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicErrorBoundary from "./PublicErrorBoundary";
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "projects", element: <Projects /> },
       { path: "projects/:id", element: <ProjectDetails />, loader: projectLoader },
+      { path: "resume", element: <Resume /> },
       { path: "*", element: <NotFound /> },
     ],
   },

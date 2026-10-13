@@ -48,6 +48,7 @@ export default function Home() {
           profile={profile}
           contactVisible={flags.contact}
           socialLinks={data.socialLinks}
+          resumeDownloadUrl={data.activeResume?.downloadUrl ?? null}
         />
       ) : (
         <h1 className="sr-only">

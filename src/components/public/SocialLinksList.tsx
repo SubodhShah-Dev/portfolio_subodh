@@ -1,5 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
-
 import type { SocialLink } from "../../types/socialLink";
 
 interface SocialLinksListProps {
@@ -9,17 +7,21 @@ interface SocialLinksListProps {
 }
 
 /**
- * Social links row (§18) — outlined pop pills that flood cobalt on hover;
- * label falls back to the platform name, external links always open safely
- * in a new tab. The footer band inverts the outline (near-white on black);
- * the hero's paper tone outlines in ink so the pills read on light canvas.
+ * Social links row (§18) — icon-only anchors with an accessible label;
+ * the platform SVG (iconUrl) is the whole affordance, sized to stay
+ * noticeable. Band tone inverts the dark icons for the black footer;
+ * paper tone keeps them ink and only inverts under dark mode.
  */
 export function SocialLinksList({ links, tone = "band" }: SocialLinksListProps) {
-  if (links.length === 0) return null;
+  // Icon-only design — links without an icon asset would render blank.
+  const visible = links.filter(
+    (link) => link.iconUrl !== undefined && link.iconUrl.trim() !== "",
+  );
+  if (visible.length === 0) return null;
 
   return (
-    <ul className="flex flex-wrap gap-2.5">
-      {links.map((link) => {
+    <ul className="flex flex-wrap items-center gap-1">
+      {visible.map((link) => {
         const label = link.label.trim() !== "" ? link.label : link.platform;
         return (
           <li key={link.id}>
@@ -27,23 +29,14 @@ export function SocialLinksList({ links, tone = "band" }: SocialLinksListProps) 
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={[
-                "group inline-flex items-center gap-1.5 rounded-full border-2 px-4 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-all duration-150 hover:-translate-y-0.5 hover:border-signal hover:bg-signal hover:text-on-signal",
-                tone === "paper" ? "border-ink text-ink" : "border-band-ink text-band-ink",
-              ].join(" ")}
+              aria-label={label}
+              className="inline-flex items-center justify-center rounded-full p-2 transition-transform duration-150 hover:-translate-y-0.5"
             >
-              {link.iconUrl !== undefined && link.iconUrl.trim() !== "" && (
-                <img
-                  src={link.iconUrl}
-                  alt=""
-                  aria-hidden="true"
-                  className="size-3.5 dark:invert"
-                />
-              )}
-              {label}
-              <ArrowUpRight
+              <img
+                src={link.iconUrl}
+                alt=""
                 aria-hidden="true"
-                className="size-3 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                className={`size-6 ${tone === "band" ? "invert" : "dark:invert"}`}
               />
             </a>
           </li>

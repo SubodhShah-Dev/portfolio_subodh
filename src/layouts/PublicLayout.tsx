@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Link, Outlet, useLocation, useRouteLoaderData } from "react-router";
-import { Download } from "lucide-react";
 
 import PublicShell, { type ShellLink } from "../components/layout/PublicShell";
 import { SocialLinksList } from "../components/public/SocialLinksList";
@@ -110,7 +109,7 @@ export default function PublicLayout() {
   // With a dark twin configured, each theme shows exactly one <img>; the
   // hidden one leaves the accessibility tree, so both carry the same alt.
   const logoClasses =
-    "block h-11 w-auto ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm";
+    "block h-12 w-auto transition-shadow group-hover:shadow-pop-sm lg:h-14";
 
   const brand = (
     <Link
@@ -138,7 +137,7 @@ export default function PublicLayout() {
             <img
               src={data.logoUrlDark}
               alt={brandName}
-              className="hidden h-11 w-auto ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm dark:block"
+              className="hidden h-12 w-auto transition-shadow group-hover:shadow-pop-sm dark:block lg:h-14"
             />
           )}
         </>
@@ -162,7 +161,7 @@ export default function PublicLayout() {
     spyId: section.hash.slice(1),
   }));
   const workLink: ShellLink[] = [
-    { key: "work", to: "/projects", label: "Work", spyId: "projects" },
+    { key: "work", to: "/projects", label: "Projects", spyId: "projects" },
   ];
   const contactIndex = visibleSections.findIndex(
     (section) => section.key === "#contact",
@@ -179,19 +178,6 @@ export default function PublicLayout() {
     { key: "home", to: "/", label: "Home", end: true },
     ...orderedSections,
   ];
-
-  const actions =
-    data.activeResume !== null ? (
-      <a
-        href={data.activeResume.downloadUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn-primary w-full justify-center lg:w-auto"
-      >
-        <Download aria-hidden="true" className="size-4" />
-        Download resume
-      </a>
-    ) : undefined;
 
   // Footer email only when the contact section is actually enabled (§48).
   const contactEmail = flags.contact
@@ -259,7 +245,7 @@ export default function PublicLayout() {
   );
 
   return (
-    <PublicShell brand={brand} links={links} actions={actions} footer={footer}>
+    <PublicShell brand={brand} links={links} footer={footer}>
       <Outlet />
     </PublicShell>
   );

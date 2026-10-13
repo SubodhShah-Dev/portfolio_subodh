@@ -150,6 +150,7 @@ export function makeSocialLink(overrides: Partial<SocialLink> = {}): SocialLink 
     platform: "GitHub",
     label: "GitHub",
     url: "https://github.com/example",
+    iconUrl: "/icons/github.svg",
     status: "published",
     order: 0,
     createdAt: now,

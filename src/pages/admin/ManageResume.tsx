@@ -81,7 +81,11 @@ export default function ManageResume() {
 
   const submitExternal = async () => {
     const errors = fieldErrors({
-      downloadUrl: urlError(externalUrl, { label: "Resume URL", required: true }),
+      downloadUrl: urlError(externalUrl, {
+        label: "Resume URL",
+        required: true,
+        allowLocal: true,
+      }),
     });
     setExternalErrors(errors);
     if (Object.keys(errors).length > 0) return;
@@ -134,7 +138,8 @@ export default function ManageResume() {
         <section className="card p-6">
           <h2 className="text-base font-semibold text-slate-100">Or use an external URL</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Link to a resume hosted anywhere — e.g. Google Drive or your own domain.
+            Link to a resume hosted anywhere (Google Drive, your domain) or a
+            path under /public.
           </p>
           {external.error !== null && (
             <div className="mt-4">

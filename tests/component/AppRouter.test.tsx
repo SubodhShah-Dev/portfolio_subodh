@@ -88,7 +88,7 @@ describe("AppRouter", () => {
       await screen.findByRole("navigation", { name: "Site navigation" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Work" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Projects" })).toBeInTheDocument();
   });
 
   it("shows the logo in place of the site name when logoUrl is set", async () => {
@@ -143,13 +143,13 @@ describe("AppRouter", () => {
   it("navigates to the Projects page via the header navigation", async () => {
     await renderAt("/");
 
-    await userEvent.click(await screen.findByRole("link", { name: "Work" }));
+    await userEvent.click(await screen.findByRole("link", { name: "Projects" }));
 
     expect(await screen.findByRole("heading", { name: "Projects" })).toBeInTheDocument();
     expect(window.location.pathname).toBe("/projects");
   });
 
-  it("keeps exactly one Download resume link across header and hero", async () => {
+  it("offers the resume via the hero Resume CTA and /resume page", async () => {
     loaderResult.layout = makeLayoutData({
       profile: makeProfile(),
       activeResume: {
@@ -167,11 +167,14 @@ describe("AppRouter", () => {
     expect(
       await screen.findByRole("heading", { name: "Ada Lovelace" }),
     ).toBeInTheDocument();
-    const downloads = screen.getAllByRole("link", { name: "Download resume" });
-    expect(downloads).toHaveLength(1);
-    expect(downloads[0]).toHaveAttribute("href", "https://example.com/resume.pdf");
-    const getInTouch = screen.getByRole("link", { name: "Get in touch" });
-    expect(getInTouch).toHaveAttribute("href", "/#contact");
+    expect(
+      screen.queryByRole("link", { name: "Download resume" }),
+    ).not.toBeInTheDocument();
+    const resume = screen.getByRole("link", { name: "Resume" });
+    expect(resume).toHaveAttribute("href", "/resume");
+    expect(
+      screen.queryByRole("link", { name: "Get in touch" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders NotFound for unknown routes", async () => {

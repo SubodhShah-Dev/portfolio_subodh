@@ -86,7 +86,7 @@ describe("PublicShell interactions", () => {
     expect(screen.queryByPlaceholderText("Type a command or search…")).toBeNull();
   });
 
-  it("opens the mobile menu and reveals its links and actions", async () => {
+  it("opens the mobile menu and reveals its links", async () => {
     renderShell();
 
     const menuButton = await screen.findByRole("button", {
@@ -97,7 +97,7 @@ describe("PublicShell interactions", () => {
     expect(document.getElementById("public-menu")).not.toBeNull();
     expect(
       document.getElementById("public-menu"),
-    ).toHaveTextContent("Download resume");
+    ).toHaveTextContent("About");
 
     fireEvent.click(screen.getByRole("button", { name: "Close navigation menu" }));
     await waitFor(() => {
@@ -196,7 +196,7 @@ describe("PublicShell scrollspy", () => {
     }
   }
 
-  it("highlights Work while the projects section crosses the header offset", async () => {
+  it("highlights Projects while the projects section crosses the header offset", async () => {
     renderSpyShell();
     await screen.findByRole("navigation", { name: "Site navigation" });
 
@@ -205,7 +205,7 @@ describe("PublicShell scrollspy", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("link", { name: "Work" }).getAttribute("aria-current"),
+        screen.getByRole("link", { name: "Projects" }).getAttribute("aria-current"),
       ).toBe("true");
     });
     expect(
@@ -228,7 +228,7 @@ describe("PublicShell scrollspy", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("link", { name: "Work" }).getAttribute("aria-current"),
+        screen.getByRole("link", { name: "Projects" }).getAttribute("aria-current"),
       ).toBe("true");
     });
     expect(
@@ -282,7 +282,7 @@ describe("PublicShell scrollspy", () => {
     ).toBeNull();
   });
 
-  it("keeps Work lit on /projects and clears stale section highlights", async () => {
+  it("keeps Projects lit on /projects and clears stale section highlights", async () => {
     renderSpyShell();
     await screen.findByRole("navigation", { name: "Site navigation" });
 
@@ -296,12 +296,12 @@ describe("PublicShell scrollspy", () => {
       ).toBe("true");
     });
 
-    fireEvent.click(screen.getByRole("link", { name: "Work" }));
+    fireEvent.click(screen.getByRole("link", { name: "Projects" }));
     await screen.findByText("Projects page");
 
     await waitFor(() => {
       expect(
-        screen.getByRole("link", { name: "Work" }).getAttribute("aria-current"),
+        screen.getByRole("link", { name: "Projects" }).getAttribute("aria-current"),
       ).toBe("true");
       expect(
         screen

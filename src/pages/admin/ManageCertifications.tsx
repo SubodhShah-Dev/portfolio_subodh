@@ -70,7 +70,10 @@ function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
     title: requiredError("Title", values.title),
     issuer: requiredError("Issuer", values.issuer),
-    credentialUrl: urlError(values.credentialUrl, { label: "Credential URL" }),
+    credentialUrl: urlError(values.credentialUrl, {
+      label: "Credential URL",
+      allowLocal: true,
+    }),
   });
 }
 
@@ -159,6 +162,7 @@ export default function ManageCertifications() {
             label="Credential URL"
             id="cert-url"
             type="url"
+            hint="External URL or a path under /public (e.g. /credentials/aws.pdf)."
             value={values.credentialUrl}
             error={errors.credentialUrl}
             onChange={(credentialUrl) =>
