@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Timestamp } from "firebase/firestore";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -88,6 +88,36 @@ describe("AppRouter", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Work" })).toBeInTheDocument();
+  });
+
+  it("shows the logo in place of the site name when logoUrl is set", async () => {
+    loaderResult.layout = makeLayoutData({
+      profile: makeProfile(),
+      logoUrl: "/brand/logo.svg",
+    });
+
+    await renderAt("/");
+
+    const logo = await screen.findByAltText("Ada Lovelace");
+    expect(logo).toHaveAttribute("src", "/brand/logo.svg");
+    const brand = logo.closest("a");
+    expect(brand).not.toBeNull();
+    const scope = within(brand as HTMLElement);
+    expect(scope.queryByText("Ada Lovelace")).not.toBeInTheDocument();
+    expect(scope.getByText("Software Engineer")).toBeInTheDocument();
+  });
+
+  it("falls back to the text brand when no logo is set", async () => {
+    loaderResult.layout = makeLayoutData({ profile: makeProfile() });
+
+    await renderAt("/");
+
+    const brandLinks = await screen.findAllByRole("link", {
+      name: /Ada Lovelace/,
+    });
+    expect(brandLinks.length).toBeGreaterThan(0);
+    expect(screen.queryByAltText("Ada Lovelace")).not.toBeInTheDocument();
+    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
   });
 
   it("navigates to the Projects page via the header navigation", async () => {

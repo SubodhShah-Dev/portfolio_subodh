@@ -17,6 +17,7 @@ import {
   type SiteSettingsInput,
 } from "../../types/settings";
 import { getSiteSettings, updateSiteSettings } from "../../services/settingsService";
+import { textOrClear } from "../../services/serviceUtils";
 import { fieldErrors } from "../../utils/validation";
 import { urlError } from "../../utils/urlValidation";
 
@@ -66,8 +67,11 @@ function toValues(settings: SiteSettings | null): FormValues {
 
 function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
-    logoUrl: urlError(values.logoUrl, { label: "Logo URL" }),
-    faviconUrl: urlError(values.faviconUrl, { label: "Favicon URL" }),
+    logoUrl: urlError(values.logoUrl, { label: "Logo URL", allowLocal: true }),
+    faviconUrl: urlError(values.faviconUrl, {
+      label: "Favicon URL",
+      allowLocal: true,
+    }),
   });
 }
 
@@ -77,17 +81,11 @@ export default function ManageSettings() {
     const input: SiteSettingsInput = {
       enabled: values.enabled,
       sections: values.sections,
-      ...(values.siteTitle.trim() !== "" ? { siteTitle: values.siteTitle.trim() } : {}),
-      ...(values.siteDescription.trim() !== ""
-        ? { siteDescription: values.siteDescription.trim() }
-        : {}),
-      ...(values.logoUrl.trim() !== "" ? { logoUrl: values.logoUrl.trim() } : {}),
-      ...(values.faviconUrl.trim() !== ""
-        ? { faviconUrl: values.faviconUrl.trim() }
-        : {}),
-      ...(values.footerText.trim() !== ""
-        ? { footerText: values.footerText.trim() }
-        : {}),
+      siteTitle: textOrClear(values.siteTitle),
+      siteDescription: textOrClear(values.siteDescription),
+      logoUrl: textOrClear(values.logoUrl),
+      faviconUrl: textOrClear(values.faviconUrl),
+      footerText: textOrClear(values.footerText),
     };
     return updateSiteSettings(input);
   });
@@ -155,6 +153,7 @@ export default function ManageSettings() {
             label="Logo URL"
             id="settings-logo"
             type="url"
+            hint="External URL or a path under /public (e.g. /brand/logo.svg). Replaces the site name in the nav."
             value={values.logoUrl}
             error={errors.logoUrl}
             onChange={(logoUrl) => setValues((current) => ({ ...current, logoUrl }))}
@@ -163,6 +162,7 @@ export default function ManageSettings() {
             label="Favicon URL"
             id="settings-favicon"
             type="url"
+            hint="External URL or a path under /public (e.g. /brand/favicon.svg)."
             value={values.faviconUrl}
             error={errors.faviconUrl}
             onChange={(faviconUrl) =>

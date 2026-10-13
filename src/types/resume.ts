@@ -1,5 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
 
+import type { Clearable } from "./write";
+
 /** Where the active resume file lives (§22). */
 export type ResumeSource = "storage" | "external";
 
@@ -21,7 +23,7 @@ export interface Resume {
 }
 
 /** External-URL payload supplied by the administrator — never generated. */
-export interface ExternalResumeInput {
+export type ExternalResumeInput = Clearable<{
   downloadUrl: string;
   fileName?: string;
-}
+}>;

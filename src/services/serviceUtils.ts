@@ -15,6 +15,7 @@ import {
   writeBatch,
   type CollectionReference,
   type DocumentReference,
+  type FieldValue,
   type QueryConstraint,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
@@ -218,6 +219,16 @@ export async function upsertSingleDoc(
   } catch (error) {
     throw toAppError(error);
   }
+}
+
+/**
+ * Trimmed text for a write: blank removes the field from the document.
+ * `setDoc(…, { merge: true })` never deletes absent keys, so a cleared
+ * optional field must be sent as `deleteField()` or the old value sticks.
+ */
+export function textOrClear(value: string): string | FieldValue {
+  const trimmed = value.trim();
+  return trimmed === "" ? deleteField() : trimmed;
 }
 
 /** Unguarded single-doc read for config documents (contact, settings). */

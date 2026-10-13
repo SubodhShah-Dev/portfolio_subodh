@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { deleteField } from "firebase/firestore";
 
 import AdminPageShell from "../../components/admin/AdminPageShell";
 import { ContentRow } from "../../components/admin/ContentRow";
@@ -23,6 +24,7 @@ import {
   setSkillStatus,
   updateSkill,
 } from "../../services/skillService";
+import { textOrClear } from "../../services/serviceUtils";
 import { fieldErrors, requiredError } from "../../utils/validation";
 import { urlError } from "../../utils/urlValidation";
 
@@ -109,10 +111,11 @@ export default function ManageSkills() {
       order: editing?.order ?? collection.list.data?.length ?? 0,
       name: values.name.trim(),
       category: values.category.trim(),
-      ...(values.iconUrl.trim() !== "" ? { iconUrl: values.iconUrl.trim() } : {}),
-      ...(values.proficiency.trim() !== ""
-        ? { proficiency: Number(values.proficiency.trim()) }
-        : {}),
+      iconUrl: textOrClear(values.iconUrl),
+      proficiency:
+        values.proficiency.trim() !== ""
+          ? Number(values.proficiency.trim())
+          : deleteField(),
     };
     const result = await collection.save(editing?.id ?? null, input);
     if (result.ok) setFormOpen(false);

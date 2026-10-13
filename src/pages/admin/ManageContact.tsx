@@ -15,7 +15,8 @@ import {
   getContactSettings,
   updateContactSettings,
 } from "../../services/contactService";
-import { emailError, fieldErrors, maxLengthError } from "../../utils/validation";
+import { textOrClear } from "../../services/serviceUtils";
+import { fieldErrors, maxLengthError, optionalEmailError } from "../../utils/validation";
 
 interface FormValues {
   enabled: boolean;
@@ -49,7 +50,7 @@ function toValues(settings: ContactSettings | null): FormValues {
 
 function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
-    email: emailError("Email", values.email),
+    email: optionalEmailError("Email", values.email),
     location: maxLengthError("Location", values.location, 80),
   });
 }
@@ -59,13 +60,11 @@ export default function ManageContact() {
   const save = useMutation<FormValues, void>((values) => {
     const input: ContactSettingsInput = {
       enabled: values.enabled,
-      ...(values.title.trim() !== "" ? { title: values.title.trim() } : {}),
-      ...(values.description.trim() !== ""
-        ? { description: values.description.trim() }
-        : {}),
-      ...(values.email.trim() !== "" ? { email: values.email.trim() } : {}),
-      ...(values.phone.trim() !== "" ? { phone: values.phone.trim() } : {}),
-      ...(values.location.trim() !== "" ? { location: values.location.trim() } : {}),
+      title: textOrClear(values.title),
+      description: textOrClear(values.description),
+      email: textOrClear(values.email),
+      phone: textOrClear(values.phone),
+      location: textOrClear(values.location),
     };
     return updateContactSettings(input);
   });

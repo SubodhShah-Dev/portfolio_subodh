@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   galleryUrlsError,
+  isLocalPath,
   isValidHttpUrl,
   parseImageLines,
   urlError,
@@ -43,6 +44,52 @@ describe("urlError", () => {
       "Live demo URL must be a valid http(s) URL.",
     );
   });
+
+  it("rejects local paths unless allowLocal is set", () => {
+    expect(urlError("/brand/logo.png")).toBe(
+      "URL must be a valid http(s) URL.",
+    );
+    expect(urlError("/brand/logo.png", { allowLocal: true })).toBeNull();
+    expect(urlError("/about/1.jpg?width=600", { allowLocal: true })).toBeNull();
+    expect(
+      urlError("/brand/logo.png", { required: true, allowLocal: true }),
+    ).toBeNull();
+  });
+
+  it("still rejects off-origin and unsafe values when allowLocal is set", () => {
+    expect(urlError("//evil.com/x.png", { allowLocal: true })).toBe(
+      "URL must be a valid http(s) URL.",
+    );
+    expect(urlError("/\\evil.com", { allowLocal: true })).toBe(
+      "URL must be a valid http(s) URL.",
+    );
+    expect(urlError("/", { allowLocal: true })).toBe(
+      "URL must be a valid http(s) URL.",
+    );
+    expect(urlError("javascript:alert(1)", { allowLocal: true })).toBe(
+      "URL must be a valid http(s) URL.",
+    );
+    expect(
+      urlError("https://example.com/a.png", { allowLocal: true }),
+    ).toBeNull();
+  });
+});
+
+describe("isLocalPath", () => {
+  it("accepts root-relative paths deeper than the site root", () => {
+    expect(isLocalPath("/brand/logo.svg")).toBe(true);
+    expect(isLocalPath("/favicon.svg")).toBe(true);
+    expect(isLocalPath("  /about/1.jpg  ")).toBe(true);
+  });
+
+  it("rejects bare root, relative, protocol-relative, and backslash values", () => {
+    expect(isLocalPath("/")).toBe(false);
+    expect(isLocalPath("about/1.jpg")).toBe(false);
+    expect(isLocalPath("//cdn.example.com/x.png")).toBe(false);
+    expect(isLocalPath("/\\cdn.example.com")).toBe(false);
+    expect(isLocalPath("")).toBe(false);
+    expect(isLocalPath("https://example.com/x.png")).toBe(false);
+  });
 });
 
 describe("parseImageLines", () => {
@@ -83,5 +130,25 @@ describe("galleryUrlsError", () => {
     expect(galleryUrlsError("nope", "Profile image URL")).toBe(
       "Profile image URL (line 1) must be a valid http(s) URL.",
     );
+  });
+
+  it("accepts local paths per line when allowLocal is set", () => {
+    expect(
+      galleryUrlsError(
+        "/about/1.jpg\n/about/2.jpg\n",
+        "Profile image URL",
+        { allowLocal: true },
+      ),
+    ).toBeNull();
+    expect(
+      galleryUrlsError(
+        "/about/1.jpg\n/\\evil.com/x.jpg",
+        "Profile image URL",
+        { allowLocal: true },
+      ),
+    ).toBe("Profile image URL (line 2) must be a valid http(s) URL.");
+    expect(
+      galleryUrlsError("not-a-url", "Gallery image URL", { allowLocal: true }),
+    ).toBe("Gallery image URL (line 1) must be a valid http(s) URL.");
   });
 });

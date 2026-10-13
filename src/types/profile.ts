@@ -1,3 +1,5 @@
+import type { Clearable } from "./write";
+
 /**
  * Public profile information (§8).
  * Stored at profile/public — readable by anyone, writable only by admins.
@@ -33,5 +35,5 @@ export interface PortfolioProfile {
 }
 
 /** Draft values handled by the admin form before persistence. */
-export type PublicProfileInput = Omit<PublicProfile, "id">;
-export type ContactProfileInput = Omit<ContactProfile, "id">;
+export type PublicProfileInput = Clearable<Omit<PublicProfile, "id">>;
+export type ContactProfileInput = Clearable<Omit<ContactProfile, "id">>;

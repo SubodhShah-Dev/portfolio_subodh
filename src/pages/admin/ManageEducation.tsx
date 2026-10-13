@@ -23,6 +23,7 @@ import {
   setEducationStatus,
   updateEducation,
 } from "../../services/educationService";
+import { textOrClear } from "../../services/serviceUtils";
 import { fieldErrors, requiredError } from "../../utils/validation";
 import { urlError } from "../../utils/urlValidation";
 
@@ -115,14 +116,10 @@ export default function ManageEducation() {
       institution: values.institution.trim(),
       degree: values.degree.trim(),
       startDate: values.startDate.trim(),
-      ...(values.field.trim() !== "" ? { field: values.field.trim() } : {}),
-      ...(values.endDate.trim() !== "" ? { endDate: values.endDate.trim() } : {}),
-      ...(values.institutionUrl.trim() !== ""
-        ? { institutionUrl: values.institutionUrl.trim() }
-        : {}),
-      ...(values.description.trim() !== ""
-        ? { description: values.description.trim() }
-        : {}),
+      field: textOrClear(values.field),
+      endDate: textOrClear(values.endDate),
+      institutionUrl: textOrClear(values.institutionUrl),
+      description: textOrClear(values.description),
     };
     const result = await collection.save(editing?.id ?? null, input);
     if (result.ok) setFormOpen(false);

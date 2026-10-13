@@ -23,6 +23,7 @@ import {
   setExperienceStatus,
   updateExperience,
 } from "../../services/experienceService";
+import { textOrClear } from "../../services/serviceUtils";
 import {
   fieldErrors,
   joinList,
@@ -126,11 +127,9 @@ export default function ManageExperience() {
       description: values.description.trim(),
       startDate: values.startDate.trim(),
       technologies: parseList(values.technologies),
-      ...(values.endDate.trim() !== "" ? { endDate: values.endDate.trim() } : {}),
-      ...(values.location.trim() !== "" ? { location: values.location.trim() } : {}),
-      ...(values.companyUrl.trim() !== ""
-        ? { companyUrl: values.companyUrl.trim() }
-        : {}),
+      endDate: textOrClear(values.endDate),
+      location: textOrClear(values.location),
+      companyUrl: textOrClear(values.companyUrl),
     };
     const result = await collection.save(editing?.id ?? null, input);
     if (result.ok) setFormOpen(false);

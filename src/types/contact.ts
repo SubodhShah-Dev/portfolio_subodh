@@ -1,5 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
 
+import type { Clearable } from "./write";
+
 /** Contact section configuration (§19). Only supplied fields are rendered. */
 export interface ContactSettings {
   id: string;
@@ -12,4 +14,6 @@ export interface ContactSettings {
   updatedAt: Timestamp;
 }
 
-export type ContactSettingsInput = Omit<ContactSettings, "id" | "updatedAt">;
+export type ContactSettingsInput = Clearable<
+  Omit<ContactSettings, "id" | "updatedAt">
+>;

@@ -1,4 +1,5 @@
 import type { OrderedContent } from "./common";
+import type { Clearable } from "./write";
 
 /** Social link (§18). Platform is free-form — no hardcoded platform list. */
 export interface SocialLink extends OrderedContent {
@@ -9,4 +10,6 @@ export interface SocialLink extends OrderedContent {
   iconUrl?: string;
 }
 
-export type SocialLinkInput = Omit<SocialLink, "id" | "createdAt" | "updatedAt" | "publishedAt">;
+export type SocialLinkInput = Clearable<
+  Omit<SocialLink, "id" | "createdAt" | "updatedAt" | "publishedAt">
+>;

@@ -29,6 +29,7 @@ import {
   setProjectStatus,
   updateProject,
 } from "../../services/projectService";
+import { textOrClear } from "../../services/serviceUtils";
 import {
   fieldErrors,
   joinList,
@@ -107,8 +108,13 @@ function validate(values: FormValues): Record<string, string> {
     description: requiredError("Description", values.description),
     githubUrl: urlError(values.githubUrl, { label: "GitHub URL" }),
     liveDemoUrl: urlError(values.liveDemoUrl, { label: "Live demo URL" }),
-    thumbnailUrl: urlError(values.thumbnailUrl, { label: "Thumbnail URL" }),
-    images: galleryUrlsError(values.images),
+    thumbnailUrl: urlError(values.thumbnailUrl, {
+      label: "Thumbnail URL",
+      allowLocal: true,
+    }),
+    images: galleryUrlsError(values.images, "Gallery image URL", {
+      allowLocal: true,
+    }),
   });
 }
 
@@ -150,18 +156,12 @@ export default function ManageProjects() {
       techStack: parseList(values.techStack),
       features: parseList(values.features),
       featured: values.featured,
-      ...(values.githubUrl.trim() !== ""
-        ? { githubUrl: values.githubUrl.trim() }
-        : {}),
-      ...(values.liveDemoUrl.trim() !== ""
-        ? { liveDemoUrl: values.liveDemoUrl.trim() }
-        : {}),
-      thumbnailUrl: values.thumbnailUrl.trim(),
+      githubUrl: textOrClear(values.githubUrl),
+      liveDemoUrl: textOrClear(values.liveDemoUrl),
+      thumbnailUrl: textOrClear(values.thumbnailUrl),
       images: parseImageLines(values.images),
-      ...(values.date.trim() !== "" ? { date: values.date.trim() } : {}),
-      ...(values.architecture.trim() !== ""
-        ? { architecture: values.architecture.trim() }
-        : {}),
+      date: textOrClear(values.date),
+      architecture: textOrClear(values.architecture),
     };
     const result = await collection.save(editing?.id ?? null, input);
     if (result.ok) setFormOpen(false);
@@ -254,6 +254,7 @@ export default function ManageProjects() {
             label="Thumbnail URL"
             id="project-thumbnail"
             type="url"
+            hint="External URL or a path under /public (e.g. /projects/thumb.jpg)."
             value={values.thumbnailUrl}
             error={errors.thumbnailUrl}
             onChange={(thumbnailUrl) =>
@@ -267,7 +268,7 @@ export default function ManageProjects() {
               rows={3}
               value={values.images}
               error={errors.images}
-              hint="Shown as a lightbox strip on the project page. Clear the field to remove the gallery."
+              hint="Shown as a lightbox strip on the project page (external URLs or /public paths). Clear the field to remove the gallery."
               onChange={(images) =>
                 setValues((current) => ({ ...current, images }))
               }

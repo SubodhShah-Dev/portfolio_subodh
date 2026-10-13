@@ -1,4 +1,5 @@
 import type { OrderedContent } from "./common";
+import type { Clearable } from "./write";
 
 /** Experience record (§15). Dates are user-facing strings, not timestamps. */
 export interface Experience extends OrderedContent {
@@ -13,4 +14,6 @@ export interface Experience extends OrderedContent {
   companyUrl?: string;
 }
 
-export type ExperienceInput = Omit<Experience, "id" | "createdAt" | "updatedAt" | "publishedAt">;
+export type ExperienceInput = Clearable<
+  Omit<Experience, "id" | "createdAt" | "updatedAt" | "publishedAt">
+>;

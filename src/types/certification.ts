@@ -1,4 +1,5 @@
 import type { OrderedContent } from "./common";
+import type { Clearable } from "./write";
 
 /** Certification record (§17). */
 export interface Certification extends OrderedContent {
@@ -10,7 +11,6 @@ export interface Certification extends OrderedContent {
   description?: string;
 }
 
-export type CertificationInput = Omit<
-  Certification,
-  "id" | "createdAt" | "updatedAt" | "publishedAt"
+export type CertificationInput = Clearable<
+  Omit<Certification, "id" | "createdAt" | "updatedAt" | "publishedAt">
 >;

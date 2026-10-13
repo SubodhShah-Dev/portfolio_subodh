@@ -122,9 +122,9 @@ export async function saveExternalResume(
   }
 
   const payload: Record<string, unknown> = { source: "external", downloadUrl };
-  const fileName = input.fileName?.trim();
-  if (fileName !== undefined && fileName !== "") {
-    payload.fileName = fileName;
+  // Callers pass trimmed text, "" (omit), or deleteField() (remove).
+  if (input.fileName !== undefined && input.fileName !== "") {
+    payload.fileName = input.fileName;
   }
   return insertResume(payload);
 }

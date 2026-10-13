@@ -1,4 +1,5 @@
 import type { OrderedContent } from "./common";
+import type { Clearable } from "./write";
 
 /** Project record (§10). */
 export interface Project extends OrderedContent {
@@ -18,4 +19,6 @@ export interface Project extends OrderedContent {
   architecture?: string;
 }
 
-export type ProjectInput = Omit<Project, "id" | "createdAt" | "updatedAt" | "publishedAt">;
+export type ProjectInput = Clearable<
+  Omit<Project, "id" | "createdAt" | "updatedAt" | "publishedAt">
+>;

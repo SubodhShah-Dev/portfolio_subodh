@@ -1,4 +1,5 @@
 import type { OrderedContent } from "./common";
+import type { Clearable } from "./write";
 
 /** Education record (§16). */
 export interface Education extends OrderedContent {
@@ -12,4 +13,6 @@ export interface Education extends OrderedContent {
   institutionUrl?: string;
 }
 
-export type EducationInput = Omit<Education, "id" | "createdAt" | "updatedAt" | "publishedAt">;
+export type EducationInput = Clearable<
+  Omit<Education, "id" | "createdAt" | "updatedAt" | "publishedAt">
+>;
