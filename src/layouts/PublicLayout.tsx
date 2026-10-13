@@ -106,7 +106,6 @@ export default function PublicLayout() {
   }
 
   const name = profile?.public.name ?? "";
-  const role = profile?.public.role ?? "";
 
   const brand = (
     <Link
@@ -119,24 +118,17 @@ export default function PublicLayout() {
         requestAnimationFrame(() => scrollToTop());
       }}
     >
-      <span className="min-w-0">
-        {data.logoUrl !== null ? (
-          <img
-            src={data.logoUrl}
-            alt={name.trim() !== "" ? name : "Portfolio"}
-            className="block h-6 w-auto shrink-0"
-          />
-        ) : (
-          <span className="block truncate font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal">
-            {name.trim() !== "" ? name : "Portfolio"}
-          </span>
-        )}
-        {role.trim() !== "" && (
-          <span className="mt-0.5 block truncate font-meta text-[10px] tracking-[0.14em] text-muted uppercase">
-            {role}
-          </span>
-        )}
-      </span>
+      {data.logoUrl !== null ? (
+        <img
+          src={data.logoUrl}
+          alt={name.trim() !== "" ? name : "Portfolio"}
+          className="block h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm"
+        />
+      ) : (
+        <span className="min-w-0 truncate font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal">
+          {name.trim() !== "" ? name : "Portfolio"}
+        </span>
+      )}
     </Link>
   );
 

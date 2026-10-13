@@ -93,18 +93,19 @@ describe("AppRouter", () => {
   it("shows the logo in place of the site name when logoUrl is set", async () => {
     loaderResult.layout = makeLayoutData({
       profile: makeProfile(),
-      logoUrl: "/brand/logo.svg",
+      logoUrl: "/brand/profilelogo.jpg",
     });
 
     await renderAt("/");
 
     const logo = await screen.findByAltText("Ada Lovelace");
-    expect(logo).toHaveAttribute("src", "/brand/logo.svg");
+    expect(logo).toHaveAttribute("src", "/brand/profilelogo.jpg");
     const brand = logo.closest("a");
     expect(brand).not.toBeNull();
     const scope = within(brand as HTMLElement);
     expect(scope.queryByText("Ada Lovelace")).not.toBeInTheDocument();
-    expect(scope.getByText("Software Engineer")).toBeInTheDocument();
+    // The navbar brand is the logo alone — no role line.
+    expect(scope.queryByText("Software Engineer")).not.toBeInTheDocument();
   });
 
   it("falls back to the text brand when no logo is set", async () => {
@@ -117,7 +118,6 @@ describe("AppRouter", () => {
     });
     expect(brandLinks.length).toBeGreaterThan(0);
     expect(screen.queryByAltText("Ada Lovelace")).not.toBeInTheDocument();
-    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
   });
 
   it("navigates to the Projects page via the header navigation", async () => {
