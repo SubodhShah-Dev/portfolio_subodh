@@ -110,7 +110,7 @@ export default function PublicLayout() {
   // With a dark twin configured, each theme shows exactly one <img>; the
   // hidden one leaves the accessibility tree, so both carry the same alt.
   const logoClasses =
-    "block h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm";
+    "block h-11 w-auto ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm";
 
   const brand = (
     <Link
@@ -138,7 +138,7 @@ export default function PublicLayout() {
             <img
               src={data.logoUrlDark}
               alt={brandName}
-              className="hidden h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm dark:block"
+              className="hidden h-11 w-auto ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm dark:block"
             />
           )}
         </>
