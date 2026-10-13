@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Nimbus Notes illustration">
+  <rect width="800" height="500" fill="#fafaf7"/>
+  <g stroke="#141414" stroke-width="6" fill="none">
+    <rect x="120" y="90" width="380" height="260" rx="18" fill="#ffffff"/>
+    <rect x="180" y="150" width="380" height="260" rx="18" fill="#ffffff"/>
+  </g>
+  <g fill="#141414">
+    <rect x="220" y="200" width="220" height="14" rx="7"/>
+    <rect x="220" y="236" width="300" height="10" rx="5" fill="#55555f"/>
+    <rect x="220" y="262" width="260" height="10" rx="5" fill="#55555f"/>
+    <rect x="220" y="288" width="280" height="10" rx="5" fill="#55555f"/>
+  </g>
+  <circle cx="580" cy="140" r="52" fill="#3d34f5" stroke="#141414" stroke-width="6"/>
+  <path d="M556 140l16 16 32-36" stroke="#ffffff" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <g stroke="#a9a4ff" stroke-width="4" fill="none">
+    <path d="M80 420c60-40 120 40 180 0s120 40 180 0"/>
+  </g>
+</svg>
