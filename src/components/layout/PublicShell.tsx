@@ -365,8 +365,12 @@ export default function PublicShell({
       />
 
       <header className="sticky top-0 z-40 border-b border-hairline bg-canvas">
+        {/* z-50 keeps the hanging ribbon tab above the mobile menu panel and
+            the scroll-progress bar, which are siblings inside this header. */}
         <div className="shell-container flex h-14 items-center justify-between gap-6 lg:h-16">
-          <div className="min-w-0 shrink">{brand}</div>
+          <div className="relative z-50 min-w-0 shrink self-start translate-y-2.5 lg:translate-y-3.5">
+            {brand}
+          </div>
 
           <nav
             aria-label="Site navigation"
@@ -459,7 +463,7 @@ export default function PublicShell({
             >
               <nav
                 aria-label="Site navigation"
-                className="shell-container py-3"
+                className="shell-container pt-5 pb-3"
               >
                 {links.map((link, index) => (
                   <motion.div
