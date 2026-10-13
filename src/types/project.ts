@@ -11,6 +11,10 @@ export interface Project extends OrderedContent {
   githubUrl?: string;
   liveDemoUrl?: string;
   thumbnailUrl?: string;
+  /** Optional short muted video shown in the card media frame on hover (§10). */
+  previewVideoUrl?: string;
+  /** Public lifecycle chip on cards and the detail page — not the publish status. */
+  lifecycle?: "shipped" | "in-progress" | "planned";
   /** Gallery screenshot URLs shown as a lightbox strip on the detail page. */
   images?: string[];
   date?: string;
