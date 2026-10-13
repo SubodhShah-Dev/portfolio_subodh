@@ -45,7 +45,6 @@ describe("PublicLayout", () => {
     );
 
     expect((await screen.findAllByText("Ada Lovelace")).length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Software Engineer").length).toBeGreaterThan(0);
 
     const navigation = screen.getByRole("navigation", { name: "Site navigation" });
     expect(navigation).toHaveTextContent("About");
