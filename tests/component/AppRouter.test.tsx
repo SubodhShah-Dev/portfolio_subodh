@@ -149,7 +149,7 @@ describe("AppRouter", () => {
     expect(window.location.pathname).toBe("/projects");
   });
 
-  it("keeps exactly one Download resume link across header and hero", async () => {
+  it("offers the resume from the header and a Resume hero CTA", async () => {
     loaderResult.layout = makeLayoutData({
       profile: makeProfile(),
       activeResume: {
@@ -170,8 +170,12 @@ describe("AppRouter", () => {
     const downloads = screen.getAllByRole("link", { name: "Download resume" });
     expect(downloads).toHaveLength(1);
     expect(downloads[0]).toHaveAttribute("href", "https://example.com/resume.pdf");
-    const getInTouch = screen.getByRole("link", { name: "Get in touch" });
-    expect(getInTouch).toHaveAttribute("href", "/#contact");
+    const resume = screen.getByRole("link", { name: "Resume" });
+    expect(resume).toHaveAttribute("href", "https://example.com/resume.pdf");
+    expect(resume).toHaveAttribute("target", "_blank");
+    expect(
+      screen.queryByRole("link", { name: "Get in touch" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders NotFound for unknown routes", async () => {

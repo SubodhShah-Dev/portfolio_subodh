@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Link } from "react-router";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Download } from "lucide-react";
 
 import { SocialLinksList } from "./SocialLinksList";
 import { scrollToId } from "../../utils/smoothScroll";
@@ -11,6 +11,8 @@ interface HeroProps {
   profile: PortfolioProfile;
   contactVisible: boolean;
   socialLinks: SocialLink[];
+  /** Active resume download URL — renders the Resume CTA when present. */
+  resumeDownloadUrl: string | null;
 }
 
 /**
@@ -21,13 +23,18 @@ interface HeroProps {
  * revealed word-by-word behind overflow masks, with an aria-label keeping
  * the accessible name exactly the display name. The role sits under the top
  * row as plain display text — impactful, but clearly below the name. Social
- * links repeat the footer's pills (inverted for paper) at the right end of
- * the CTA row on desktop — below the stacked full-width CTAs on small
- * screens — and "Get in touch" follows the navbar's smooth anchor flight to
- * #contact. The resume download lives only in the header actions so the
- * composed page keeps a single instance.
+ * links repeat the footer's icon-only anchors at the right end of the CTA
+ * row on desktop — below the stacked full-width CTAs on small screens.
+ * The primary CTA is "Resume" (opens the active CV in a new tab) when a
+ * resume exists, falling back to the #contact anchor flight otherwise.
+ * CTAs slim down on small screens and keep the full pop size at sm+.
  */
-export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
+export function Hero({
+  profile,
+  contactVisible,
+  socialLinks,
+  resumeDownloadUrl,
+}: HeroProps) {
   const { name, role, headline, location } = profile.public;
 
   const displayName = name.trim() !== "" ? name.trim() : "Portfolio";
@@ -161,27 +168,42 @@ export function Hero({ profile, contactVisible, socialLinks }: HeroProps) {
           style={{ animationDelay: "700ms" }}
         >
           <div className="flex flex-col gap-4 sm:flex-row">
-            {contactVisible && (
-              <Link
-                className="cta-primary group w-full sm:w-auto"
-                to={{ pathname: "/", hash: "#contact" }}
-                onClick={() => {
-                  // Same anchor flight as the navbar's hash links — waits
-                  // for #contact to mount on cross-route arrivals; the
-                  // layout's hash effect covers hash changes, this covers
-                  // re-clicks on the same hash.
-                  scrollToId("contact");
-                }}
+            {resumeDownloadUrl !== null ? (
+              <a
+                className="cta-primary group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
+                href={resumeDownloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Get in touch
-                <ArrowRight
+                Resume
+                <Download
                   aria-hidden="true"
-                  className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                  className="size-4 transition-transform duration-200 group-hover:translate-y-0.5"
                 />
-              </Link>
+              </a>
+            ) : (
+              contactVisible && (
+                <Link
+                  className="cta-primary group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
+                  to={{ pathname: "/", hash: "#contact" }}
+                  onClick={() => {
+                    // Same anchor flight as the navbar's hash links — waits
+                    // for #contact to mount on cross-route arrivals; the
+                    // layout's hash effect covers hash changes, this covers
+                    // re-clicks on the same hash.
+                    scrollToId("contact");
+                  }}
+                >
+                  Get in touch
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="size-4 transition-transform duration-200 group-hover:translate-x-1"
+                  />
+                </Link>
+              )
             )}
             <Link
-              className="cta-ghost group w-full sm:w-auto"
+              className="cta-ghost group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
               to="/projects"
               viewTransition
             >
