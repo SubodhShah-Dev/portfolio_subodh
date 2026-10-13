@@ -37,6 +37,7 @@ interface FormValues {
   siteTitle: string;
   siteDescription: string;
   logoUrl: string;
+  logoUrlDark: string;
   faviconUrl: string;
   footerText: string;
   sections: SectionVisibility;
@@ -47,6 +48,7 @@ const EMPTY_VALUES: FormValues = {
   siteTitle: "",
   siteDescription: "",
   logoUrl: "",
+  logoUrlDark: "",
   faviconUrl: "",
   footerText: "",
   sections: { ...DEFAULT_SECTION_VISIBILITY },
@@ -59,6 +61,7 @@ function toValues(settings: SiteSettings | null): FormValues {
     siteTitle: settings.siteTitle ?? "",
     siteDescription: settings.siteDescription ?? "",
     logoUrl: settings.logoUrl ?? "",
+    logoUrlDark: settings.logoUrlDark ?? "",
     faviconUrl: settings.faviconUrl ?? "",
     footerText: settings.footerText ?? "",
     sections: { ...DEFAULT_SECTION_VISIBILITY, ...settings.sections },
@@ -68,6 +71,10 @@ function toValues(settings: SiteSettings | null): FormValues {
 function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
     logoUrl: urlError(values.logoUrl, { label: "Logo URL", allowLocal: true }),
+    logoUrlDark: urlError(values.logoUrlDark, {
+      label: "Dark logo URL",
+      allowLocal: true,
+    }),
     faviconUrl: urlError(values.faviconUrl, {
       label: "Favicon URL",
       allowLocal: true,
@@ -84,6 +91,7 @@ export default function ManageSettings() {
       siteTitle: textOrClear(values.siteTitle),
       siteDescription: textOrClear(values.siteDescription),
       logoUrl: textOrClear(values.logoUrl),
+      logoUrlDark: textOrClear(values.logoUrlDark),
       faviconUrl: textOrClear(values.faviconUrl),
       footerText: textOrClear(values.footerText),
     };
@@ -157,6 +165,17 @@ export default function ManageSettings() {
             value={values.logoUrl}
             error={errors.logoUrl}
             onChange={(logoUrl) => setValues((current) => ({ ...current, logoUrl }))}
+          />
+          <TextField
+            label="Dark logo URL"
+            id="settings-logo-dark"
+            type="url"
+            hint="Optional — shown in dark mode; falls back to the light logo when empty."
+            value={values.logoUrlDark}
+            error={errors.logoUrlDark}
+            onChange={(logoUrlDark) =>
+              setValues((current) => ({ ...current, logoUrlDark }))
+            }
           />
           <TextField
             label="Favicon URL"
@@ -268,6 +287,7 @@ export default function ManageSettings() {
             <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
               {[
                 ["Logo URL", data.logoUrl],
+                ["Dark logo URL", data.logoUrlDark],
                 ["Favicon URL", data.faviconUrl],
                 ["Footer text", data.footerText],
               ].map(([label, value]) => (
