@@ -109,6 +109,47 @@ describe("ManageSettings", () => {
     expect(input?.siteTitle).toBe("Ada's Portfolio");
   });
 
+  it("saves a dark logo path and validates it", async () => {
+    const user = userEvent.setup();
+    render(<ManageSettings />);
+    await screen.findByText("Site settings not created yet");
+
+    await user.click(screen.getByRole("button", { name: "Create settings" }));
+    await user.type(screen.getByLabelText(/^Logo URL/), "/brand/logo.jpg");
+    await user.type(
+      screen.getByLabelText(/^Dark logo URL/),
+      "/brand/logo-dark.webp",
+    );
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() =>
+      expect(updateMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          logoUrl: "/brand/logo.jpg",
+          logoUrlDark: "/brand/logo-dark.webp",
+        }),
+      ),
+    );
+  });
+
+  it("rejects invalid dark logo URLs without saving", async () => {
+    const user = userEvent.setup();
+    render(<ManageSettings />);
+    await screen.findByText("Site settings not created yet");
+
+    await user.click(screen.getByRole("button", { name: "Create settings" }));
+    await user.type(
+      screen.getByLabelText(/^Dark logo URL/),
+      "javascript:alert(1)",
+    );
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(
+      screen.getByText("Dark logo URL must be a valid http(s) URL."),
+    ).toBeInTheDocument();
+    expect(updateMock).not.toHaveBeenCalled();
+  });
+
   it("rejects invalid logo URLs without saving", async () => {
     const user = userEvent.setup();
     render(<ManageSettings />);

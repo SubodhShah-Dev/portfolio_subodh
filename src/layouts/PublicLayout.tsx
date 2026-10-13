@@ -106,6 +106,11 @@ export default function PublicLayout() {
   }
 
   const name = profile?.public.name ?? "";
+  const brandName = name.trim() !== "" ? name : "Portfolio";
+  // With a dark twin configured, each theme shows exactly one <img>; the
+  // hidden one leaves the accessibility tree, so both carry the same alt.
+  const logoClasses =
+    "block h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm";
 
   const brand = (
     <Link
@@ -119,14 +124,27 @@ export default function PublicLayout() {
       }}
     >
       {data.logoUrl !== null ? (
-        <img
-          src={data.logoUrl}
-          alt={name.trim() !== "" ? name : "Portfolio"}
-          className="block h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm"
-        />
+        <>
+          <img
+            src={data.logoUrl}
+            alt={brandName}
+            className={
+              data.logoUrlDark !== null
+                ? `${logoClasses} dark:hidden`
+                : logoClasses
+            }
+          />
+          {data.logoUrlDark !== null && (
+            <img
+              src={data.logoUrlDark}
+              alt={brandName}
+              className="hidden h-8 w-auto rounded-lg ring-1 ring-hairline transition-shadow group-hover:shadow-pop-sm dark:block"
+            />
+          )}
+        </>
       ) : (
         <span className="min-w-0 truncate font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal">
-          {name.trim() !== "" ? name : "Portfolio"}
+          {brandName}
         </span>
       )}
     </Link>

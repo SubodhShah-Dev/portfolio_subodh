@@ -40,6 +40,7 @@ export function makeLayoutData(
     siteTitle: null,
     siteDescription: null,
     logoUrl: null,
+    logoUrlDark: null,
     faviconUrl: null,
     footerText: null,
     flags: { ...HIDDEN_FLAGS },

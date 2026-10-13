@@ -31,6 +31,7 @@ vi.mock("../../src/loaders/publicLoaders", () => {
     siteTitle: null,
     siteDescription: null,
     logoUrl: null,
+    logoUrlDark: null,
     faviconUrl: null,
     footerText: null,
     flags: {
@@ -106,6 +107,25 @@ describe("AppRouter", () => {
     expect(scope.queryByText("Ada Lovelace")).not.toBeInTheDocument();
     // The navbar brand is the logo alone — no role line.
     expect(scope.queryByText("Software Engineer")).not.toBeInTheDocument();
+  });
+
+  it("swaps to the dark logo via CSS when logoUrlDark is set", async () => {
+    loaderResult.layout = makeLayoutData({
+      profile: makeProfile(),
+      logoUrl: "/brand/profilelogo.jpg",
+      logoUrlDark: "/brand/profilelogo-dark.webp",
+    });
+
+    await renderAt("/");
+
+    const images = await screen.findAllByAltText("Ada Lovelace");
+    expect(images).toHaveLength(2);
+    const [light, dark] = images as [HTMLImageElement, HTMLImageElement];
+    expect(light).toHaveAttribute("src", "/brand/profilelogo.jpg");
+    expect(light.className).toContain("dark:hidden");
+    expect(dark).toHaveAttribute("src", "/brand/profilelogo-dark.webp");
+    expect(dark.className).toContain("hidden");
+    expect(dark.className).toContain("dark:block");
   });
 
   it("falls back to the text brand when no logo is set", async () => {

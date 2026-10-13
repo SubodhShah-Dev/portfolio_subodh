@@ -30,6 +30,7 @@ export interface PublicLayoutData {
   siteTitle: string | null;
   siteDescription: string | null;
   logoUrl: string | null;
+  logoUrlDark: string | null;
   faviconUrl: string | null;
   footerText: string | null;
   /** Visibility combined with actual content — only truthy flags render (§48). */
@@ -122,6 +123,7 @@ export async function publicLayoutLoader(): Promise<PublicLayoutData> {
     siteTitle: settings?.siteTitle || null,
     siteDescription: settings?.siteDescription || null,
     logoUrl: settings?.logoUrl || null,
+    logoUrlDark: settings?.logoUrlDark || null,
     faviconUrl: settings?.faviconUrl || null,
     footerText: settings?.footerText || null,
     flags: computeFlags({ profile, settings, contactSettings, skills, experience, education, certifications, projects }),

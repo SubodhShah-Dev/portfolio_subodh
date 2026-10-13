@@ -31,6 +31,8 @@ export interface SiteSettings {
   siteTitle?: string;
   siteDescription?: string;
   logoUrl?: string;
+  /** Optional dark-theme twin of the nav logo; falls back to logoUrl. */
+  logoUrlDark?: string;
   faviconUrl?: string;
   footerText?: string;
   sections: SectionVisibility;
