@@ -32,7 +32,7 @@ export function ProjectMedia({ imageUrl, videoUrl, alt }: ProjectMediaProps) {
   };
 
   return (
-    <div className="relative aspect-video overflow-hidden border-2 border-ink bg-canvas">
+    <div className="relative aspect-video overflow-hidden border-2 border-ink bg-surface-hover">
       {hasImage && (
         <img
           src={imageUrl}

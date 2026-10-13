@@ -1,3 +1,4 @@
+import { ArrowUpRight, GitBranch } from "lucide-react";
 import { Link } from "react-router";
 
 import { LifecycleChip } from "./LifecycleChip";
@@ -14,8 +15,9 @@ interface ProjectCardProps {
 /**
  * Reusable project card (§13) — pop frame with an inset media frame (image
  * or hover-play video preview), title/date/status row, clamped description,
- * filled tech chips, and Source / Live demo buttons above a stretched title
- * link so the whole card reads as one target while the buttons stay usable.
+ * filled tech chips, and Source / Live demo underline links above a stretched
+ * title link so the whole card reads as one target while the links stay
+ * usable.
  */
 export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) {
   const hasGithub =
@@ -65,7 +67,7 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
             {project.techStack.map((technology) => (
               <li
                 key={technology}
-                className="rounded-md border border-hairline bg-raised px-2.5 py-1 font-meta text-xs text-muted"
+                className="rounded-md border border-hairline bg-surface px-2.5 py-1 font-meta text-xs text-muted"
               >
                 {technology}
               </li>
@@ -73,15 +75,16 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
           </ul>
         )}
         {(hasGithub || hasDemo) && (
-          <div className="relative z-10 mt-auto flex flex-wrap gap-2 pt-5">
+          <div className="relative z-10 mt-auto flex flex-wrap gap-4 pt-5">
             {hasGithub && (
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full border-2 border-ink bg-ink px-3 py-1.5 font-meta text-[11px] uppercase tracking-[0.1em] text-canvas transition-colors hover:border-signal hover:bg-signal hover:text-on-signal"
+                className="cta-link font-meta text-[11px] font-medium tracking-[0.1em] uppercase"
               >
                 Source
+                <GitBranch aria-hidden="true" className="size-3.5" />
               </a>
             )}
             {hasDemo && (
@@ -89,9 +92,10 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
                 href={project.liveDemoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full border-2 border-ink bg-raised px-3 py-1.5 font-meta text-[11px] uppercase tracking-[0.1em] text-ink transition-colors hover:border-signal hover:text-signal"
+                className="cta-link font-meta text-[11px] font-medium tracking-[0.1em] uppercase"
               >
                 Live demo
+                <ArrowUpRight aria-hidden="true" className="size-3.5" />
               </a>
             )}
           </div>

@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router";
 
 import { ProjectCard } from "./ProjectCard";
@@ -60,9 +61,10 @@ export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
       action={
         <Link
           to="/projects"
-          className="font-meta text-xs text-muted transition-colors hover:text-signal"
+          className="cta-link font-meta text-xs font-medium text-muted"
         >
-          View all →
+          View all
+          <ArrowUpRight aria-hidden="true" className="size-3.5" />
         </Link>
       }
     >

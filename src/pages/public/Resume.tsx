@@ -39,17 +39,17 @@ export default function Resume() {
           <p className="mt-2 font-meta text-xs text-muted">{fileName}</p>
         </div>
         <a
-          className="cta-primary"
+          className="cta-link"
           href={activeResume.downloadUrl}
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Download aria-hidden="true" className="size-4" />
           Download
+          <Download aria-hidden="true" className="size-4" />
         </a>
       </header>
 
-      <div className="overflow-hidden rounded-chunk border-2 border-ink bg-canvas">
+      <div className="overflow-hidden rounded-chunk border-2 border-ink bg-surface-hover">
         <iframe
           src={activeResume.downloadUrl}
           title="Resume preview"

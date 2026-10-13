@@ -151,10 +151,7 @@ export function Hero({
         <div className="mt-9 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-4 sm:flex-row">
             {resumeDownloadUrl !== null ? (
-              <Link
-                className="cta-primary group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
-                to="/resume"
-              >
+              <Link className="cta-link group" to="/resume">
                 Resume
                 <FileText
                   aria-hidden="true"
@@ -164,7 +161,7 @@ export function Hero({
             ) : (
               contactVisible && (
                 <Link
-                  className="cta-primary group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
+                  className="cta-link group"
                   to={{ pathname: "/", hash: "#contact" }}
                   onClick={() => {
                     // Same anchor flight as the navbar's hash links — waits
@@ -182,10 +179,7 @@ export function Hero({
                 </Link>
               )
             )}
-            <Link
-              className="cta-ghost group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
-              to="/projects"
-            >
+            <Link className="cta-link group" to="/projects">
               View my work
               <ArrowUpRight
                 aria-hidden="true"

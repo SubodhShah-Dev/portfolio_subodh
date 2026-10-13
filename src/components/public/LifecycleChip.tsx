@@ -14,7 +14,7 @@ export function LifecycleChip({
 }) {
   if (lifecycle === undefined) return null;
   return (
-    <span className="border border-hairline bg-raised px-2 py-0.5 font-meta text-[11px] text-muted">
+    <span className="border border-hairline bg-surface px-2 py-0.5 font-meta text-[11px] text-muted">
       {LABELS[lifecycle]}
     </span>
   );

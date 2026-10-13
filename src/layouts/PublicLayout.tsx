@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { ArrowUpRight, Mail } from "lucide-react";
 import { Link, Outlet, useLocation, useRouteLoaderData } from "react-router";
 
 import PublicShell, { type ShellLink } from "../components/layout/PublicShell";
@@ -194,12 +195,13 @@ export default function PublicLayout() {
           </h2>
           <div className="mt-8 flex flex-wrap gap-4">
             {contactEmail !== null && (
-              <a className="cta-primary" href={`mailto:${contactEmail}`}>
+              <a className="cta-link" href={`mailto:${contactEmail}`}>
                 Say hello
+                <Mail aria-hidden="true" className="size-4" />
               </a>
             )}
             <Link
-              className="cta-ghost"
+              className="cta-link"
               to="/projects"
               onClick={() => {
                 // Same-location clicks (footer while already on /projects)
@@ -208,6 +210,7 @@ export default function PublicLayout() {
               }}
             >
               See my work
+              <ArrowUpRight aria-hidden="true" className="size-4" />
             </Link>
           </div>
         </div>

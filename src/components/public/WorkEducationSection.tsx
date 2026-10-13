@@ -43,7 +43,7 @@ function TimelineLogo({ src, name }: { src?: string; name: string }) {
   return (
     <span
       aria-hidden="true"
-      className="relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-raised font-meta text-xs text-ink sm:size-12"
+      className="relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-surface font-meta text-xs text-ink sm:size-12"
     >
       {initials(name)}
     </span>
@@ -110,7 +110,7 @@ export function WorkEducationSection({
           role="tablist"
           aria-label="Experience and education"
           onKeyDown={onTabKeyDown}
-          className="mb-8 flex max-w-md gap-1.5 rounded-full border-2 border-ink bg-raised p-1.5"
+          className="mb-8 flex max-w-md gap-1.5 rounded-full border-2 border-ink bg-surface p-1.5"
         >
           <button
             type="button"

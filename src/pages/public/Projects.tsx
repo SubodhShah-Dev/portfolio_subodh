@@ -56,7 +56,7 @@ export default function Projects() {
             className={`cursor-pointer rounded-full border-2 border-ink px-3.5 py-1.5 font-meta text-xs transition-colors ${
               selectedTech === FILTER_ALL
                 ? "bg-ink text-canvas"
-                : "bg-raised text-ink hover:bg-signal hover:text-on-signal"
+                  : "bg-surface text-ink hover:bg-surface-hover"
             }`}
           >
             All
@@ -70,7 +70,7 @@ export default function Projects() {
               className={`cursor-pointer rounded-full border-2 border-ink px-3.5 py-1.5 font-meta text-xs transition-colors ${
                 selectedTech === technology
                   ? "bg-ink text-canvas"
-                  : "bg-raised text-ink hover:bg-signal hover:text-on-signal"
+                : "bg-surface text-ink hover:bg-surface-hover"
               }`}
             >
               {technology}

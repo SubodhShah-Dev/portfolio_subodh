@@ -50,19 +50,19 @@ const FOCUSABLE_SELECTOR =
 
 function routeLinkClass(active: boolean): string {
   return [
-    "relative rounded-full px-3.5 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
-    // The pill behind the active link flips with ink (black in light, white
-    // in dark), so its label flips too — text-canvas on the ink pill.
-    active ? "text-canvas" : "text-muted hover:text-ink",
+    "relative px-3.5 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    active
+      ? "text-ink underline decoration-2 underline-offset-8"
+      : "text-muted hover:text-ink",
   ].join(" ");
 }
 
 function menuLinkClass(active: boolean): string {
   return [
-    "block rounded-lg px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    "block px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
     active
-      ? "bg-ink text-canvas"
-      : "text-muted hover:bg-ink/5 hover:text-ink",
+      ? "text-ink underline decoration-2 underline-offset-4"
+      : "text-muted hover:text-ink",
   ].join(" ");
 }
 
@@ -293,15 +293,6 @@ export default function PublicShell({
 
   const renderLink = (link: ShellLink, mobile: boolean): ReactNode => {
     const linkClass = mobile ? menuLinkClass : routeLinkClass;
-    const underline = (active: boolean): ReactNode =>
-      !mobile && active ? (
-        <motion.span
-          layoutId="nav-pill"
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 rounded-full bg-ink"
-          transition={{ type: "spring", stiffness: 460, damping: 36 }}
-        />
-      ) : null;
 
     // Route matching (replaces NavLink's): exact for `end`, prefix otherwise
     // so /projects/:id keeps Work lit. Hash sections ignore the route —
@@ -348,7 +339,6 @@ export default function PublicShell({
         }}
       >
         {link.label}
-        {underline(active)}
       </Link>
     );
   };
@@ -365,6 +355,13 @@ export default function PublicShell({
       >
         Skip to content
       </a>
+
+      {/* Fixed dot-grid texture behind the whole page — bands and cards
+          hide it while the open canvas shows it. */}
+      <div
+        aria-hidden="true"
+        className="grid-overlay pointer-events-none fixed inset-0 z-0"
+      />
 
       <header className="sticky top-0 z-40 border-b border-hairline bg-canvas">
         <div className="shell-container flex h-14 items-center justify-between gap-6 lg:h-16">

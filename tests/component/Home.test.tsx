@@ -134,7 +134,7 @@ describe("Home", () => {
       screen.getByRole("link", { name: /Beta service/ }),
     ).toBeInTheDocument();
     expect(
-        screen.getByRole("link", { name: "View all →" }),
+        screen.getByRole("link", { name: "View all" }),
     ).toBeInTheDocument();
   });
 
@@ -179,7 +179,7 @@ describe("Home", () => {
         screen.getByRole("link", { name: /Beta service/ }),
       ).toBeInTheDocument();
       expect(
-      screen.getByRole("link", { name: "View all →" }),
+      screen.getByRole("link", { name: "View all" }),
       ).toBeInTheDocument();
     } finally {
       vi.unstubAllGlobals();
