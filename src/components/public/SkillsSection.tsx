@@ -53,6 +53,14 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
                     position % 2 === 0 ? "-rotate-1" : "rotate-1"
                   }`}
                 >
+                  {skill.iconUrl !== undefined && skill.iconUrl.trim() !== "" && (
+                    <img
+                      src={skill.iconUrl}
+                      alt=""
+                      aria-hidden="true"
+                      className="size-4 dark:invert"
+                    />
+                  )}
                   {skill.name}
                 </li>
               ))}

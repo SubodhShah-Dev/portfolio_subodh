@@ -19,7 +19,7 @@ import {
 
 import { db, storage } from "../config/firebase";
 import { createAppError, getFirebaseCode, toAppError } from "../utils/firebaseErrors";
-import { isValidHttpUrl } from "../utils/urlValidation";
+import { isLocalPath, isValidHttpUrl } from "../utils/urlValidation";
 import { validateResumeFile } from "../utils/resumeValidation";
 import { cached, invalidateCache } from "./contentCache";
 import {
@@ -114,10 +114,10 @@ export async function saveExternalResume(
   input: ExternalResumeInput,
 ): Promise<string> {
   const downloadUrl = input.downloadUrl.trim();
-  if (!isValidHttpUrl(downloadUrl)) {
+  if (!isValidHttpUrl(downloadUrl) && !isLocalPath(downloadUrl)) {
     throw createAppError(
       "invalid-input",
-      "Enter a valid resume URL starting with http:// or https://.",
+      "Enter a valid resume URL (http(s) link or a path under /public).",
     );
   }
 
