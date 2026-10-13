@@ -107,13 +107,12 @@ export default function PublicLayout() {
   const brandName = name.trim() !== "" ? name : "Portfolio";
   // With a dark twin configured, each theme shows exactly one <img>; the
   // hidden one leaves the accessibility tree, so both carry the same alt.
-  // Sized to sit inside the ribbon tab that hangs off the header.
-  const logoClasses = "block h-10 w-auto lg:h-12";
+  const logoClasses = "block h-12 w-auto lg:h-14";
 
   const brand = (
     <Link
       to="/"
-      className="group flex min-w-0 items-center gap-2.5 rounded-xl border-2 border-ink bg-surface px-3 py-1.5 transition-colors duration-200 hover:bg-surface-hover lg:px-4 lg:py-2"
+      className="group flex h-14 w-full min-w-0 items-center gap-2.5 border-r-2 border-ink bg-surface px-5 transition-colors duration-200 hover:bg-surface-hover lg:h-16 lg:px-6"
       onClick={() => {
         // Same-location clicks (logo while already on /) skip the layout's
         // reset effect — scroll explicitly, as the nav links do.
@@ -138,7 +137,7 @@ export default function PublicLayout() {
               src={data.logoUrlDark}
               alt={brandName}
               decoding="async"
-              className="hidden h-10 w-auto dark:block lg:h-12"
+              className="hidden h-12 w-auto dark:block lg:h-14"
             />
           )}
         </>
