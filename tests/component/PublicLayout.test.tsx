@@ -53,7 +53,7 @@ describe("PublicLayout", () => {
     expect(navigation).not.toHaveTextContent("Experience");
   });
 
-  it("provides the resume download and social links in the sidebar footer", async () => {
+  it("provides social links in the sidebar footer without a navbar resume", async () => {
     renderLayout(
       makeLayoutData({
         activeResume: {
@@ -67,9 +67,10 @@ describe("PublicLayout", () => {
       }),
     );
 
-    const resume = await screen.findByRole("link", { name: "Download resume" });
-    expect(resume).toHaveAttribute("href", "https://example.com/resume.pdf");
-    expect(screen.getByRole("link", { name: /GitHub/ })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /GitHub/ })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Download resume" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the footer with owner attribution", async () => {

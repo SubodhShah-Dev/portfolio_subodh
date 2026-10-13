@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Link } from "react-router";
-import { ArrowRight, ArrowUpRight, Download } from "lucide-react";
+import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
 
 import { SocialLinksList } from "./SocialLinksList";
 import { scrollToId } from "../../utils/smoothScroll";
@@ -11,7 +11,7 @@ interface HeroProps {
   profile: PortfolioProfile;
   contactVisible: boolean;
   socialLinks: SocialLink[];
-  /** Active resume download URL — renders the Resume CTA when present. */
+  /** Active resume download URL — presence renders the Resume CTA to /resume. */
   resumeDownloadUrl: string | null;
 }
 
@@ -25,7 +25,7 @@ interface HeroProps {
  * row as plain display text — impactful, but clearly below the name. Social
  * links repeat the footer's icon-only anchors at the right end of the CTA
  * row on desktop — below the stacked full-width CTAs on small screens.
- * The primary CTA is "Resume" (opens the active CV in a new tab) when a
+ * The primary CTA is "Resume" (routes to the inline /resume viewer) when a
  * resume exists, falling back to the #contact anchor flight otherwise.
  * CTAs slim down on small screens and keep the full pop size at sm+.
  */
@@ -169,18 +169,17 @@ export function Hero({
         >
           <div className="flex flex-col gap-4 sm:flex-row">
             {resumeDownloadUrl !== null ? (
-              <a
+              <Link
                 className="cta-primary group w-full px-4 py-2.5 text-sm sm:w-auto sm:px-6 sm:py-3 sm:text-base"
-                href={resumeDownloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+                to="/resume"
+                viewTransition
               >
                 Resume
-                <Download
+                <FileText
                   aria-hidden="true"
                   className="size-4 transition-transform duration-200 group-hover:translate-y-0.5"
                 />
-              </a>
+              </Link>
             ) : (
               contactVisible && (
                 <Link

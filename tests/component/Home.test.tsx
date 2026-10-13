@@ -59,9 +59,9 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { name: "Skills" })).toBeInTheDocument();
     expect(screen.getAllByText("TypeScript").length).toBeGreaterThan(0);
     expect(
-      screen.getByRole("heading", { name: "Work & Education" }),
+      screen.getByRole("heading", { name: "Experience & Education" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Work" })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: "Experience" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
@@ -205,7 +205,7 @@ describe("Home", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Work & Education" }),
+      await screen.findByRole("heading", { name: "Experience & Education" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     expect(screen.getByText("University of London")).toBeInTheDocument();
