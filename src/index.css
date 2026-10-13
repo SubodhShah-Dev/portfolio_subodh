@@ -258,6 +258,12 @@
 
   /* --- Signal primitives (public only) ------------------------------------ */
 
+  /* Public page width — single source of truth for every content column
+     (header, mobile menu, main wrapper, hero, footer). Tweak margins here. */
+  .shell-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-12;
+  }
+
   /* Mono eyebrow — role, section numbers, meta labels. */
   .eyebrow {
     @apply font-meta text-[0.6875rem] font-medium tracking-[0.16em] text-signal-deep uppercase;

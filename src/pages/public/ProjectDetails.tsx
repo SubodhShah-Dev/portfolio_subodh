@@ -114,7 +114,8 @@ export default function ProjectDetails() {
             <img
               src={project.thumbnailUrl}
               alt={`Screenshot of ${project.title}`}
-              loading="lazy"
+              loading="eager"
+              fetchPriority="high"
               decoding="async"
               className="h-full w-full object-cover"
             />

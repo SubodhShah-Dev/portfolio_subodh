@@ -7,9 +7,6 @@ import { projectLoader, publicLayoutLoader } from "../loaders/publicLoaders";
 import AdminLogin from "../pages/admin/AdminLogin";
 import Home from "../pages/public/Home";
 import NotFound from "../pages/public/NotFound";
-import ProjectDetails from "../pages/public/ProjectDetails";
-import Projects from "../pages/public/Projects";
-import Resume from "../pages/public/Resume";
 import { PageSkeleton } from "../components/common/Skeleton";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicErrorBoundary from "./PublicErrorBoundary";
@@ -23,7 +20,8 @@ import PublicErrorBoundary from "./PublicErrorBoundary";
  * - Loader failures surface via PublicErrorBoundary (safe copy + retry).
  * - /admin/login is the only unauthenticated admin route.
  * - Every other /admin/* route passes through ProtectedRoute (auth + authz).
- * - Admin pages are lazy-loaded; public entry points stay eager (§51).
+ * - Admin pages and the secondary public routes (projects, details, resume)
+ *   are lazy; only Home + NotFound stay eager for first paint.
  */
 const router = createBrowserRouter([
   {
@@ -38,9 +36,25 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Home /> },
-      { path: "projects", element: <Projects /> },
-      { path: "projects/:id", element: <ProjectDetails />, loader: projectLoader },
-      { path: "resume", element: <Resume /> },
+      {
+        path: "projects",
+        lazy: async () => ({
+          Component: (await import("../pages/public/Projects")).default,
+        }),
+      },
+      {
+        path: "projects/:id",
+        loader: projectLoader,
+        lazy: async () => ({
+          Component: (await import("../pages/public/ProjectDetails")).default,
+        }),
+      },
+      {
+        path: "resume",
+        lazy: async () => ({
+          Component: (await import("../pages/public/Resume")).default,
+        }),
+      },
       { path: "*", element: <NotFound /> },
     ],
   },

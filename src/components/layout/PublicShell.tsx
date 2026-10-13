@@ -254,7 +254,9 @@ export default function PublicShell({
   const [showBackToTop, setShowBackToTop] = useState(false);
   useEffect(() => {
     const handleScroll = (): void => {
-      setShowBackToTop(window.scrollY > 640);
+      const next = window.scrollY > 640;
+      // Identity-return no-op keeps scroll events from re-rendering the shell.
+      setShowBackToTop((current) => (current === next ? current : next));
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
@@ -373,7 +375,7 @@ export default function PublicShell({
       />
 
       <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-16 lg:px-10">
+        <div className="shell-container flex h-14 items-center justify-between gap-6 lg:h-16">
           <div className="min-w-0 shrink">{brand}</div>
 
           <nav
@@ -467,7 +469,7 @@ export default function PublicShell({
             >
               <nav
                 aria-label="Site navigation"
-                className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6"
+                className="shell-container py-3"
               >
                 {links.map((link, index) => (
                   <motion.div
@@ -499,7 +501,7 @@ export default function PublicShell({
         tabIndex={-1}
         className="relative z-10 flex-1 outline-none"
       >
-        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+        <div className="shell-container py-12 lg:py-16">
           {children}
         </div>
       </main>

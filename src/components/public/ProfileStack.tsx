@@ -63,6 +63,8 @@ export function ProfileStack({ images, name }: ProfileStackProps) {
           <img
             src={images[0]}
             alt={`${name} — profile`}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
             draggable={false}
           />
@@ -128,6 +130,8 @@ export function ProfileStack({ images, name }: ProfileStackProps) {
             <img
               src={src}
               alt={`${name} — profile photo ${position + 1} of ${count}`}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover"
               draggable={false}
             />

@@ -58,6 +58,8 @@ export function SkillsSection({ skills, index }: SkillsSectionProps) {
                       src={skill.iconUrl}
                       alt=""
                       aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
                       className="size-4 dark:invert"
                     />
                   )}

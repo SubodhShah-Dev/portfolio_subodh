@@ -29,6 +29,12 @@ export default defineConfig({
               test: /node_modules[\\/](cmdk|canvas-confetti)[\\/]/,
             },
             {
+              // Carousel only — loaded by the lazy ProjectShowcase chunk on
+              // mobile; must not fall into the eager `vendor` group.
+              name: "vendor-carousel",
+              test: /node_modules[\\/]embla-carousel/,
+            },
+            {
               name: "vendor",
               test: /node_modules[\\/]/,
             },

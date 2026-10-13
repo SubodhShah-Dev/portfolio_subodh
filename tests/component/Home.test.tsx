@@ -74,7 +74,7 @@ describe("Home", () => {
     expect(screen.getByRole("heading", { name: "Certifications" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Projects" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Contact" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Fixture project/ })).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /Fixture project/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Send message" })).toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: "Download resume" }),

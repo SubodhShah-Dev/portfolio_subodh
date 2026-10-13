@@ -230,28 +230,3 @@ export function textOrClear(value: string): string | FieldValue {
   const trimmed = value.trim();
   return trimmed === "" ? deleteField() : trimmed;
 }
-
-/** Unguarded single-doc read for config documents (contact, settings). */
-export async function fetchSingleDoc<T extends { id: string }>(
-  path: string,
-  id: string,
-  options: { skipCache?: boolean } = {},
-): Promise<T | null> {
-  const key = `${path}:byId:${id}`;
-
-  const load = async (): Promise<T | null> => {
-    try {
-      const snapshot = await getDoc(documentRef<DocData<T>>(path, id));
-      if (!snapshot.exists()) return null;
-      return snapshotToDoc<T>(snapshot);
-    } catch (error) {
-      const code = getFirebaseCode(error);
-      if (code === "firestore/permission-denied" || code === "firestore/not-found") {
-        return null;
-      }
-      throw toAppError(error);
-    }
-  };
-
-  return options.skipCache === true ? load() : cached(key, load);
-}

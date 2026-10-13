@@ -23,9 +23,7 @@ const SECTION_LINKS: ReadonlyArray<{
   flags: readonly (keyof PublicLayoutData["flags"])[];
 }> = [
   { hash: "#about", label: "About", flags: ["about"] },
-  { hash: "#skills", label: "Skills", flags: ["skills"] },
   { hash: "#experience", label: "Experience", flags: ["experience", "education"] },
-  { hash: "#certifications", label: "Certifications", flags: ["certifications"] },
   { hash: "#contact", label: "Contact", flags: ["contact"] },
 ];
 
@@ -127,6 +125,8 @@ export default function PublicLayout() {
           <img
             src={data.logoUrl}
             alt={brandName}
+            fetchPriority="high"
+            decoding="async"
             className={
               data.logoUrlDark !== null
                 ? `${logoClasses} dark:hidden`
@@ -137,6 +137,7 @@ export default function PublicLayout() {
             <img
               src={data.logoUrlDark}
               alt={brandName}
+              decoding="async"
               className="hidden h-12 w-auto transition-shadow group-hover:shadow-pop-sm dark:block lg:h-14"
             />
           )}
@@ -186,7 +187,7 @@ export default function PublicLayout() {
   const ownerName = profile?.public.name ?? "";
 
   const footer = (
-    <div className="relative mx-auto w-full max-w-7xl overflow-hidden px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+    <div className="shell-container relative overflow-hidden py-20 lg:py-28">
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="max-w-3xl">
           <p className="eyebrow">Get in touch</p>

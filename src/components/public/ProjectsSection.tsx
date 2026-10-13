@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import { ProjectCard } from "./ProjectCard";
-import { ProjectShowcase } from "./ProjectShowcase";
 import { Section } from "./Section";
 import type { Project } from "../../types/project";
+
+// Carousel chunk (embla) only loads below 1024px — desktop never fetches it.
+const ProjectShowcase = lazy(() =>
+  import("./ProjectShowcase").then((module) => ({
+    default: module.ProjectShowcase,
+  })),
+);
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -69,7 +75,9 @@ export function ProjectsSection({ projects, index }: ProjectsSectionProps) {
           ))}
         </ul>
       ) : (
-        <ProjectShowcase projects={preview} />
+        <Suspense fallback={null}>
+          <ProjectShowcase projects={preview} />
+        </Suspense>
       )}
     </Section>
   );

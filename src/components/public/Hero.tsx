@@ -93,7 +93,7 @@ export function Hero({
         </div>
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-4 sm:px-6 lg:px-10">
+      <div className="shell-container relative z-10 flex flex-1 flex-col justify-end">
         {hasTopRow && (
           <div
             // xl: right-pad past the terminal card's band (w-[16.5rem] at
