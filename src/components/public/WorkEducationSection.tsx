@@ -141,13 +141,21 @@ export function WorkEducationSection({
         </div>
       )}
 
-      {(showTabs ? active === "work" : hasWork) && (
-        <div
-          role={showTabs ? "tabpanel" : undefined}
-          id={showTabs ? `${baseId}-work-panel` : undefined}
-          aria-labelledby={showTabs ? `${baseId}-work-tab` : undefined}
-          tabIndex={showTabs ? 0 : undefined}
-          className="relative overflow-hidden rounded-2xl border border-hairline"
+      {/* Both panels share one grid cell when tabbed, so the section is
+          always as tall as the taller one — switching tabs never shifts the
+          content below. The inactive panel stays in the layout but is made
+          invisible and inert (out of the a11y tree and tab order). */}
+      <div className={showTabs ? "grid" : undefined}>
+        {(showTabs || hasWork) && (
+          <div
+            role={showTabs ? "tabpanel" : undefined}
+            id={showTabs ? `${baseId}-work-panel` : undefined}
+            aria-labelledby={showTabs ? `${baseId}-work-tab` : undefined}
+            tabIndex={showTabs && active !== "work" ? -1 : showTabs ? 0 : undefined}
+            inert={showTabs && active !== "work"}
+            className={`relative col-start-1 row-start-1 overflow-hidden rounded-2xl border border-hairline${
+              showTabs && active !== "work" ? " invisible" : ""
+            }`}
         >
           <div
             aria-hidden="true"
@@ -210,13 +218,16 @@ export function WorkEducationSection({
         </div>
       )}
 
-      {(showTabs ? active === "education" : hasEducation) && (
+      {(showTabs || hasEducation) && (
         <div
           role={showTabs ? "tabpanel" : undefined}
           id={showTabs ? `${baseId}-education-panel` : undefined}
           aria-labelledby={showTabs ? `${baseId}-education-tab` : undefined}
-          tabIndex={showTabs ? 0 : undefined}
-          className="relative overflow-hidden rounded-2xl border border-hairline"
+          tabIndex={showTabs && active !== "education" ? -1 : showTabs ? 0 : undefined}
+          inert={showTabs && active !== "education"}
+          className={`relative col-start-1 row-start-1 overflow-hidden rounded-2xl border border-hairline${
+            showTabs && active !== "education" ? " invisible" : ""
+          }`}
         >
           <div
             aria-hidden="true"
@@ -269,6 +280,7 @@ export function WorkEducationSection({
           </ol>
         </div>
       )}
+      </div>
     </Section>
   );
 }
