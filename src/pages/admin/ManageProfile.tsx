@@ -64,7 +64,11 @@ function validate(values: FormValues): Record<string, string> {
     role: requiredError("Role", values.role),
     headline: requiredError("Headline", values.headline),
     bio: requiredError("Bio", values.bio),
-    profileImageUrls: galleryUrlsError(values.profileImageUrls, "Profile image URL"),
+    profileImageUrls: galleryUrlsError(
+      values.profileImageUrls,
+      "Profile image URL",
+      { allowLocal: true },
+    ),
     location: maxLengthError("Location", values.location, 80),
     email: emailError("Email", values.email),
   });
@@ -182,7 +186,7 @@ export default function ManageProfile() {
               rows={3}
               value={values.profileImageUrls}
               error={errors.profileImageUrls}
-              hint="One URL per line. The first photo fronts the About stack."
+              hint="One URL per line (external or a path under /public like /about/1.jpg). The first photo fronts the About stack."
               onChange={(profileImageUrls) =>
                 setValues((current) => ({ ...current, profileImageUrls }))
               }

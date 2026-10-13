@@ -66,8 +66,11 @@ function toValues(settings: SiteSettings | null): FormValues {
 
 function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
-    logoUrl: urlError(values.logoUrl, { label: "Logo URL" }),
-    faviconUrl: urlError(values.faviconUrl, { label: "Favicon URL" }),
+    logoUrl: urlError(values.logoUrl, { label: "Logo URL", allowLocal: true }),
+    faviconUrl: urlError(values.faviconUrl, {
+      label: "Favicon URL",
+      allowLocal: true,
+    }),
   });
 }
 
@@ -155,6 +158,7 @@ export default function ManageSettings() {
             label="Logo URL"
             id="settings-logo"
             type="url"
+            hint="External URL or a path under /public (e.g. /brand/logo.svg). Replaces the site name in the nav."
             value={values.logoUrl}
             error={errors.logoUrl}
             onChange={(logoUrl) => setValues((current) => ({ ...current, logoUrl }))}
@@ -163,6 +167,7 @@ export default function ManageSettings() {
             label="Favicon URL"
             id="settings-favicon"
             type="url"
+            hint="External URL or a path under /public (e.g. /brand/favicon.svg)."
             value={values.faviconUrl}
             error={errors.faviconUrl}
             onChange={(faviconUrl) =>

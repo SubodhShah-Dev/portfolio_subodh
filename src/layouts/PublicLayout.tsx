@@ -119,13 +119,18 @@ export default function PublicLayout() {
         requestAnimationFrame(() => scrollToTop());
       }}
     >
-      {data.logoUrl !== null && (
-        <img src={data.logoUrl} alt="" className="h-6 w-auto shrink-0" />
-      )}
       <span className="min-w-0">
-        <span className="block truncate font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal">
-          {name.trim() !== "" ? name : "Portfolio"}
-        </span>
+        {data.logoUrl !== null ? (
+          <img
+            src={data.logoUrl}
+            alt={name.trim() !== "" ? name : "Portfolio"}
+            className="block h-6 w-auto shrink-0"
+          />
+        ) : (
+          <span className="block truncate font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal">
+            {name.trim() !== "" ? name : "Portfolio"}
+          </span>
+        )}
         {role.trim() !== "" && (
           <span className="mt-0.5 block truncate font-meta text-[10px] tracking-[0.14em] text-muted uppercase">
             {role}

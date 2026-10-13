@@ -107,8 +107,13 @@ function validate(values: FormValues): Record<string, string> {
     description: requiredError("Description", values.description),
     githubUrl: urlError(values.githubUrl, { label: "GitHub URL" }),
     liveDemoUrl: urlError(values.liveDemoUrl, { label: "Live demo URL" }),
-    thumbnailUrl: urlError(values.thumbnailUrl, { label: "Thumbnail URL" }),
-    images: galleryUrlsError(values.images),
+    thumbnailUrl: urlError(values.thumbnailUrl, {
+      label: "Thumbnail URL",
+      allowLocal: true,
+    }),
+    images: galleryUrlsError(values.images, "Gallery image URL", {
+      allowLocal: true,
+    }),
   });
 }
 
@@ -254,6 +259,7 @@ export default function ManageProjects() {
             label="Thumbnail URL"
             id="project-thumbnail"
             type="url"
+            hint="External URL or a path under /public (e.g. /projects/thumb.jpg)."
             value={values.thumbnailUrl}
             error={errors.thumbnailUrl}
             onChange={(thumbnailUrl) =>
@@ -267,7 +273,7 @@ export default function ManageProjects() {
               rows={3}
               value={values.images}
               error={errors.images}
-              hint="Shown as a lightbox strip on the project page. Clear the field to remove the gallery."
+              hint="Shown as a lightbox strip on the project page (external URLs or /public paths). Clear the field to remove the gallery."
               onChange={(images) =>
                 setValues((current) => ({ ...current, images }))
               }
