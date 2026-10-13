@@ -13,7 +13,16 @@ import App from "./App";
 import { initAppCheck } from "./config/firebase";
 import "./index.css";
 
-initAppCheck();
+// App Check off the render path: the reCAPTCHA script + token request must
+// not compete with the layout loader and LCP image on first paint.
+const scheduleIdle = (task: () => void): void => {
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(task);
+  } else {
+    window.setTimeout(task, 200);
+  }
+};
+scheduleIdle(() => initAppCheck());
 
 const container = document.getElementById("root");
 

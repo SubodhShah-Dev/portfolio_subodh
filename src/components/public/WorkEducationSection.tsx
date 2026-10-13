@@ -43,7 +43,7 @@ function TimelineLogo({ src, name }: { src?: string; name: string }) {
   return (
     <span
       aria-hidden="true"
-      className="relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-raised font-meta text-xs text-ink shadow-pop-sm sm:size-12"
+      className="relative z-10 inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-surface font-meta text-xs text-ink sm:size-12"
     >
       {initials(name)}
     </span>
@@ -97,7 +97,7 @@ export function WorkEducationSection({
 
   const tabClass = (isSelected: boolean): string =>
     [
-      "flex-1 rounded-full border-2 px-4 py-2 font-meta text-[11px] uppercase tracking-[0.12em] transition-colors",
+      "flex-1 rounded-full border-2 px-4 py-2 font-meta text-[11px] uppercase tracking-[0.12em] transition-colors duration-200",
       isSelected
         ? "border-ink bg-ink text-canvas"
         : "border-hairline text-muted hover:border-ink hover:text-ink",
@@ -110,7 +110,7 @@ export function WorkEducationSection({
           role="tablist"
           aria-label="Experience and education"
           onKeyDown={onTabKeyDown}
-          className="mb-8 flex max-w-md gap-1.5 rounded-full border-2 border-ink bg-raised p-1.5"
+          className="mb-8 flex max-w-md gap-1.5 rounded-full border-2 border-ink bg-surface p-1.5"
         >
           <button
             type="button"

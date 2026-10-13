@@ -44,12 +44,12 @@ export default function Resume() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Download aria-hidden="true" className="size-4" />
           Download
+          <Download aria-hidden="true" className="size-4" />
         </a>
       </header>
 
-      <div className="overflow-hidden rounded-chunk border-2 border-ink bg-canvas shadow-pop">
+      <div className="overflow-hidden rounded-chunk border-2 border-ink bg-surface-hover">
         <iframe
           src={activeResume.downloadUrl}
           title="Resume preview"

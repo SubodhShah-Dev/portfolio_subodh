@@ -51,10 +51,10 @@ export default function CommandPalette({
     >
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-ink/45 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-ink/45"
         onClick={onClose}
       />
-      <div className="relative mx-auto mt-[14vh] w-[calc(100vw-2rem)] max-w-lg border-2 border-ink bg-raised shadow-[12px_12px_0_0_var(--color-signal)]">
+      <div className="relative mx-auto mt-[14vh] w-[calc(100vw-2rem)] max-w-lg border-2 border-ink bg-raised">
         <Command.Input
           placeholder="Type a command or search…"
           className="w-full bg-transparent px-4 py-3.5 text-base text-ink outline-none placeholder:text-muted"
@@ -73,7 +73,7 @@ export default function CommandPalette({
                 value={link.label}
                 onSelect={() => {
                   const path = linkToPath(link.to);
-                  void navigate(path, { viewTransition: !path.includes("#") });
+                  void navigate(path);
                   onClose();
                   // Mirror the nav links: same-location navigations never
                   // change the layout's scroll deps, so scroll explicitly.

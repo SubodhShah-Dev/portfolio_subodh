@@ -39,7 +39,7 @@ export function Section({
         {index !== undefined && (
           <span
             aria-hidden="true"
-            className="inline-flex size-11 shrink-0 -rotate-6 items-center justify-center rounded-full border-2 border-ink bg-raised shadow-pop-sm"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-surface"
           >
             <ArrowRight className="size-5 text-ink" />
           </span>

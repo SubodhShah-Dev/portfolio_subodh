@@ -1,3 +1,4 @@
+import { ArrowUpRight, GitBranch } from "lucide-react";
 import { Link } from "react-router";
 
 import { LifecycleChip } from "./LifecycleChip";
@@ -65,7 +66,7 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
             {project.techStack.map((technology) => (
               <li
                 key={technology}
-                className="rounded-md border border-hairline bg-raised px-2.5 py-1 font-meta text-xs text-muted"
+                className="rounded-md border border-hairline bg-surface px-2.5 py-1 font-meta text-xs text-muted"
               >
                 {technology}
               </li>
@@ -79,9 +80,10 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full border-2 border-ink bg-ink px-3 py-1.5 font-meta text-[11px] uppercase tracking-[0.1em] text-canvas transition-colors hover:border-signal hover:bg-signal hover:text-on-signal"
+                className="cta-primary cta-sm"
               >
                 Source
+                <GitBranch aria-hidden="true" className="size-3.5" />
               </a>
             )}
             {hasDemo && (
@@ -89,9 +91,10 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
                 href={project.liveDemoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-full border-2 border-ink bg-raised px-3 py-1.5 font-meta text-[11px] uppercase tracking-[0.1em] text-ink transition-colors hover:border-signal hover:text-signal"
+                className="cta-ghost cta-sm"
               >
                 Live demo
+                <ArrowUpRight aria-hidden="true" className="size-3.5" />
               </a>
             )}
           </div>

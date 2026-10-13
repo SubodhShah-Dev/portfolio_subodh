@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { ArrowUpRight, Mail } from "lucide-react";
 import { Link, Outlet, useLocation, useRouteLoaderData } from "react-router";
 
 import PublicShell, { type ShellLink } from "../components/layout/PublicShell";
@@ -23,9 +24,7 @@ const SECTION_LINKS: ReadonlyArray<{
   flags: readonly (keyof PublicLayoutData["flags"])[];
 }> = [
   { hash: "#about", label: "About", flags: ["about"] },
-  { hash: "#skills", label: "Skills", flags: ["skills"] },
   { hash: "#experience", label: "Experience", flags: ["experience", "education"] },
-  { hash: "#certifications", label: "Certifications", flags: ["certifications"] },
   { hash: "#contact", label: "Contact", flags: ["contact"] },
 ];
 
@@ -108,13 +107,11 @@ export default function PublicLayout() {
   const brandName = name.trim() !== "" ? name : "Portfolio";
   // With a dark twin configured, each theme shows exactly one <img>; the
   // hidden one leaves the accessibility tree, so both carry the same alt.
-  const logoClasses =
-    "block h-12 w-auto transition-shadow group-hover:shadow-pop-sm lg:h-14";
+  const logoClasses = "block h-12 w-auto lg:h-14";
 
   const brand = (
     <Link
       to="/"
-      viewTransition
       className="group flex min-w-0 items-center gap-2.5"
       onClick={() => {
         // Same-location clicks (logo while already on /) skip the layout's
@@ -127,6 +124,8 @@ export default function PublicLayout() {
           <img
             src={data.logoUrl}
             alt={brandName}
+            fetchPriority="high"
+            decoding="async"
             className={
               data.logoUrlDark !== null
                 ? `${logoClasses} dark:hidden`
@@ -137,7 +136,8 @@ export default function PublicLayout() {
             <img
               src={data.logoUrlDark}
               alt={brandName}
-              className="hidden h-12 w-auto transition-shadow group-hover:shadow-pop-sm dark:block lg:h-14"
+              decoding="async"
+              className="hidden h-12 w-auto dark:block lg:h-14"
             />
           )}
         </>
@@ -186,7 +186,7 @@ export default function PublicLayout() {
   const ownerName = profile?.public.name ?? "";
 
   const footer = (
-    <div className="relative mx-auto w-full max-w-7xl overflow-hidden px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
+    <div className="shell-container relative overflow-hidden py-20 lg:py-28">
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="max-w-3xl">
           <p className="eyebrow">Get in touch</p>
@@ -197,12 +197,12 @@ export default function PublicLayout() {
             {contactEmail !== null && (
               <a className="cta-primary" href={`mailto:${contactEmail}`}>
                 Say hello
+                <Mail aria-hidden="true" className="size-4" />
               </a>
             )}
             <Link
               className="cta-ghost"
               to="/projects"
-              viewTransition
               onClick={() => {
                 // Same-location clicks (footer while already on /projects)
                 // skip the layout's reset effect — scroll explicitly.
@@ -210,6 +210,7 @@ export default function PublicLayout() {
               }}
             >
               See my work
+              <ArrowUpRight aria-hidden="true" className="size-4" />
             </Link>
           </div>
         </div>

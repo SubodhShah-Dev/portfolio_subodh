@@ -7,22 +7,21 @@
 /* ---------------------------------------------------------------------------
    Three visual systems in one stylesheet (§56):
 
-   1. Pop Mono — the PUBLIC portfolio, light default + dark twin. The base is
-      white/paper + near-black ink; ONE accent color (signal cobalt) carries
-      links, focus, hovers, and small highlights — "monochrome base, color on
-      top". Pop structure without the loud palette: hard offset shadows
-      (shadow-pop), chunky radii, press-down pills; borders/shadows follow
-      --color-ink so the frame flips light on the dark canvas. Fixed
-      --color-on-accent keeps text on white pills dark in BOTH modes.
-      Bricolage Grotesque display, Instrument Sans body, IBM Plex Mono meta.
-      Applied only under `.public-scope` (public shell root, paused screen,
-      error boundary) — the admin never carries that class.
+   1. Pop Mono — the PUBLIC portfolio, light default + dark twin. FLAT
+      monochrome: paper canvas + ink + gray shades, no accent hue and no
+      shadows. Cards sit on a distinct surface gray that lifts a shade on
+      hover; CTAs are underlined text links with an icon beside them
+      (currentColor — ink on paper, canvas on inverted bands). Structure is
+      carried by 2px ink borders, chunky radii (--radius-chunk), and a fixed
+      72px grid texture. Bricolage Grotesque display, Instrument Sans body,
+      IBM Plex Mono meta. Applied only under `.public-scope` (public shell
+      root, paused screen, error boundary) — the admin never carries it.
 
    2. Ink Console — the ADMIN. Always dark: slate/emerald/sky/red utility
       names are kept (they are used exclusively by admin surfaces) but their
-      VALUES are re-pointed in @theme to the Signal ink system — near-black
-      canvas, raised panels, ultramarine accent, Bricolage headings. Shared
-      primitives below (.card, .btn-*, .input) are sharp-cornered Signal.
+      VALUES are re-pointed in @theme to a grayscale ink system — near-black
+      canvas, raised panels, gray accent, Bricolage headings. Shared
+      primitives below (.card, .btn-*, .input) are sharp-cornered.
 
    3. Admin never reads the Signal semantic tokens; public surfaces never
       read slate utilities. Both systems coexist without leaking.
@@ -42,38 +41,37 @@
   --font-body: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
   --font-meta: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* Signal palette — LIGHT (all pairs WCAG-verified, see P0 commit). */
+  /* Ink palette — LIGHT. Monochrome: paper canvas + ink + gray shades.
+     The single accent ("signal") is now just ink; hovers/focus invert. */
   --color-canvas: #fafaf7;
   --color-raised: #ffffff;
+  --color-surface: #eceae3; /* card fill — distinctly gray on paper */
+  --color-surface-hover: #f6f4ee; /* card hover — lifts toward white */
   --color-ink: #141414;
   --color-muted: #55555f;
   --color-faint: #8a8a93; /* large text / decorative only — 3.27:1 */
   --color-hairline: #1414141f;
-  --color-signal: #3d34f5; /* links, primary surfaces — 6.68:1 on canvas */
-  --color-signal-deep: #2a21d9; /* hover + focus ring — 8.66:1 on canvas */
-  --color-signal-soft: #a9a4ff; /* accents on ink bands — 8.28:1 on band */
-  --color-on-signal: #ffffff; /* text on signal fills — 6.98:1 */
+  --color-signal: #141414; /* links, primary surfaces = ink */
+  --color-signal-deep: #000000; /* hover + focus ring */
+  --color-signal-soft: #a1a1aa; /* accents on ink bands */
+  --color-on-signal: #fafaf7; /* text on ink fills = canvas */
   --color-band: #141414; /* inverted footer band — near-black */
   --color-band-ink: #fafaf7; /* 17.6:1 on band */
   --color-band-muted: #a1a1aa; /* muted copy on band — 7.4:1 */
+  --grid-line: rgb(20 20 20 / 0.05); /* fixed background grid texture */
   --color-ok: #157a4b;
   --color-ok-tint: #e7f4ec;
   --color-err: #c0271a;
   --color-err-tint: #fbebe9;
 
   /* Fixed dark for text/borders on white pills — never flips, so white
-     buttons keep navy text in light AND dark modes. */
+     buttons keep ink text in light AND dark modes. */
   --color-on-accent: #141414;
 
-  /* Hard offset shadows + chunky radius + springy ease (pop motion). */
-  --shadow-pop-sm: 3px 3px 0 0 var(--color-ink);
-  --shadow-pop: 5px 5px 0 0 var(--color-ink);
-  --shadow-pop-lg: 9px 9px 0 0 var(--color-ink);
+  /* Chunky radius + springy ease (pop motion). Shadows removed for a flat,
+     fast monochrome UI. */
   --radius-chunk: 1.25rem;
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  /* Grid texture lines (fixed overlay in the public shell). */
-  --grid-line: rgb(20 20 20 / 0.05);
 
   /* Shared light-variant primitives (public Alert/FormField) reuse the
      same reds/greens under their own names. */
@@ -98,12 +96,12 @@
   --color-slate-300: #c9c8d2; /* labels */
   --color-slate-200: #e6e5ec; /* hover text */
   --color-slate-100: #f2f1ed; /* headings */
-  --color-emerald-500: #8b85ff; /* accent fill — signal on ink (6.3:1 w/ slate-950 text) */
-  --color-emerald-400: #a5a0ff; /* accent text/hover — 8.6:1 on canvas */
-  --color-emerald-300: #b9b5ff; /* accent hover text */
-  --color-sky-500: #8b85ff; /* info badges → signal family */
-  --color-sky-400: #a5a0ff;
-  --color-sky-300: #b9b5ff;
+  --color-emerald-500: #e6e5ec; /* accent fill — light gray on ink (dark text) */
+  --color-emerald-400: #f2f1ed; /* accent text/hover */
+  --color-emerald-300: #ffffff; /* accent hover text */
+  --color-sky-500: #a5a4b0; /* info badges → gray */
+  --color-sky-400: #c9c8d2;
+  --color-sky-300: #e6e5ec;
   --color-red-500: #ff6f61; /* error */
   --color-red-400: #ff8a80; /* error text — 7.4:1 on slate-900 */
   --color-red-300: #ffaba4;
@@ -115,26 +113,28 @@
   --dur-3: 750ms;
 }
 
-/* Signal palette — DARK. Same keys, new values; utilities flip via var(). */
+/* Ink palette — DARK. Same keys; monochrome (signal = ink/paper). */
 :root.dark {
   --color-canvas: #0f0f13;
   --color-raised: #17171d;
+  --color-surface: #1e1e24; /* card fill — lighter than canvas */
+  --color-surface-hover: #26262e; /* card hover — up a shade */
   --color-ink: #f2f1ed;
   --color-muted: #a5a4b0;
   --color-faint: #71717c;
   --color-hairline: #f2f1ed26;
-  --color-signal: #8b85ff;
-  --color-signal-deep: #a5a0ff;
-  --color-signal-soft: #8b85ff;
-  --color-on-signal: #0f0f13;
+  --color-signal: #f2f1ed; /* links, primary surfaces = ink (paper in dark) */
+  --color-signal-deep: #ffffff; /* hover + focus ring */
+  --color-signal-soft: #a5a4b0; /* accents on dark bands */
+  --color-on-signal: #0f0f13; /* text on ink fills = dark canvas */
   --color-band: #191920;
   --color-band-ink: #f2f1ed;
   --color-band-muted: #a5a4b0;
+  --grid-line: rgb(242 241 237 / 0.05); /* fixed background grid texture */
   --color-ok: #4ade9e;
   --color-ok-tint: #10241a;
   --color-err: #ff8a80;
   --color-err-tint: #2a1210;
-  --grid-line: rgb(242 241 237 / 0.05);
 
   --color-error: #ff8a80;
   --color-error-tint: #2a1210;
@@ -181,11 +181,34 @@
     }
   }
 
-  /* Native theme-switch wipe (utils/theme startViewTransition). */
+  /* Native route/theme transitions (react-router viewTransition prop +
+     utils/theme startViewTransition). */
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation-duration: 280ms;
     animation-timing-function: var(--ease-signal);
+  }
+
+  /* Interactive cursors — pointer everywhere something can be clicked. */
+  a[href],
+  button:not(:disabled),
+  select:not(:disabled),
+  summary,
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="option"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  input,
+  textarea {
+    cursor: text;
   }
 
   /* Body: Signal canvas by default; admin surfaces self-paint bg-slate-950.
@@ -258,30 +281,36 @@
 
   /* --- Signal primitives (public only) ------------------------------------ */
 
+  /* Public page width — single source of truth for every content column
+     (header, mobile menu, main wrapper, hero, footer). Tweak margins here. */
+  .shell-container {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-12;
+  }
+
   /* Mono eyebrow — role, section numbers, meta labels. */
   .eyebrow {
     @apply font-meta text-[0.6875rem] font-medium tracking-[0.16em] text-signal-deep uppercase;
   }
 
-  /* Primary CTA — black pill, white text, hard offset shadow, press-down.
-     Hover floods the one accent (cobalt). Public-only (admin uses .btn-*). */
+  /* Primary CTA — ink button, canvas text; hover lifts and inverts to
+     raised. Flat (no shadow), rounded-xl instead of a full pill. */
   .cta-primary {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2
-      border-ink bg-ink px-6 py-3.5 text-base font-semibold text-canvas transition-[transform,box-shadow,background-color,color] duration-150;
-    box-shadow: var(--shadow-pop);
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border-2 border-ink bg-ink px-6 py-3 text-base font-semibold text-canvas;
+    border-radius: 0.75rem;
+    transition:
+      transform 220ms var(--ease-pop),
+      background-color 220ms var(--ease-signal),
+      color 220ms var(--ease-signal);
   }
 
   .cta-primary:hover:not(:disabled) {
-    background-color: var(--color-signal);
-    border-color: var(--color-signal);
-    color: var(--color-on-signal);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-pop-lg);
+    background-color: var(--color-raised);
+    color: var(--color-ink);
+    transform: translateY(-2px);
   }
 
   .cta-primary:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 0 0 0 0 var(--color-ink);
+    transform: translateY(0);
     transition-duration: 80ms;
   }
 
@@ -289,24 +318,24 @@
     @apply cursor-not-allowed opacity-50;
   }
 
-  /* Secondary CTA — white pill, ink frame; hover floods cobalt too. */
+  /* Secondary CTA — surface button, ink frame; hover floods ink and lifts. */
   .cta-ghost {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border-2
-      border-ink bg-raised px-6 py-3 text-base font-semibold text-ink transition-[transform,box-shadow,background-color,color] duration-150;
-    box-shadow: var(--shadow-pop);
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 border-2 border-ink bg-surface px-6 py-3 text-base font-semibold text-ink;
+    border-radius: 0.75rem;
+    transition:
+      transform 220ms var(--ease-pop),
+      background-color 220ms var(--ease-signal),
+      color 220ms var(--ease-signal);
   }
 
   .cta-ghost:hover:not(:disabled) {
-    background-color: var(--color-signal);
-    border-color: var(--color-signal);
-    color: var(--color-on-signal);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-pop-lg);
+    background-color: var(--color-ink);
+    color: var(--color-canvas);
+    transform: translateY(-2px);
   }
 
   .cta-ghost:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 0 0 0 0 var(--color-ink);
+    transform: translateY(0);
     transition-duration: 80ms;
   }
 
@@ -314,35 +343,47 @@
     @apply cursor-not-allowed opacity-50;
   }
 
-  /* Pop card — chunky-radius public content card with hard offset shadow. */
+  /* Compact CTA — meta-sized button for in-card links and section actions. */
+  .cta-sm {
+    @apply px-3 py-1.5 font-meta text-[11px] tracking-[0.1em] uppercase;
+  }
+
+  /* Pop card — chunky-radius public content card on the surface ladder. */
   .pop-card {
     border: 2px solid var(--color-ink);
     border-radius: var(--radius-chunk);
-    background-color: var(--color-raised);
-    box-shadow: var(--shadow-pop);
+    background-color: var(--color-surface);
   }
 
-  /* Add to any anchor/wrapper around a .pop-card for the press lift. */
+  /* Add to any anchor/wrapper around a .pop-card for the press lift.
+     Hover also lifts the fill a shade toward white. */
   .pop-card-link {
     transition:
-      transform var(--dur-1) var(--ease-pop),
-      box-shadow var(--dur-1) var(--ease-pop);
+      transform 220ms var(--ease-pop),
+      background-color 220ms var(--ease-signal);
   }
 
   .pop-card-link:hover {
     transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-pop-lg);
+    background-color: var(--color-surface-hover);
   }
 
   .pop-card-link:active {
     transform: translate(2px, 2px);
-    box-shadow: 0 0 0 0 var(--color-ink);
   }
 
   /* Chip — mono pill badge (skills, tags, filters). */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-raised px-3
+    @apply inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-surface px-3
       py-1.5 font-meta text-xs font-medium text-ink;
+    transition:
+      background-color 220ms var(--ease-signal),
+      color 220ms var(--ease-signal),
+      border-color 220ms var(--ease-signal);
+  }
+
+  .chip:hover {
+    background-color: var(--color-surface-hover);
   }
 
   /* Fixed dot-grid texture behind the public page (aria-hidden overlay). */
@@ -385,33 +426,28 @@
     border-radius: 0;
   }
 
-  /* Shared Button (public instances) — same monochrome-base/cobalt-hover
-     pill system as the .cta pair. */
+  /* Shared Button (public instances) — flat monochrome pill. Hover inverts;
+     no shadows. */
   .public-scope .btn-primary {
     border-radius: 9999px;
     border: 2px solid var(--color-ink);
     background-color: var(--color-ink);
     color: var(--color-canvas);
-    box-shadow: var(--shadow-pop-sm);
     transition:
-      transform var(--dur-1) var(--ease-pop),
-      box-shadow var(--dur-1) var(--ease-pop),
       background-color var(--dur-1),
       color var(--dur-1),
       border-color var(--dur-1);
   }
 
   .public-scope .btn-primary:hover:not(:disabled) {
-    background-color: var(--color-signal);
-    border-color: var(--color-signal);
-    color: var(--color-on-signal);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-pop);
+    background-color: var(--color-raised);
+    border-color: var(--color-ink);
+    color: var(--color-ink);
   }
 
   .public-scope .btn-primary:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 0 0 0 0 var(--color-ink);
+    background-color: var(--color-ink);
+    color: var(--color-canvas);
   }
 
   .public-scope .btn-primary:disabled {
@@ -424,26 +460,21 @@
     border: 2px solid var(--color-ink);
     background-color: var(--color-raised);
     color: var(--color-ink);
-    box-shadow: var(--shadow-pop-sm);
     transition:
-      transform var(--dur-1) var(--ease-pop),
-      box-shadow var(--dur-1) var(--ease-pop),
       background-color var(--dur-1),
       color var(--dur-1),
       border-color var(--dur-1);
   }
 
   .public-scope .btn-secondary:hover:not(:disabled) {
-    background-color: var(--color-signal);
-    border-color: var(--color-signal);
-    color: var(--color-on-signal);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-pop);
+    background-color: var(--color-ink);
+    border-color: var(--color-ink);
+    color: var(--color-canvas);
   }
 
   .public-scope .btn-secondary:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 0 0 0 0 var(--color-ink);
+    background-color: var(--color-raised);
+    color: var(--color-ink);
   }
 
   .public-scope .input {
@@ -483,42 +514,28 @@
     color: var(--color-muted);
   }
 
-  /* CTAs on the black footer band — white/outlined pills with a cobalt
-     hard shadow (visible on black), flooding cobalt on hover. Cobalt fills
-     and shadows flip with --color-signal, so they read on both band values. */
+  /* CTAs on the inverted footer band — fills flip to band-ink so they read
+     on both band values. Same lift hover, flat. */
+  .public-scope .band .cta-primary {
+    background-color: var(--color-band-ink);
+    border-color: var(--color-band-ink);
+    color: var(--color-band);
+  }
+
+  .public-scope .band .cta-primary:hover:not(:disabled) {
+    background-color: transparent;
+    color: var(--color-band-ink);
+  }
+
   .public-scope .band .cta-ghost {
     background-color: transparent;
     border-color: var(--color-band-ink);
     color: var(--color-band-ink);
-    box-shadow: 4px 4px 0 0 var(--color-signal);
   }
 
   .public-scope .band .cta-ghost:hover:not(:disabled) {
-    background-color: var(--color-signal);
-    border-color: var(--color-signal);
-    color: var(--color-on-signal);
-    box-shadow: 9px 9px 0 0 var(--color-signal);
-  }
-
-  .public-scope .band .cta-primary {
     background-color: var(--color-band-ink);
-    border-color: var(--color-on-accent);
-    color: var(--color-on-accent);
-    box-shadow: 4px 4px 0 0 var(--color-signal);
-  }
-
-  .public-scope .band .cta-primary:hover:not(:disabled) {
-    background-color: var(--color-signal);
-    border-color: var(--color-signal);
-    color: var(--color-on-signal);
-    box-shadow: 9px 9px 0 0 var(--color-signal);
-  }
-
-  .public-scope .band .cta-primary:active:not(:disabled),
-  .public-scope .band .cta-ghost:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: 0 0 0 0 var(--color-signal);
-    transition-duration: 80ms;
+    color: var(--color-band);
   }
 }
 
@@ -539,85 +556,4 @@
      containing block and mis-anchor position:fixed descendants (the
      contact copy toast) to the section instead of the viewport. */
   transform: none;
-}
-
-/* Scroll-driven enhancement: elements rise as they enter the viewport.
-   Chromium-only; .reveal / static content covers every other engine. */
-@supports (animation-timeline: view()) {
-  .reveal-view {
-    animation: fade-rise linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 32%;
-  }
-}
-
-/* Hero choreography: word masks, drawn rule, staged rise. Delays are inline
-   per element; reduced-motion zeroes duration AND delay, landing everything
-   in its final state instantly. */
-@keyframes word-rise {
-  from {
-    transform: translateY(108%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes rule-draw {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-.animate-word {
-  animation: word-rise var(--dur-3) var(--ease-signal) both;
-}
-
-.animate-rise {
-  animation: fade-rise var(--dur-3) var(--ease-signal) both;
-}
-
-.animate-draw {
-  animation: rule-draw var(--dur-2) var(--ease-signal) both;
-}
-
-/* Pressable micro-state for buttons/cards (used with lucide arrow nudges). */
-.press {
-  transition:
-    transform var(--dur-1) var(--ease-signal),
-    box-shadow var(--dur-1) var(--ease-signal);
-}
-
-.press:active {
-  transform: translateY(2px);
-}
-
-/* Pop decor motion: bobbing hero terminal card. Reduced-motion global rule
-   freezes it on its first frame. */
-@keyframes pop-bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-16px);
-  }
-}
-
-.animate-pop-bob {
-  animation: pop-bob 3.6s var(--ease-signal) infinite;
 }

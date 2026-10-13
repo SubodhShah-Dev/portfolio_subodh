@@ -36,6 +36,8 @@ export function SocialLinksList({ links, tone = "band" }: SocialLinksListProps) 
                 src={link.iconUrl}
                 alt=""
                 aria-hidden="true"
+                loading="lazy"
+                decoding="async"
                 className={`size-6 ${tone === "band" ? "invert" : "dark:invert"}`}
               />
             </a>

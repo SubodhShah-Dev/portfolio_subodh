@@ -50,19 +50,19 @@ const FOCUSABLE_SELECTOR =
 
 function routeLinkClass(active: boolean): string {
   return [
-    "relative rounded-full px-3.5 py-2 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
-    // The pill behind the active link flips with ink (black in light, white
-    // in dark), so its label flips too — text-canvas on the ink pill.
-    active ? "text-canvas" : "text-muted hover:text-ink",
+    "relative px-3.5 py-2 font-meta text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors duration-200",
+    active
+      ? "text-ink underline decoration-2 underline-offset-8"
+      : "text-muted hover:text-ink",
   ].join(" ");
 }
 
 function menuLinkClass(active: boolean): string {
   return [
-    "block rounded-lg px-3 py-2.5 font-meta text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+    "block px-3 py-2.5 font-meta text-[11px] font-semibold tracking-[0.12em] uppercase transition-colors duration-200",
     active
-      ? "bg-ink text-canvas"
-      : "text-muted hover:bg-ink/5 hover:text-ink",
+      ? "text-ink underline decoration-2 underline-offset-4"
+      : "text-muted hover:text-ink",
   ].join(" ");
 }
 
@@ -254,7 +254,9 @@ export default function PublicShell({
   const [showBackToTop, setShowBackToTop] = useState(false);
   useEffect(() => {
     const handleScroll = (): void => {
-      setShowBackToTop(window.scrollY > 640);
+      const next = window.scrollY > 640;
+      // Identity-return no-op keeps scroll events from re-rendering the shell.
+      setShowBackToTop((current) => (current === next ? current : next));
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
@@ -291,15 +293,6 @@ export default function PublicShell({
 
   const renderLink = (link: ShellLink, mobile: boolean): ReactNode => {
     const linkClass = mobile ? menuLinkClass : routeLinkClass;
-    const underline = (active: boolean): ReactNode =>
-      !mobile && active ? (
-        <motion.span
-          layoutId="nav-pill"
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 rounded-full bg-ink"
-          transition={{ type: "spring", stiffness: 460, damping: 36 }}
-        />
-      ) : null;
 
     // Route matching (replaces NavLink's): exact for `end`, prefix otherwise
     // so /projects/:id keeps Work lit. Hash sections ignore the route —
@@ -347,7 +340,6 @@ export default function PublicShell({
         }}
       >
         {link.label}
-        {underline(active)}
       </Link>
     );
   };
@@ -365,15 +357,15 @@ export default function PublicShell({
         Skip to content
       </a>
 
-      {/* Fixed dot-grid texture — sits UNDER page content (z-0), so opaque
-          bands and cards hide it while the open canvas shows it. */}
+      {/* Fixed dot-grid texture behind the whole page — bands and cards
+          hide it while the open canvas shows it. */}
       <div
         aria-hidden="true"
         className="grid-overlay pointer-events-none fixed inset-0 z-0"
       />
 
-      <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:h-16 lg:px-10">
+      <header className="sticky top-0 z-40 border-b border-hairline bg-canvas">
+        <div className="shell-container flex h-14 items-center justify-between gap-6 lg:h-16">
           <div className="min-w-0 shrink">{brand}</div>
 
           <nav
@@ -390,7 +382,7 @@ export default function PublicShell({
                 type="button"
                 onClick={() => setPaletteOpen(true)}
                 aria-label="Open command palette"
-                className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-ink transition-colors hover:bg-ink hover:text-canvas"
+                className="flex cursor-pointer items-center gap-2 rounded-full border-2 border-ink px-3 py-1.5 text-ink transition-colors duration-200 hover:bg-ink hover:text-canvas"
               >
                 <Search aria-hidden="true" className="size-3.5" />
                 <span className="font-meta text-[10px] tracking-[0.1em] uppercase">
@@ -407,7 +399,7 @@ export default function PublicShell({
               onClick={handleToggleTheme}
               aria-label={themeLabel}
               title={themeLabel}
-              className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors hover:bg-ink hover:text-canvas"
+              className="relative flex size-9 cursor-pointer items-center justify-center rounded-full border-2 border-ink text-ink transition-colors duration-200 hover:bg-ink hover:text-canvas"
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
@@ -467,7 +459,7 @@ export default function PublicShell({
             >
               <nav
                 aria-label="Site navigation"
-                className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6"
+                className="shell-container py-3"
               >
                 {links.map((link, index) => (
                   <motion.div
@@ -499,7 +491,7 @@ export default function PublicShell({
         tabIndex={-1}
         className="relative z-10 flex-1 outline-none"
       >
-        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+        <div className="shell-container py-12 lg:py-16">
           {children}
         </div>
       </main>
@@ -517,7 +509,7 @@ export default function PublicShell({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 14 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal shadow-pop transition-transform hover:-translate-y-0.5"
+            className="fixed right-4 bottom-4 z-60 flex size-11 cursor-pointer items-center justify-center rounded-full border-2 border-ink bg-signal text-on-signal transition-transform duration-200 hover:-translate-y-0.5"
           >
             <ArrowUp aria-hidden="true" className="size-5" />
           </motion.button>
