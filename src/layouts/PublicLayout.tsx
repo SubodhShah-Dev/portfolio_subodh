@@ -107,12 +107,16 @@ export default function PublicLayout() {
   const brandName = name.trim() !== "" ? name : "Portfolio";
   // With a dark twin configured, each theme shows exactly one <img>; the
   // hidden one leaves the accessibility tree, so both carry the same alt.
-  const logoClasses = "block h-12 w-auto lg:h-14";
+  // Full-bleed: the art is an opaque rectangle (white bg in the light
+  // twin, near-black in the dark one), so filling the block's full height
+  // makes that baked background the block's own fill — flush against the
+  // paper canvas with no inner box seam.
+  const logoClasses = "block h-full w-auto";
 
   const brand = (
     <Link
       to="/"
-      className="group flex h-14 w-full min-w-0 items-center gap-2.5 border-r-2 border-ink bg-surface px-5 transition-colors duration-200 hover:bg-surface-hover lg:h-16 lg:px-6"
+      className="group flex h-14 min-w-0 items-center border-r-2 border-ink transition-colors duration-200 lg:h-16"
       onClick={() => {
         // Same-location clicks (logo while already on /) skip the layout's
         // reset effect — scroll explicitly, as the nav links do.
@@ -137,12 +141,12 @@ export default function PublicLayout() {
               src={data.logoUrlDark}
               alt={brandName}
               decoding="async"
-              className="hidden h-12 w-auto dark:block lg:h-14"
+              className="hidden h-full w-auto dark:block"
             />
           )}
         </>
       ) : (
-        <span className="min-w-0 truncate font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal">
+        <span className="min-w-0 truncate px-5 font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal lg:px-6">
           {brandName}
         </span>
       )}
