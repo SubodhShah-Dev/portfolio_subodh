@@ -23,6 +23,7 @@ import {
   setSocialLinkStatus,
   updateSocialLink,
 } from "../../services/socialLinkService";
+import { textOrClear } from "../../services/serviceUtils";
 import { fieldErrors, requiredError } from "../../utils/validation";
 import { urlError } from "../../utils/urlValidation";
 
@@ -106,7 +107,7 @@ export default function ManageSocialLinks() {
       platform: values.platform.trim(),
       label: values.label.trim(),
       url: values.url.trim(),
-      ...(values.iconUrl.trim() !== "" ? { iconUrl: values.iconUrl.trim() } : {}),
+      iconUrl: textOrClear(values.iconUrl),
     };
     const result = await collection.save(editing?.id ?? null, input);
     if (result.ok) setFormOpen(false);

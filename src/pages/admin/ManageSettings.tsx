@@ -17,6 +17,7 @@ import {
   type SiteSettingsInput,
 } from "../../types/settings";
 import { getSiteSettings, updateSiteSettings } from "../../services/settingsService";
+import { textOrClear } from "../../services/serviceUtils";
 import { fieldErrors } from "../../utils/validation";
 import { urlError } from "../../utils/urlValidation";
 
@@ -80,17 +81,11 @@ export default function ManageSettings() {
     const input: SiteSettingsInput = {
       enabled: values.enabled,
       sections: values.sections,
-      ...(values.siteTitle.trim() !== "" ? { siteTitle: values.siteTitle.trim() } : {}),
-      ...(values.siteDescription.trim() !== ""
-        ? { siteDescription: values.siteDescription.trim() }
-        : {}),
-      ...(values.logoUrl.trim() !== "" ? { logoUrl: values.logoUrl.trim() } : {}),
-      ...(values.faviconUrl.trim() !== ""
-        ? { faviconUrl: values.faviconUrl.trim() }
-        : {}),
-      ...(values.footerText.trim() !== ""
-        ? { footerText: values.footerText.trim() }
-        : {}),
+      siteTitle: textOrClear(values.siteTitle),
+      siteDescription: textOrClear(values.siteDescription),
+      logoUrl: textOrClear(values.logoUrl),
+      faviconUrl: textOrClear(values.faviconUrl),
+      footerText: textOrClear(values.footerText),
     };
     return updateSiteSettings(input);
   });

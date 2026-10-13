@@ -23,6 +23,7 @@ import {
   setCertificationStatus,
   updateCertification,
 } from "../../services/certificationService";
+import { textOrClear } from "../../services/serviceUtils";
 import { fieldErrors, requiredError } from "../../utils/validation";
 import { urlError } from "../../utils/urlValidation";
 
@@ -107,13 +108,9 @@ export default function ManageCertifications() {
       order: editing?.order ?? collection.list.data?.length ?? 0,
       title: values.title.trim(),
       issuer: values.issuer.trim(),
-      ...(values.issueDate.trim() !== "" ? { issueDate: values.issueDate.trim() } : {}),
-      ...(values.credentialUrl.trim() !== ""
-        ? { credentialUrl: values.credentialUrl.trim() }
-        : {}),
-      ...(values.description.trim() !== ""
-        ? { description: values.description.trim() }
-        : {}),
+      issueDate: textOrClear(values.issueDate),
+      credentialUrl: textOrClear(values.credentialUrl),
+      description: textOrClear(values.description),
     };
     const result = await collection.save(editing?.id ?? null, input);
     if (result.ok) setFormOpen(false);

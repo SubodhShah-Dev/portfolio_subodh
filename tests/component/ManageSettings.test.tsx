@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { deleteField } from "firebase/firestore";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import ManageSettings from "../../src/pages/admin/ManageSettings";
@@ -84,6 +85,28 @@ describe("ManageSettings", () => {
     expect(await screen.findByText("Ada's Portfolio")).toBeInTheDocument();
     expect(screen.getByText("site live")).toBeInTheDocument();
     expect(screen.getByText("Contact: off")).toBeInTheDocument();
+  });
+
+  it("clears a removed field with a field deletion", async () => {
+    const user = userEvent.setup();
+    getMock.mockResolvedValue({
+      id: "main",
+      siteTitle: "Ada's Portfolio",
+      logoUrl: "https://example.com/logo.png",
+      enabled: true,
+      sections: { ...DEFAULT_SECTION_VISIBILITY },
+      updatedAt: { toDate: () => new Date() } as never,
+    });
+    render(<ManageSettings />);
+    await user.click(await screen.findByRole("button", { name: "Edit settings" }));
+
+    await user.clear(await screen.findByLabelText(/^Logo URL/));
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(updateMock).toHaveBeenCalledTimes(1));
+    const input = updateMock.mock.calls[0]?.[0];
+    expect(input?.logoUrl).toEqual(deleteField());
+    expect(input?.siteTitle).toBe("Ada's Portfolio");
   });
 
   it("rejects invalid logo URLs without saving", async () => {

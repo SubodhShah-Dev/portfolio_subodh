@@ -29,6 +29,7 @@ import {
   setProjectStatus,
   updateProject,
 } from "../../services/projectService";
+import { textOrClear } from "../../services/serviceUtils";
 import {
   fieldErrors,
   joinList,
@@ -155,18 +156,12 @@ export default function ManageProjects() {
       techStack: parseList(values.techStack),
       features: parseList(values.features),
       featured: values.featured,
-      ...(values.githubUrl.trim() !== ""
-        ? { githubUrl: values.githubUrl.trim() }
-        : {}),
-      ...(values.liveDemoUrl.trim() !== ""
-        ? { liveDemoUrl: values.liveDemoUrl.trim() }
-        : {}),
-      thumbnailUrl: values.thumbnailUrl.trim(),
+      githubUrl: textOrClear(values.githubUrl),
+      liveDemoUrl: textOrClear(values.liveDemoUrl),
+      thumbnailUrl: textOrClear(values.thumbnailUrl),
       images: parseImageLines(values.images),
-      ...(values.date.trim() !== "" ? { date: values.date.trim() } : {}),
-      ...(values.architecture.trim() !== ""
-        ? { architecture: values.architecture.trim() }
-        : {}),
+      date: textOrClear(values.date),
+      architecture: textOrClear(values.architecture),
     };
     const result = await collection.save(editing?.id ?? null, input);
     if (result.ok) setFormOpen(false);

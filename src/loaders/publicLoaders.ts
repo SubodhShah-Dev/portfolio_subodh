@@ -117,11 +117,13 @@ export async function publicLayoutLoader(): Promise<PublicLayoutData> {
     socialLinks,
     contactSettings,
     siteEnabled,
-    siteTitle: settings?.siteTitle ?? null,
-    siteDescription: settings?.siteDescription ?? null,
-    logoUrl: settings?.logoUrl ?? null,
-    faviconUrl: settings?.faviconUrl ?? null,
-    footerText: settings?.footerText ?? null,
+    // `|| null` (not `?? null`): a legacy doc may hold an empty string for a
+    // cleared field — treat it as absent so no empty <img src=""> can render.
+    siteTitle: settings?.siteTitle || null,
+    siteDescription: settings?.siteDescription || null,
+    logoUrl: settings?.logoUrl || null,
+    faviconUrl: settings?.faviconUrl || null,
+    footerText: settings?.footerText || null,
     flags: computeFlags({ profile, settings, contactSettings, skills, experience, education, certifications, projects }),
     skills,
     experience,

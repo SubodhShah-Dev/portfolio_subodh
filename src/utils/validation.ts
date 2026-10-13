@@ -24,6 +24,12 @@ export function emailError(label: string, value: string): string | null {
   return isValidEmail(value) ? null : `${label} must be a valid email address.`;
 }
 
+/** Optional email — blank is fine; non-blank must be a valid address. */
+export function optionalEmailError(label: string, value: string): string | null {
+  if (value.trim() === "") return null;
+  return isValidEmail(value) ? null : `${label} must be a valid email address.`;
+}
+
 export function maxLengthError(
   label: string,
   value: string,

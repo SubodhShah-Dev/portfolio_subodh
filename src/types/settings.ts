@@ -1,5 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
 
+import type { Clearable } from "./write";
+
 /** Which public homepage sections render (§48). */
 export interface SectionVisibility {
   hero: boolean;
@@ -36,4 +38,4 @@ export interface SiteSettings {
   updatedAt: Timestamp;
 }
 
-export type SiteSettingsInput = Omit<SiteSettings, "id" | "updatedAt">;
+export type SiteSettingsInput = Clearable<Omit<SiteSettings, "id" | "updatedAt">>;

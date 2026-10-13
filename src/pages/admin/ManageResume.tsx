@@ -19,6 +19,7 @@ import {
   setActiveResume,
   uploadResume,
 } from "../../services/resumeService";
+import { textOrClear } from "../../services/serviceUtils";
 import { fieldErrors } from "../../utils/validation";
 import { urlError } from "../../utils/urlValidation";
 import { validateResumeFile } from "../../utils/resumeValidation";
@@ -41,7 +42,7 @@ export default function ManageResume() {
   const [externalName, setExternalName] = useState("");
   const [externalErrors, setExternalErrors] = useState<Record<string, string>>({});
   const external = useMutation<string, void>((url) =>
-    saveExternalResume({ downloadUrl: url, ...(externalName.trim() !== "" ? { fileName: externalName.trim() } : {}) }).then(
+    saveExternalResume({ downloadUrl: url, fileName: textOrClear(externalName) }).then(
       () => undefined,
     ),
   );

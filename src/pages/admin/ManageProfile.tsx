@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { deleteField } from "firebase/firestore";
 
 import AdminPageShell from "../../components/admin/AdminPageShell";
 import { EntityForm } from "../../components/admin/EntityForm";
@@ -16,7 +17,13 @@ import {
   updateContactProfile,
   updateProfile,
 } from "../../services/profileService";
-import { emailError, fieldErrors, maxLengthError, requiredError } from "../../utils/validation";
+import { textOrClear } from "../../services/serviceUtils";
+import {
+  fieldErrors,
+  maxLengthError,
+  optionalEmailError,
+  requiredError,
+} from "../../utils/validation";
 import { galleryUrlsError, parseImageLines } from "../../utils/urlValidation";
 
 interface FormValues {
@@ -70,7 +77,7 @@ function validate(values: FormValues): Record<string, string> {
       { allowLocal: true },
     ),
     location: maxLengthError("Location", values.location, 80),
-    email: emailError("Email", values.email),
+    email: optionalEmailError("Email", values.email),
   });
 }
 
@@ -86,12 +93,12 @@ export default function ManageProfile() {
       // The deck is the source of truth; the legacy single URL always mirrors
       // its front card so older readers stay correct.
       profileImageUrls: imageUrls,
-      profileImageUrl: imageUrls[0] ?? "",
-      ...(values.location.trim() !== "" ? { location: values.location.trim() } : {}),
+      profileImageUrl: imageUrls[0] ?? deleteField(),
+      location: textOrClear(values.location),
     };
     const contactInput = {
-      ...(values.email.trim() !== "" ? { email: values.email.trim() } : {}),
-      ...(values.phone.trim() !== "" ? { phone: values.phone.trim() } : {}),
+      email: textOrClear(values.email),
+      phone: textOrClear(values.phone),
     };
     await Promise.all([updateProfile(publicInput), updateContactProfile(contactInput)]);
   });
