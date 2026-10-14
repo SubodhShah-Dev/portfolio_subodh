@@ -337,25 +337,44 @@
     background-color: var(--color-surface);
   }
 
-  /* Sweep — hover wipe: the fill slides in from the left edge toward the
-     right as a hard vertical edge. The fill mixes the signal color into
-     the surface so the wipe stays visible in both themes (the plain
-     surface-hover tint is nearly identical to surface in light).
-     Reduced-motion collapses the transition. */
-  .pop-card-sweep::before {
+  /* Fold — hover: two paper leaves unfold outward from the card's vertical
+     midline, each with an inset spine shadow to sell the crease. The fill
+     mixes the signal color into the surface so it stays visible in both
+     themes. Reduced-motion collapses the transition. */
+  .pop-card-sweep::before,
+  .pop-card-sweep::after {
     content: "";
     position: absolute;
-    inset: 0;
+    top: 0;
+    bottom: 0;
+    width: 50%;
     z-index: -1;
-    border-radius: inherit;
     background-color: color-mix(in oklab, var(--color-signal) 12%, var(--color-surface));
-    clip-path: polygon(0 0, 0 0, 0 0, 0 0);
-    transition: clip-path 280ms var(--ease-signal);
+    transform: scaleX(0);
+    transition: transform 280ms var(--ease-signal);
     pointer-events: none;
   }
 
-  .pop-card-sweep:hover::before {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  /* Left leaf: origin at the spine, outer edge carries the chunky radius,
+     spine shading darkens the right edge. */
+  .pop-card-sweep::before {
+    left: 0;
+    transform-origin: right center;
+    border-radius: var(--radius-chunk) 0 0 var(--radius-chunk);
+    box-shadow: inset -12px 0 16px -10px rgb(0 0 0 / 38%);
+  }
+
+  /* Right leaf: mirrored. */
+  .pop-card-sweep::after {
+    right: 0;
+    transform-origin: left center;
+    border-radius: 0 var(--radius-chunk) var(--radius-chunk) 0;
+    box-shadow: inset 12px 0 16px -10px rgb(0 0 0 / 38%);
+  }
+
+  .pop-card-sweep:hover::before,
+  .pop-card-sweep:hover::after {
+    transform: scaleX(1);
   }
 
   /* Chip — mono pill badge (skills, tags, filters). */
