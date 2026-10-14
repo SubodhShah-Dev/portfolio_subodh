@@ -338,17 +338,19 @@
   }
 
   /* Sweep — hover wipe: the fill slides in from the bottom-right corner
-     toward the top-left as a hard diagonal edge (solid-color pseudo,
-     so no gradient mush). Reduced-motion collapses the transition. */
+     toward the top-left as a hard diagonal edge. The fill mixes the signal
+     color into the surface so the wipe stays visible in both themes (the
+     plain surface-hover tint is nearly identical to surface in light).
+     Reduced-motion collapses the transition. */
   .pop-card-sweep::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
     border-radius: inherit;
-    background-color: var(--color-surface-hover);
+    background-color: color-mix(in oklab, var(--color-signal) 12%, var(--color-surface));
     clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%);
-    transition: clip-path 160ms var(--ease-signal);
+    transition: clip-path 280ms var(--ease-signal);
     pointer-events: none;
   }
 
