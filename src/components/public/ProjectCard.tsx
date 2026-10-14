@@ -29,7 +29,7 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
       : "";
 
   return (
-    <article className="pop-card pop-card-link group relative flex h-full flex-col p-4 sm:p-5">
+    <article className="pop-card group relative flex h-full flex-col p-4 sm:p-5">
       <ProjectMedia
         imageUrl={project.thumbnailUrl}
         videoUrl={project.previewVideoUrl}
@@ -74,13 +74,17 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
           </ul>
         )}
         {(hasGithub || hasDemo) && (
-          <div className="relative z-10 mt-auto flex flex-wrap gap-2 pt-5">
+          // No z-10 here: the wrapper must not sit above the stretched
+          // title link (inset-0 on the article), or its empty padding
+          // becomes a dead zone with no pointer and no navigation — only
+          // the buttons themselves need to win the stacking order.
+          <div className="mt-auto flex flex-wrap gap-2 pt-5">
             {hasGithub && (
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cta-primary cta-sm"
+                className="cta-primary cta-sm relative z-10"
               >
                 Source
                 <GitBranch aria-hidden="true" className="size-3.5" />
@@ -91,7 +95,7 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
                 href={project.liveDemoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="cta-ghost cta-sm"
+                className="cta-ghost cta-sm relative z-10"
               >
                 Live demo
                 <ArrowUpRight aria-hidden="true" className="size-3.5" />

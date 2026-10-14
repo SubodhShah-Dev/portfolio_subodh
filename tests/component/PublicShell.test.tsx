@@ -384,8 +384,8 @@ describe("PublicShell scrollspy", () => {
       ).toBe("true");
     });
 
-    // Land: contact now crosses the band. Three quiet spy frames with no
-    // lenis flight drop the intent, so the position spy owns the pill again.
+    // Land: contact now crosses the band. The spy catching up with the
+    // announced target drops the intent, so the position owns the pill again.
     setSectionTops({ about: -1400, projects: -900, contact: 96 });
     for (let tick = 0; tick < 3; tick++) {
       fireEvent.scroll(window);

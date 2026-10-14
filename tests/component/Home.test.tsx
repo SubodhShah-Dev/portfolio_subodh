@@ -70,7 +70,12 @@ describe("Home", () => {
       "false",
     );
     expect(screen.getByText("Analytical Engines Ltd")).toBeInTheDocument();
-    expect(screen.queryByText("University of London")).not.toBeInTheDocument();
+    // The inactive panel is kept in the layout (so the section height stays
+    // fixed when switching tabs) but is inert — out of the a11y tree and
+    // tab order.
+    expect(
+      screen.getByText("University of London").closest("[role='tabpanel']"),
+    ).toHaveAttribute("inert");
     expect(screen.getByRole("heading", { name: "Certifications" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Projects" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Contact" })).toBeInTheDocument();
@@ -191,8 +196,10 @@ describe("Home", () => {
 
     fireEvent.click(await screen.findByRole("tab", { name: "Education" }));
 
-    expect(screen.getByText("University of London")).toBeInTheDocument();
-    expect(screen.queryByText("Analytical Engines Ltd")).not.toBeInTheDocument();
+    expect(screen.getByText("University of London")).toBeVisible();
+    expect(
+      screen.getByText("Analytical Engines Ltd").closest("[role='tabpanel']"),
+    ).toHaveAttribute("inert");
   });
 
   it("hides the tablist and shows only education when work is empty", async () => {

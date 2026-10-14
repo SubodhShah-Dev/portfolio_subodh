@@ -11,8 +11,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowUp, Menu, Moon, Search, Sun, X } from "lucide-react";
 
 import {
-  initLenis,
-  isFlying,
   NAV_ANCHOR_OFFSET,
   NAV_ANCHOR_TOLERANCE,
   onFlight,
@@ -74,7 +72,7 @@ function menuLinkClass(active: boolean): string {
  * Structure only: every piece of content arrives as props from PublicLayout,
  * which owns all loader data. Accessibility: skip link, single labelled
  * navigation landmark, Esc-to-close with focus restore on the menu button,
- * and lenis kept off under reduced motion and in tests.
+ * and native smooth scrolling honours prefers-reduced-motion.
  */
 export default function PublicShell({
   brand,
@@ -114,14 +112,6 @@ export default function PublicShell({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [menuOpen]);
-
-  // --- Smooth scrolling: mounted once for the public site, skipped in tests
-  // and whenever the visitor prefers reduced motion.
-  useEffect(() => {
-    if (import.meta.env.MODE === "test") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    return initLenis();
-  }, []);
 
   // --- Command palette: ⌘K / Ctrl+K toggles the lazy-loaded palette.
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -164,36 +154,37 @@ export default function PublicShell({
   // through every section band it crosses (§7 round 8).
   const [flightId, setFlightId] = useState<string | null>(null);
   const flightRef = useRef<string | null>(null);
-  const idleFrames = useRef(0);
   useEffect(
     () =>
       onFlight((id) => {
         flightRef.current = id;
-        idleFrames.current = 0;
         setFlightId(id);
       }),
     [],
   );
   // Hand back to the position spy when either (a) the visitor takes over —
-  // any wheel/touch/keydown drops the intent so their own scroll wins
-  // instantly — or (b) the flight has ended: three quiet spy frames with
-  // no lenis animation mean the page has landed, where position and
-  // intent agree anyway.
+  // any wheel/touch/keydown/pointerdown drops the intent so their own
+  // scroll wins instantly — or (b) the flight has ended: the native
+  // scroll's `scrollend` fires once the page has landed, where position
+  // and intent agree anyway.
   useEffect(() => {
     const dropIntent = (): void => {
       if (flightRef.current === null) return;
       flightRef.current = null;
-      idleFrames.current = 0;
       setFlightId(null);
     };
     const handleKeyDown = (): void => dropIntent();
     window.addEventListener("wheel", dropIntent, { passive: true });
     window.addEventListener("touchstart", dropIntent, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("pointerdown", dropIntent, { passive: true });
+    window.addEventListener("scrollend", dropIntent);
     return () => {
       window.removeEventListener("wheel", dropIntent);
       window.removeEventListener("touchstart", dropIntent);
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pointerdown", dropIntent);
+      window.removeEventListener("scrollend", dropIntent);
     };
   }, []);
   const shownSpyId = flightId ?? activeSpyId;
@@ -223,17 +214,12 @@ export default function PublicShell({
           ? prev
           : { pathname: location.pathname, id: active },
       );
-      // Hold the announced intent while its flight runs; three consecutive
-      // quiet frames (no lenis animation) mean the page has landed, so drop
-      // the intent and let the position above take over seamlessly.
-      if (flightRef.current !== null) {
-        if (isFlying()) {
-          idleFrames.current = 0;
-        } else if (++idleFrames.current >= 3) {
-          flightRef.current = null;
-          idleFrames.current = 0;
-          setFlightId(null);
-        }
+      // The position spy caught up with the announced intent — the flight
+      // has landed on its target, so drop the intent and let the position
+      // above own the highlight seamlessly.
+      if (flightRef.current !== null && active === flightRef.current) {
+        flightRef.current = null;
+        setFlightId(null);
       }
     };
     const requestUpdate = (): void => {
