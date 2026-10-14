@@ -57,7 +57,7 @@ export function Lightbox({
         type="button"
         aria-label="Close image viewer"
         onClick={onClose}
-        className="absolute top-4 right-4 flex size-10 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
+        className="absolute top-4 right-4 z-10 flex size-10 cursor-pointer items-center justify-center border border-white/25 text-white transition-colors duration-200 hover:border-white hover:bg-white/10"
       >
         <X aria-hidden="true" className="size-5" />
       </button>
@@ -77,7 +77,7 @@ export function Lightbox({
           </button>
         )}
 
-        <figure className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
+        <figure className="flex min-h-0 min-w-0 flex-1 flex-col justify-center">
           {/* w-full (not just max-w-full): SVGs without width/height
               attributes have no intrinsic size, so max-* alone would render
               them at the ~300px default. The box fills the available width,
