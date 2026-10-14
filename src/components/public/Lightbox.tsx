@@ -63,7 +63,7 @@ export function Lightbox({
       </button>
 
       <div
-        className="relative flex max-h-full max-w-7xl items-center gap-3"
+        className="relative flex max-h-full w-full max-w-7xl items-center gap-3"
         onClick={(event) => event.stopPropagation()}
       >
         {images.length > 1 && (
@@ -77,11 +77,15 @@ export function Lightbox({
           </button>
         )}
 
-        <figure className="min-w-0">
+        <figure className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
+          {/* w-full (not just max-w-full): SVGs without width/height
+              attributes have no intrinsic size, so max-* alone would render
+              them at the ~300px default. The box fills the available width,
+              max-h caps the height, and object-contain preserves the ratio. */}
           <img
             src={src}
             alt={`Gallery image ${index + 1} of ${images.length}`}
-            className="max-h-[85vh] max-w-full border border-white/15 object-contain"
+            className="h-auto max-h-[85vh] w-full border border-white/15 object-contain"
           />
           <figcaption className="mt-3 text-center font-meta text-xs tracking-[0.14em] text-white/70 tabular-nums">
             {index + 1} / {images.length}
