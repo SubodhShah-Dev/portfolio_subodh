@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLoaderData } from "react-router";
+import { createPortal } from "react-dom";
 import { ArrowDown, ArrowUpRight, GitBranch } from "lucide-react";
 
 import NotFound from "./NotFound";
@@ -243,14 +244,21 @@ export default function ProjectDetails() {
         </section>
       )}
 
-      {lightboxIndex !== null && gallery.length > 0 && (
-        <Lightbox
-          images={gallery}
-          index={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-          onIndexChange={setLightboxIndex}
-        />
-      )}
+      {lightboxIndex !== null &&
+        gallery.length > 0 &&
+        // Portal to body: <main> is `relative z-10`, a stacking context the
+        // dialog's z-100 cannot escape — the sticky header (z-40) would
+        // paint over the close button and the footer (z-10, later sibling)
+        // over the bottom of the overlay.
+        createPortal(
+          <Lightbox
+            images={gallery}
+            index={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            onIndexChange={setLightboxIndex}
+          />,
+          document.body,
+        )}
     </article>
   );
 }
