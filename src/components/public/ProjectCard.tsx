@@ -29,7 +29,7 @@ export function ProjectCard({ project, showFeatured = true }: ProjectCardProps) 
       : "";
 
   return (
-    <article className="pop-card group relative flex h-full flex-col p-4 sm:p-5">
+    <article className="pop-card pop-card-sweep isolate group relative flex h-full flex-col p-4 sm:p-5">
       <ProjectMedia
         imageUrl={project.thumbnailUrl}
         videoUrl={project.previewVideoUrl}

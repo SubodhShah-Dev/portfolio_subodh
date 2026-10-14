@@ -337,6 +337,25 @@
     background-color: var(--color-surface);
   }
 
+  /* Sweep — hover wipe: the fill slides in from the bottom-right corner
+     toward the top-left as a hard diagonal edge (solid-color pseudo,
+     so no gradient mush). Reduced-motion collapses the transition. */
+  .pop-card-sweep::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--color-surface-hover);
+    clip-path: polygon(100% 100%, 100% 100%, 100% 100%, 100% 100%);
+    transition: clip-path 160ms var(--ease-signal);
+    pointer-events: none;
+  }
+
+  .pop-card-sweep:hover::before {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
   /* Chip — mono pill badge (skills, tags, filters). */
   .chip {
     @apply inline-flex items-center gap-1.5 rounded-full border-2 border-ink bg-surface px-3
