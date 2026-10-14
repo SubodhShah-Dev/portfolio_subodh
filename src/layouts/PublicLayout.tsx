@@ -49,8 +49,8 @@ export default function PublicLayout() {
     scrollToId(location.hash.slice(1));
   }, [location.hash, location.pathname]);
 
-  // Reset scroll on plain route changes (no hash involved) — through lenis
-  // when it is active, so returning Home glides like every other nav jump.
+  // Reset scroll on plain route changes (no hash involved) — native
+  // smooth scroll, so returning Home glides like every other nav jump.
   useEffect(() => {
     if (location.hash === "") {
       scrollToTop();

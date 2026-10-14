@@ -63,7 +63,7 @@ export function Lightbox({
       </button>
 
       <div
-        className="relative flex max-h-full max-w-5xl items-center gap-3"
+        className="relative flex max-h-full max-w-7xl items-center gap-3"
         onClick={(event) => event.stopPropagation()}
       >
         {images.length > 1 && (
@@ -81,7 +81,7 @@ export function Lightbox({
           <img
             src={src}
             alt={`Gallery image ${index + 1} of ${images.length}`}
-            className="max-h-[75vh] max-w-full border border-white/15 object-contain"
+            className="max-h-[85vh] max-w-full border border-white/15 object-contain"
           />
           <figcaption className="mt-3 text-center font-meta text-xs tracking-[0.14em] text-white/70 tabular-nums">
             {index + 1} / {images.length}

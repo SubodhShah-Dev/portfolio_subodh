@@ -143,26 +143,8 @@
 }
 
 @layer base {
-  /* No CSS scroll-behavior — lenis owns smooth scrolling when active; the
-     native fallback passes behavior explicitly to scrollIntoView. */
-
-  /* Lenis smooth-scroll integration (class added at runtime). */
-  html.lenis,
-  html.lenis body {
-    height: auto;
-  }
-
-  .lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-  }
-
-  .lenis.lenis-smooth [data-lenis-prevent] {
-    overscroll-behavior: contain;
-  }
-
-  .lenis.lenis-stopped {
-    overflow: hidden;
-  }
+  /* No CSS scroll-behavior — every scroll call passes behavior explicitly
+     (native smooth by default, auto under prefers-reduced-motion). */
 
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -353,23 +335,6 @@
     border: 2px solid var(--color-ink);
     border-radius: var(--radius-chunk);
     background-color: var(--color-surface);
-  }
-
-  /* Add to any anchor/wrapper around a .pop-card for the press lift.
-     Hover also lifts the fill a shade toward white. */
-  .pop-card-link {
-    transition:
-      transform 220ms var(--ease-pop),
-      background-color 220ms var(--ease-signal);
-  }
-
-  .pop-card-link:hover {
-    transform: translate(-2px, -2px);
-    background-color: var(--color-surface-hover);
-  }
-
-  .pop-card-link:active {
-    transform: translate(2px, 2px);
   }
 
   /* Chip — mono pill badge (skills, tags, filters). */
