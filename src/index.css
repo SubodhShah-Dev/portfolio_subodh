@@ -338,9 +338,10 @@
   }
 
   /* Fold — hover: two paper leaves unfold outward from the card's vertical
-     midline, each with an inset spine shadow to sell the crease. The fill
-     mixes the signal color into the surface so it stays visible in both
-     themes. Reduced-motion collapses the transition. */
+     midline. The inset spine shadow is visible only mid-unfold and fades
+     to nothing once open, so the end state is a flat fill (no book crease).
+     The fill mixes the signal color into the surface so it stays visible
+     in both themes. Reduced-motion collapses the transition. */
   .pop-card-sweep::before,
   .pop-card-sweep::after {
     content: "";
@@ -351,12 +352,14 @@
     z-index: -1;
     background-color: color-mix(in oklab, var(--color-signal) 12%, var(--color-surface));
     transform: scaleX(0);
-    transition: transform 280ms var(--ease-signal);
+    transition:
+      transform 280ms var(--ease-signal),
+      box-shadow 280ms var(--ease-signal);
     pointer-events: none;
   }
 
   /* Left leaf: origin at the spine, outer edge carries the chunky radius,
-     spine shading darkens the right edge. */
+     spine shading darkens the right edge while the fold is in motion. */
   .pop-card-sweep::before {
     left: 0;
     transform-origin: right center;
@@ -375,6 +378,7 @@
   .pop-card-sweep:hover::before,
   .pop-card-sweep:hover::after {
     transform: scaleX(1);
+    box-shadow: inset 0 0 0 0 transparent;
   }
 
   /* Chip — mono pill badge (skills, tags, filters). */
