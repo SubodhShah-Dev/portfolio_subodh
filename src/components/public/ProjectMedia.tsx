@@ -39,7 +39,7 @@ export function ProjectMedia({ imageUrl, videoUrl, alt }: ProjectMediaProps) {
           alt={alt}
           loading="lazy"
           decoding="async"
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]"
         />
       )}
       {hasVideo && (
@@ -55,7 +55,7 @@ export function ProjectMedia({ imageUrl, videoUrl, alt }: ProjectMediaProps) {
           tabIndex={-1}
           onMouseEnter={start}
           onMouseLeave={stop}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ${
+          className={`absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-500 group-hover:scale-[1.06] ${
             hasImage ? "opacity-0 group-hover:opacity-100" : ""
           }`}
         />
