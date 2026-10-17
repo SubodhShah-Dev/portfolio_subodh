@@ -36,8 +36,7 @@ interface FormValues {
   enabled: boolean;
   siteTitle: string;
   siteDescription: string;
-  logoUrl: string;
-  logoUrlDark: string;
+  navIconUrl: string;
   faviconUrl: string;
   footerText: string;
   sections: SectionVisibility;
@@ -47,8 +46,7 @@ const EMPTY_VALUES: FormValues = {
   enabled: true,
   siteTitle: "",
   siteDescription: "",
-  logoUrl: "",
-  logoUrlDark: "",
+  navIconUrl: "",
   faviconUrl: "",
   footerText: "",
   sections: { ...DEFAULT_SECTION_VISIBILITY },
@@ -60,8 +58,7 @@ function toValues(settings: SiteSettings | null): FormValues {
     enabled: settings.enabled,
     siteTitle: settings.siteTitle ?? "",
     siteDescription: settings.siteDescription ?? "",
-    logoUrl: settings.logoUrl ?? "",
-    logoUrlDark: settings.logoUrlDark ?? "",
+    navIconUrl: settings.navIconUrl ?? "",
     faviconUrl: settings.faviconUrl ?? "",
     footerText: settings.footerText ?? "",
     sections: { ...DEFAULT_SECTION_VISIBILITY, ...settings.sections },
@@ -70,9 +67,8 @@ function toValues(settings: SiteSettings | null): FormValues {
 
 function validate(values: FormValues): Record<string, string> {
   return fieldErrors({
-    logoUrl: urlError(values.logoUrl, { label: "Logo URL", allowLocal: true }),
-    logoUrlDark: urlError(values.logoUrlDark, {
-      label: "Dark logo URL",
+    navIconUrl: urlError(values.navIconUrl, {
+      label: "Nav icon URL",
       allowLocal: true,
     }),
     faviconUrl: urlError(values.faviconUrl, {
@@ -90,8 +86,7 @@ export default function ManageSettings() {
       sections: values.sections,
       siteTitle: textOrClear(values.siteTitle),
       siteDescription: textOrClear(values.siteDescription),
-      logoUrl: textOrClear(values.logoUrl),
-      logoUrlDark: textOrClear(values.logoUrlDark),
+      navIconUrl: textOrClear(values.navIconUrl),
       faviconUrl: textOrClear(values.faviconUrl),
       footerText: textOrClear(values.footerText),
     };
@@ -158,23 +153,14 @@ export default function ManageSettings() {
             }
           />
           <TextField
-            label="Logo URL"
-            id="settings-logo"
+            label="Nav icon URL"
+            id="settings-nav-icon"
             type="url"
-            hint="External URL or a path under /public (e.g. /brand/logo.svg). Replaces the site name in the nav."
-            value={values.logoUrl}
-            error={errors.logoUrl}
-            onChange={(logoUrl) => setValues((current) => ({ ...current, logoUrl }))}
-          />
-          <TextField
-            label="Dark logo URL"
-            id="settings-logo-dark"
-            type="url"
-            hint="Optional — shown in dark mode; falls back to the light logo when empty."
-            value={values.logoUrlDark}
-            error={errors.logoUrlDark}
-            onChange={(logoUrlDark) =>
-              setValues((current) => ({ ...current, logoUrlDark }))
+            hint="External URL or a path under /public (e.g. /brand/logo.svg). Optional — when empty the nav shows the SS monogram."
+            value={values.navIconUrl}
+            error={errors.navIconUrl}
+            onChange={(navIconUrl) =>
+              setValues((current) => ({ ...current, navIconUrl }))
             }
           />
           <TextField
@@ -286,8 +272,7 @@ export default function ManageSettings() {
             </div>
             <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
               {[
-                ["Logo URL", data.logoUrl],
-                ["Dark logo URL", data.logoUrlDark],
+                ["Nav icon URL", data.navIconUrl],
                 ["Favicon URL", data.faviconUrl],
                 ["Footer text", data.footerText],
               ].map(([label, value]) => (

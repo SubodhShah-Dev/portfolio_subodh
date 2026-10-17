@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Timestamp } from "firebase/firestore";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -30,8 +30,7 @@ vi.mock("../../src/loaders/publicLoaders", () => {
     siteEnabled: true,
     siteTitle: null,
     siteDescription: null,
-    logoUrl: null,
-    logoUrlDark: null,
+    navIconUrl: null,
     faviconUrl: null,
     footerText: null,
     flags: {
@@ -91,44 +90,29 @@ describe("AppRouter", () => {
     expect(screen.getByRole("link", { name: "Projects" })).toBeInTheDocument();
   });
 
-  it("shows the logo in place of the site name when logoUrl is set", async () => {
+  it("shows the nav icon when navIconUrl is set", async () => {
     loaderResult.layout = makeLayoutData({
       profile: makeProfile(),
-      logoUrl: "/brand/profilelogo.jpg",
+      navIconUrl: "/brand/nav-icon.jpg",
     });
 
     await renderAt("/");
 
-    const logo = await screen.findByAltText("Ada Lovelace");
-    expect(logo).toHaveAttribute("src", "/brand/profilelogo.jpg");
-    const brand = logo.closest("a");
-    expect(brand).not.toBeNull();
-    const scope = within(brand as HTMLElement);
-    expect(scope.queryByText("Ada Lovelace")).not.toBeInTheDocument();
-    // The navbar brand is the logo alone — no role line.
-    expect(scope.queryByText("Software Engineer")).not.toBeInTheDocument();
-  });
-
-  it("swaps to the dark logo via CSS when logoUrlDark is set", async () => {
-    loaderResult.layout = makeLayoutData({
-      profile: makeProfile(),
-      logoUrl: "/brand/profilelogo.jpg",
-      logoUrlDark: "/brand/profilelogo-dark.webp",
+    const brandLinks = await screen.findAllByRole("link", {
+      name: "Ada Lovelace",
     });
-
-    await renderAt("/");
-
-    const images = await screen.findAllByAltText("Ada Lovelace");
-    expect(images).toHaveLength(2);
-    const [light, dark] = images as [HTMLImageElement, HTMLImageElement];
-    expect(light).toHaveAttribute("src", "/brand/profilelogo.jpg");
-    expect(light.className).toContain("dark:hidden");
-    expect(dark).toHaveAttribute("src", "/brand/profilelogo-dark.webp");
-    expect(dark.className).toContain("hidden");
-    expect(dark.className).toContain("dark:block");
+    const brand = brandLinks.find((link) => link.querySelector("img"));
+    expect(brand).toBeDefined();
+    if (brand === undefined) return;
+    const icon = brand.querySelector("img");
+    expect(icon).toHaveAttribute("src", "/brand/nav-icon.jpg");
+    expect(icon).toHaveAttribute("alt", "");
+    // The nav icon replaces the SS monogram and the name/role line entirely.
+    expect(brand.textContent).toBe("");
+    expect(brand.querySelector("span")).toBeNull();
   });
 
-  it("falls back to the text brand when no logo is set", async () => {
+  it("shows the SS monogram when no nav icon is set", async () => {
     loaderResult.layout = makeLayoutData({ profile: makeProfile() });
 
     await renderAt("/");
@@ -137,7 +121,17 @@ describe("AppRouter", () => {
       name: /Ada Lovelace/,
     });
     expect(brandLinks.length).toBeGreaterThan(0);
+    const monogram = brandLinks.find((link) =>
+      link.textContent?.includes("SS"),
+    );
+    expect(monogram).toBeDefined();
+    expect(monogram?.querySelector("span")?.textContent).toBe("SS");
+    expect(monogram?.querySelector("img")).toBeNull();
+    // The brand carries the accessible name; no stray text or role line shows.
     expect(screen.queryByAltText("Ada Lovelace")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Software Engineer"),
+    ).not.toBeInTheDocument();
   });
 
   it("navigates to the Projects page via the header navigation", async () => {
