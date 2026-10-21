@@ -30,9 +30,8 @@ export interface SiteSettings {
   id: string;
   siteTitle?: string;
   siteDescription?: string;
-  logoUrl?: string;
-  /** Optional dark-theme twin of the nav logo; falls back to logoUrl. */
-  logoUrlDark?: string;
+  /** Optional nav icon image; when absent the nav shows the SS monogram. */
+  navIconUrl?: string;
   faviconUrl?: string;
   footerText?: string;
   sections: SectionVisibility;

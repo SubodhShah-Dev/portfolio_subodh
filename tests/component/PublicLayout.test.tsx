@@ -36,7 +36,7 @@ function renderLayout(data: ReturnType<typeof makeLayoutData>) {
 }
 
 describe("PublicLayout", () => {
-  it("shows the profile brand and only enabled section links", async () => {
+  it("shows the SS brand monogram and only enabled section links", async () => {
     renderLayout(
       makeLayoutData({
         profile: makeProfile(),
@@ -44,7 +44,10 @@ describe("PublicLayout", () => {
       }),
     );
 
-    expect((await screen.findAllByText("Ada Lovelace")).length).toBeGreaterThan(0);
+    const monogram = await screen.findByText("SS");
+    const brand = monogram.closest("a");
+    expect(brand).not.toBeNull();
+    expect(brand).toHaveAccessibleName("Ada Lovelace");
 
     const navigation = screen.getByRole("navigation", { name: "Site navigation" });
     expect(navigation).toHaveTextContent("About");

@@ -74,7 +74,7 @@ describe("PublicShell interactions", () => {
 
   it("opens the command palette with Ctrl+K and closes it with Escape", async () => {
     renderShell();
-    await screen.findAllByText("Ada Lovelace");
+    await screen.findByText("SS");
 
     fireEvent.keyDown(window, { key: "k", ctrlKey: true });
 
@@ -107,7 +107,7 @@ describe("PublicShell interactions", () => {
 
   it("reveals the back-to-top control after scrolling past the fold", async () => {
     renderShell();
-    await screen.findAllByText("Ada Lovelace");
+    await screen.findByText("SS");
 
     expect(
       screen.queryByRole("button", { name: "Back to top" }),

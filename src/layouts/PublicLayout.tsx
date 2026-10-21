@@ -105,49 +105,31 @@ export default function PublicLayout() {
 
   const name = profile?.public.name ?? "";
   const brandName = name.trim() !== "" ? name : "Portfolio";
-  // With a dark twin configured, each theme shows exactly one <img>; the
-  // hidden one leaves the accessibility tree, so both carry the same alt.
-  // Full-bleed: the art is an opaque rectangle (white bg in the light
-  // twin, near-black in the dark one), so filling the block's full height
-  // makes that baked background the block's own fill — flush against the
-  // paper canvas with no inner box seam.
-  const logoClasses = "block h-full w-auto";
-
+  // SS monogram slab: ink/canvas tokens auto-invert per theme, so the mark is
+  // always the opposite of the paper it sits on. Full height and flush like
+  // the old logo block — the slab IS the brand fill, no inner box seam.
   const brand = (
     <Link
       to="/"
-      className="group flex h-14 min-w-0 items-center border-r-2 border-ink transition-colors duration-200 lg:h-16"
+      aria-label={brandName}
+      className="flex h-14 min-w-0 items-center border-r-2 border-ink lg:h-16"
       onClick={() => {
         // Same-location clicks (logo while already on /) skip the layout's
         // reset effect — scroll explicitly, as the nav links do.
         requestAnimationFrame(() => scrollToTop());
       }}
     >
-      {data.logoUrl !== null ? (
-        <>
-          <img
-            src={data.logoUrl}
-            alt={brandName}
-            fetchPriority="high"
-            decoding="async"
-            className={
-              data.logoUrlDark !== null
-                ? `${logoClasses} dark:hidden`
-                : logoClasses
-            }
-          />
-          {data.logoUrlDark !== null && (
-            <img
-              src={data.logoUrlDark}
-              alt={brandName}
-              decoding="async"
-              className="hidden h-full w-auto dark:block"
-            />
-          )}
-        </>
+      {data.navIconUrl !== null ? (
+        <img
+          src={data.navIconUrl}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="block h-full w-auto"
+        />
       ) : (
-        <span className="min-w-0 truncate px-5 font-display text-lg font-extrabold tracking-[-0.03em] text-ink transition-colors group-hover:text-signal lg:px-6">
-          {brandName}
+        <span className="flex h-full items-center bg-ink px-4 font-display text-xl font-extrabold tracking-[-0.03em] text-canvas lg:px-5">
+          SS
         </span>
       )}
     </Link>
