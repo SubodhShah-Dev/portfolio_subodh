@@ -105,9 +105,9 @@ export default function PublicLayout() {
 
   const name = profile?.public.name ?? "";
   const brandName = name.trim() !== "" ? name : "Portfolio";
-  // SS monogram slab: ink/canvas tokens auto-invert per theme, so the mark is
-  // always the opposite of the paper it sits on. Full height and flush like
-  // the old logo block — the slab IS the brand fill, no inner box seam.
+  // SS monogram: quiet mono brackets around a display extrabold mark — the
+  // same ink-on-paper "code token" language as the hero's </> glyph, no
+  // inverted slab. Tokens flip with the theme; the mark stays ink-on-paper.
   const brand = (
     <Link
       to="/"
@@ -128,8 +128,12 @@ export default function PublicLayout() {
           className="block h-full w-auto"
         />
       ) : (
-        <span className="flex h-full items-center bg-ink px-4 font-display text-xl font-extrabold tracking-[-0.03em] text-canvas lg:px-5">
-          SS
+        <span className="flex h-full items-center gap-[3px] font-meta text-lg font-semibold text-muted">
+          <span>&lt;</span>
+          <span className="font-display text-xl font-extrabold tracking-[-0.03em] text-ink">
+            SS
+          </span>
+          <span>/&gt;</span>
         </span>
       )}
     </Link>

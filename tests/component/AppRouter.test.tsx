@@ -125,7 +125,7 @@ describe("AppRouter", () => {
       link.textContent?.includes("SS"),
     );
     expect(monogram).toBeDefined();
-    expect(monogram?.querySelector("span")?.textContent).toBe("SS");
+    expect(monogram?.textContent).toBe("<SS/>");
     expect(monogram?.querySelector("img")).toBeNull();
     // The brand carries the accessible name; no stray text or role line shows.
     expect(screen.queryByAltText("Ada Lovelace")).not.toBeInTheDocument();
