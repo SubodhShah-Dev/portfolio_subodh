@@ -105,14 +105,14 @@ export default function PublicLayout() {
 
   const name = profile?.public.name ?? "";
   const brandName = name.trim() !== "" ? name : "Portfolio";
-  // SS monogram slab: ink/canvas tokens auto-invert per theme, so the mark is
-  // always the opposite of the paper it sits on. Full height and flush like
-  // the old logo block — the slab IS the brand fill, no inner box seam.
+  // SS monogram: quiet mono brackets around a display extrabold mark — the
+  // same ink-on-paper "code token" language as the hero's </> glyph, no
+  // inverted slab. Tokens flip with the theme; the mark stays ink-on-paper.
   const brand = (
     <Link
       to="/"
       aria-label={brandName}
-      className="flex h-14 min-w-0 items-center border-r-2 border-ink lg:h-16"
+      className="flex h-14 min-w-0 items-center lg:h-16"
       onClick={() => {
         // Same-location clicks (logo while already on /) skip the layout's
         // reset effect — scroll explicitly, as the nav links do.
@@ -128,8 +128,12 @@ export default function PublicLayout() {
           className="block h-full w-auto"
         />
       ) : (
-        <span className="flex h-full items-center bg-ink px-4 font-display text-xl font-extrabold tracking-[-0.03em] text-canvas lg:px-5">
-          SS
+        <span className="flex h-full items-center gap-[3px] font-meta text-xl font-medium text-muted">
+          <span>&lt;</span>
+          <span className="font-display text-2xl font-extrabold tracking-[-0.03em] text-ink lg:text-[1.7rem]">
+            SS
+          </span>
+          <span>/&gt;</span>
         </span>
       )}
     </Link>
