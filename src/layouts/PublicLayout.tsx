@@ -112,7 +112,7 @@ export default function PublicLayout() {
     <Link
       to="/"
       aria-label={brandName}
-      className="flex h-14 min-w-0 items-center border-r-2 border-ink lg:h-16"
+      className="flex h-14 min-w-0 items-center lg:h-16"
       onClick={() => {
         // Same-location clicks (logo while already on /) skip the layout's
         // reset effect — scroll explicitly, as the nav links do.
@@ -128,9 +128,9 @@ export default function PublicLayout() {
           className="block h-full w-auto"
         />
       ) : (
-        <span className="flex h-full items-center gap-[3px] font-meta text-lg font-semibold text-muted">
+        <span className="flex h-full items-center gap-[3px] font-meta text-xl font-medium text-muted">
           <span>&lt;</span>
-          <span className="font-display text-xl font-extrabold tracking-[-0.03em] text-ink">
+          <span className="font-display text-2xl font-extrabold tracking-[-0.03em] text-ink lg:text-[1.7rem]">
             SS
           </span>
           <span>/&gt;</span>
